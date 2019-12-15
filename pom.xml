@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+				 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+	<modelVersion>4.0.0</modelVersion>
+
+	<parent>
+		<groupId>com.avereon.pom</groupId>
+		<artifactId>jar</artifactId>
+		<version>3.0.0-SNAPSHOT</version>
+	</parent>
+
+	<groupId>com.avereon</groupId>
+	<artifactId>venza</artifactId>
+	<version>0.1-SNAPSHOT</version>
+	<packaging>jar</packaging>
+
+	<name>Venza</name>
+	<description>Utility library</description>
+	<inceptionYear>2019</inceptionYear>
+
+	<developers>
+		<developer>
+			<name>Mark Soderquist</name>
+			<email>mark@soderquist.net</email>
+			<roles>
+				<role>Architect</role>
+			</roles>
+		</developer>
+	</developers>
+
+	<repositories>
+		<repository>
+			<id>avn</id>
+			<url>https://repo.avereon.com/avn</url>
+		</repository>
+	</repositories>
+
+	<properties>
+		<product-name>${project.name}</product-name>
+		<product-identifier>${project.artifactId}</product-identifier>
+		<project-timestamp>${maven.build.timestamp}</project-timestamp>
+
+		<!-- Version numbers updated 15 Dec 2019 -->
+		<!-- Runtime dependencies -->
+		<!--java.version defined in parent pom -->
+		<javafx.version>11</javafx.version>
+		<slf4j.version>1.8.0-beta4</slf4j.version>
+
+		<!-- Test dependencies -->
+		<testfx.version>4.0.15-alpha</testfx.version>
+	</properties>
+
+	<dependencies>
+
+		<dependency>
+			<groupId>com.avereon</groupId>
+			<artifactId>zevra</artifactId>
+			<version>0.2-SNAPSHOT</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.openjfx</groupId>
+			<artifactId>javafx-controls</artifactId>
+			<version>${javafx.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.openjfx</groupId>
+			<artifactId>javafx-swing</artifactId>
+			<version>${javafx.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-api</artifactId>
+			<version>${slf4j.version}</version>
+			<optional>true</optional>
+		</dependency>
+
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-nop</artifactId>
+			<version>${slf4j.version}</version>
+			<scope>test</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>org.testfx</groupId>
+			<artifactId>testfx-core</artifactId>
+			<version>${testfx.version}</version>
+			<scope>test</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>org.testfx</groupId>
+			<artifactId>testfx-junit5</artifactId>
+			<version>${testfx.version}</version>
+			<scope>test</scope>
+			<exclusions>
+				<!-- Exclude the junit-jupiter-api, it is already available-->
+				<exclusion>
+					<groupId>org.junit.jupiter</groupId>
+					<artifactId>junit-jupiter-api</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+
+	</dependencies>
+
+	<build>
+		<plugins>
+
+			<plugin>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<!-- This configuration allows the JUnit test runner to find the unit tests -->
+				<configuration>
+					<argLine>
+						--add-opens=javafx.graphics/com.sun.javafx.application=ALL-UNNAMED
+						--add-opens=com.avereon.venza/com.avereon.venza.color=ALL-UNNAMED
+						--add-opens=com.avereon.venza/com.avereon.venza.font=ALL-UNNAMED
+						--add-opens=com.avereon.venza/com.avereon.venza.image=ALL-UNNAMED
+						--add-opens=com.avereon.venza/com.avereon.venza.javafx=ALL-UNNAMED
+					</argLine>
+				</configuration>
+			</plugin>
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-javadoc-plugin</artifactId>
+				<executions>
+					<execution>
+						<phase>verify</phase>
+						<goals>
+							<goal>jar</goal>
+						</goals>
+						<configuration>
+							<failOnError>false</failOnError>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+
+		</plugins>
+	</build>
+
+</project>
+
