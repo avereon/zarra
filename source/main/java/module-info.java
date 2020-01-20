@@ -1,5 +1,5 @@
 module com.avereon.venza {
-	requires com.avereon.zevra;
+	requires transitive com.avereon.zevra;
 	requires java.logging;
 	requires javafx.controls;
 	requires javafx.swing;
