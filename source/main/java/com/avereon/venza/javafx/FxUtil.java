@@ -3,6 +3,7 @@ package com.avereon.venza.javafx;
 import javafx.application.Platform;
 import javafx.geometry.*;
 import javafx.scene.Node;
+import javafx.scene.Parent;
 import javafx.scene.control.TreeItem;
 import javafx.scene.layout.BackgroundPosition;
 
@@ -161,6 +162,39 @@ public class FxUtil {
 			}
 		}
 
+	}
+
+	/**
+	 * Pick the child node in a parent node that contains the scene point. Found
+	 * at: http://fxexperience.com/2016/01/node-picking-in-javafx/.
+	 *
+	 * @param parent
+	 * @param sceneX
+	 * @param sceneY
+	 * @return
+	 */
+	public static Node pick( Node parent, double sceneX, double sceneY ) {
+		Point2D point = parent.sceneToLocal( sceneX, sceneY, true );
+
+		// Check if the given node has the point inside it
+		if( !parent.contains( point ) ) return null;
+
+		if( parent instanceof Parent ) {
+			Node closest = null;
+			List<Node> children = ((Parent)parent).getChildrenUnmodifiable();
+			for( int i = children.size() - 1; i >= 0; i-- ) {
+				Node child = children.get( i );
+				point = child.sceneToLocal( sceneX, sceneY, true );
+				if( child.isVisible() && !child.isMouseTransparent() && child.contains( point ) ) {
+					closest = child;
+					break;
+				}
+			}
+
+			if( closest != null ) return pick( closest, sceneX, sceneY );
+		}
+
+		return parent;
 	}
 
 }
