@@ -1,6 +1,6 @@
 package com.avereon.venza.font;
 
-import com.avereon.util.LogUtil;
+import com.avereon.util.Log;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontPosture;
 import javafx.scene.text.FontWeight;
@@ -13,7 +13,7 @@ import static java.lang.System.Logger.Level.WARNING;
 
 public final class FontUtil {
 
-	private static final System.Logger log = LogUtil.log();
+	private static final System.Logger log = Log.log();
 
 	private static List<String> monoFamilyList;
 
