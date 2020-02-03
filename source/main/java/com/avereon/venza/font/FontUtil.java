@@ -5,15 +5,15 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontPosture;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
-import org.slf4j.Logger;
 
-import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
 import java.util.List;
 
+import static java.lang.System.Logger.Level.WARNING;
+
 public final class FontUtil {
 
-	private static final Logger log = LogUtil.get( MethodHandles.lookup().lookupClass() );
+	private static final System.Logger log = LogUtil.log();
 
 	private static List<String> monoFamilyList;
 
@@ -57,10 +57,10 @@ public final class FontUtil {
 		try {
 			size = Double.parseDouble( sizeString );
 		} catch( NumberFormatException exception ) {
-			log.warn( "Error parsing font size", exception );
+			log.log( WARNING, "Error parsing font size", exception );
 		}
 
-		return Font.font( family, getFontWeight(style), getFontPosture( style ), size );
+		return Font.font( family, getFontWeight( style ), getFontPosture( style ), size );
 	}
 
 	public static FontWeight getFontWeight( String string ) {
