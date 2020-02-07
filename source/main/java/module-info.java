@@ -2,6 +2,7 @@ module com.avereon.venza {
 	requires com.avereon.zevra;
 	requires javafx.controls;
 	requires javafx.swing;
+	requires image4j;
 
 	exports com.avereon.venza.color;
 	exports com.avereon.venza.font;
