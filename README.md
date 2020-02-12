@@ -1,4 +1,4 @@
-[build-status]: https://github.com/avereon/venza/workflows/Avereon%20Venza%20CI/badge.svg "Build status"
+[build-status]: https://github.com/avereon/venza/workflows/Avereon%20Venza%20Continuous/badge.svg "Build status"
 
 # Venza [![][build-status]](https://github.com/avereon/venza/actions)
 
