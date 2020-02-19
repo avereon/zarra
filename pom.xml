@@ -46,7 +46,6 @@
 		<!-- Runtime dependencies -->
 		<!--java.version defined in parent pom -->
 		<javafx.version>13</javafx.version>
-		<slf4j.version>1.8.0-beta4</slf4j.version>
 
 		<!-- Test dependencies -->
 		<testfx.version>4.0.15-alpha</testfx.version>
