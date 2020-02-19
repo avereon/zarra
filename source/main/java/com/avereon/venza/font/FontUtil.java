@@ -13,7 +13,7 @@ import static java.lang.System.Logger.Level.WARNING;
 
 public final class FontUtil {
 
-	private static final System.Logger log = Log.log();
+	private static final System.Logger log = Log.get();
 
 	private static List<String> monoFamilyList;
 
