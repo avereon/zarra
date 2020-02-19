@@ -45,7 +45,7 @@
 		<!-- Version numbers updated 15 Dec 2019 -->
 		<!-- Runtime dependencies -->
 		<!--java.version defined in parent pom -->
-		<javafx.version>13</javafx.version>
+		<openjfx.version>13</openjfx.version>
 
 		<!-- Test dependencies -->
 		<testfx.version>4.0.15-alpha</testfx.version>
@@ -62,13 +62,13 @@
 		<dependency>
 			<groupId>org.openjfx</groupId>
 			<artifactId>javafx-controls</artifactId>
-			<version>${javafx.version}</version>
+			<version>${openjfx.version}</version>
 		</dependency>
 
 		<dependency>
 			<groupId>org.openjfx</groupId>
 			<artifactId>javafx-swing</artifactId>
-			<version>${javafx.version}</version>
+			<version>${openjfx.version}</version>
 		</dependency>
 
 		<dependency>
