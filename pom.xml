@@ -45,10 +45,10 @@
 		<!-- Version numbers updated 15 Dec 2019 -->
 		<!-- Runtime dependencies -->
 		<!--java.version defined in parent pom -->
-		<openjfx.version>13</openjfx.version>
+		<openjfx.version>13.0.2</openjfx.version>
 
 		<!-- Test dependencies -->
-		<testfx.version>4.0.15-alpha</testfx.version>
+		<testfx.version>4.0.16-alpha</testfx.version>
 	</properties>
 
 	<dependencies>
