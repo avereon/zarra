@@ -10,19 +10,16 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class FxEventHub extends EventHub {
 
-	private FxEventHub parent;
-
 	private Map<javafx.event.EventType<? extends javafx.event.Event>, Collection<FxEventHandlerWrapper<?>>> fxHandlers;
 
 	public FxEventHub() {
-		this( null );
-	}
-
-	public FxEventHub( FxEventHub parent ) {
-		this.parent = parent;
 		this.fxHandlers = new ConcurrentHashMap<>();
 	}
 
+	public FxEventHub parent( FxEventHub parent ) {
+		super.parent( parent );
+		return this;
+	}
 
 	public FxEventHub dispatch( javafx.event.Event event ) {
 		// While the type of the incoming event is known, the parent event types,
@@ -41,7 +38,7 @@ public class FxEventHub extends EventHub {
 		}
 
 		// If there is a parent event hub, pass the event to it
-		if( parent != null ) parent.dispatch( event );
+		if( getParent() != null ) getParent().dispatch( event );
 
 		return this;
 	}
@@ -57,6 +54,10 @@ public class FxEventHub extends EventHub {
 			return c.isEmpty() ? null : c;
 		} );
 		return this;
+	}
+
+	protected FxEventHub getParent() {
+		return (FxEventHub)super.getParent();
 	}
 
 	private static class FxEventHandlerWrapper<T extends javafx.event.Event> implements javafx.event.EventDispatcher, javafx.event.EventHandler<T> {
