@@ -96,24 +96,28 @@ public abstract class ProgramImage extends Canvas {
 
 	private static final CssMetaData<ProgramImage, Color> THEME_COLOR;
 
-	private static final CssMetaData<ProgramImage, Color> OUTLINE_COLOR;
+	private static final CssMetaData<ProgramImage, Paint> OUTLINE_PAINT;
 
-	private static final CssMetaData<ProgramImage, Number> DRAW_WIDTH;
+	private static final CssMetaData<ProgramImage, Number> OUTLINE_WIDTH;
 
 	private static final Color DEFAULT_THEME_COLOR = Color.web( "#c0c0c0");
 
-	private static final Color DEFAULT_OUTLINE_COLOR = Color.web( "#404040");
+	private static final Paint DEFAULT_OUTLINE_PAINT = Color.web( "#404040");
 
-	private static final double DEFAULT_DRAW_WIDTH = 1.0 / 32.0;
+	private static final double DEFAULT_OUTLINE_WIDTH = 1.0 / 32.0;
 
 	@Deprecated
 	private static ColorTheme DEFAULT_COLOR_THEME = new ColorTheme( DEFAULT_THEME_COLOR );
 
 	private ObjectProperty<Color> themeColor;
 
-	private ObjectProperty<Color> outlineColor;
+	private ObjectProperty<Paint> outlinePaint;
 
-	private DoubleProperty drawWidth;
+	private Paint outlinePaintOverride;
+
+	private DoubleProperty outlineWidth;
+
+	private Double outlineWidthOverride;
 
 	private ColorTheme colorTheme;
 
@@ -124,7 +128,7 @@ public abstract class ProgramImage extends Canvas {
 	private Transform baseTransform = new Affine();
 
 	static {
-		THEME_COLOR = new CssMetaData<>( "-xn-theme-color", StyleConverter.getColorConverter() ) {
+		THEME_COLOR = new CssMetaData<>( "-xe-theme-color", StyleConverter.getColorConverter() ) {
 
 			@Override
 			public boolean isSettable( ProgramImage styleable ) {
@@ -134,70 +138,50 @@ public abstract class ProgramImage extends Canvas {
 			@Override
 			@SuppressWarnings( "unchecked" )
 			public StyleableProperty<Color> getStyleableProperty( ProgramImage styleable ) {
-				new Throwable( "Getting styleable property for theme color..." ).printStackTrace( System.err );
-
 				return (StyleableProperty<Color>)styleable.themeColorProperty();
 			}
 
 		};
 
-		OUTLINE_COLOR = new CssMetaData<>( "-xn-outline-color", StyleConverter.getColorConverter() ) {
+		OUTLINE_PAINT = new CssMetaData<>( "-xe-outline-paint", StyleConverter.getPaintConverter() ) {
 
 			@Override
 			public boolean isSettable( ProgramImage styleable ) {
-				return styleable.outlineColor == null || !styleable.outlineColor.isBound();
+				return styleable.outlinePaint == null || !styleable.outlinePaint.isBound();
 			}
 
 			@Override
 			@SuppressWarnings( "unchecked" )
-			public StyleableProperty<Color> getStyleableProperty( ProgramImage styleable ) {
-				return (StyleableProperty<Color>)styleable.outlineColorProperty();
+			public StyleableProperty<Paint> getStyleableProperty( ProgramImage styleable ) {
+				return (StyleableProperty<Paint>)styleable.outlinePaintProperty();
 			}
 
 		};
 
-		DRAW_WIDTH = new CssMetaData<>( "-xn-draw-width", StyleConverter.getSizeConverter() ) {
+		OUTLINE_WIDTH = new CssMetaData<>( "-xe-outline-width", StyleConverter.getSizeConverter() ) {
 
 			@Override
 			public boolean isSettable( ProgramImage styleable ) {
-				return styleable.outlineColor == null || !styleable.outlineColor.isBound();
+				return styleable.outlinePaint == null || !styleable.outlinePaint.isBound();
 			}
 
 			@Override
 			@SuppressWarnings( "unchecked" )
 			public StyleableProperty<Number> getStyleableProperty( ProgramImage styleable ) {
-				return (StyleableProperty<Number>)styleable.drawWidthProperty();
+				return (StyleableProperty<Number>)styleable.outlineWidthProperty();
 			}
 
 		};
 
-		STYLEABLES = List.of( THEME_COLOR, OUTLINE_COLOR, DRAW_WIDTH );
+		STYLEABLES = List.of( THEME_COLOR, OUTLINE_PAINT, OUTLINE_WIDTH );
 	}
 
 	public ProgramImage() {
 		setSize( DEFAULT_SIZE );
-		parentProperty().addListener( ( observable, oldValue, newValue ) -> { if( newValue != null ) fireRender(); } );
-	}
-
-	@Override
-	public void setUserData( Object value ) {
-		super.setUserData( value );
-	}
-
-	public static ColorTheme getDefaultColorTheme() {
-		return DEFAULT_COLOR_THEME;
-	}
-
-	public static void setDefaultColorTheme( ColorTheme theme ) {
-		DEFAULT_COLOR_THEME = theme;
-	}
-
-	public static Color getDefaultOutlineColor() {
-		return DEFAULT_OUTLINE_COLOR;
-	}
-
-	public static void setDefaultOutlineColor( Color color ) {
-		//DEFAULT_OUTLINE_COLOR = color;
+		getStyleClass().add( "xe-image" );
+		colorTheme = new ColorTheme( getThemeColor() );
+		themeColorProperty().addListener( ( v, o, n ) -> colorTheme = new ColorTheme( n ) );
+		parentProperty().addListener( ( v, o, n ) -> { if( n != null ) fireRender(); } );
 	}
 
 	public static List<CssMetaData<? extends Styleable, ?>> getClassCssMetaData() {
@@ -209,60 +193,70 @@ public abstract class ProgramImage extends Canvas {
 		return getClassCssMetaData();
 	}
 
-	private ColorTheme getColorTheme() {
-		return this.colorTheme == null ? DEFAULT_COLOR_THEME : this.colorTheme;
-	}
-
-	private void setColorTheme( ColorTheme theme ) {
-		this.colorTheme = theme;
-	}
-
-	public static double getDefaultDrawWidth() {
-		return DEFAULT_DRAW_WIDTH;
-	}
-
-	public static void setDefaultDrawWidth( double size ) {
-		//DEFAULT_DRAW_WIDTH = size;
-	}
-
 	public Color getThemeColor() {
 		return themeColorProperty().get();
 	}
 
 	public void setThemeColor( Color color ) {
 		themeColorProperty().set( color );
-		colorTheme = new ColorTheme( color );
 	}
 
 	public ObjectProperty<Color> themeColorProperty() {
-		if( themeColor == null ) themeColor = new SimpleStyleableObjectProperty<>( THEME_COLOR, ProgramImage.this, "themeColor", DEFAULT_THEME_COLOR );
+		if( themeColor == null ) {
+			themeColor = new SimpleStyleableObjectProperty<>( THEME_COLOR, ProgramImage.this, "themeColor", DEFAULT_THEME_COLOR ) {
+
+				@Override
+				protected void invalidated() {
+					fireRender();
+				}
+
+			};
+		}
 		return themeColor;
 	}
 
-	public Color getOutlineColor() {
-		return outlineColorProperty().get();
+	public Paint getOutlinePaint() {
+		return outlinePaintOverride != null ? outlinePaintOverride : outlinePaintProperty().get();
 	}
 
-	public void setOutlineColor( Color outlineColor ) {
-		outlineColorProperty().set( outlineColor );
+	public void setOutlinePaint( Paint outlinePaint ) {
+		outlinePaintOverride = outlinePaint;
 	}
 
-	private ObjectProperty<Color> outlineColorProperty() {
-		if( outlineColor == null ) outlineColor = new SimpleStyleableObjectProperty<>( OUTLINE_COLOR, ProgramImage.this, "outlineColor", DEFAULT_OUTLINE_COLOR );
-		return outlineColor;
+	public ObjectProperty<Paint> outlinePaintProperty() {
+		if( outlinePaint == null ) {
+			outlinePaint = new SimpleStyleableObjectProperty<>( OUTLINE_PAINT, ProgramImage.this, "outlinePaint", DEFAULT_OUTLINE_PAINT ) {
+
+				@Override
+				protected void invalidated() {
+					fireRender();
+				}
+
+			};
+		}
+		return outlinePaint;
 	}
 
-	public double getDrawWidth() {
-		return drawWidthProperty().get();
+	public double getOutlineWidth() {
+		return outlineWidthOverride != null ? outlineWidthOverride : outlineWidthProperty().get();
 	}
 
-	public void setDrawWidth( double drawWidth ) {
-		drawWidthProperty().set( drawWidth );
+	public void setOutlineWidth( double outlineWidth ) {
+		outlineWidthOverride = outlineWidth == Double.NaN ? null : outlineWidth;
 	}
 
-	public DoubleProperty drawWidthProperty() {
-		if( drawWidth == null ) drawWidth = new SimpleStyleableDoubleProperty( DRAW_WIDTH, ProgramImage.this, "drawWidth", DEFAULT_DRAW_WIDTH );
-		return drawWidth;
+	public DoubleProperty outlineWidthProperty() {
+		if( outlineWidth == null ) {
+			outlineWidth = new SimpleStyleableDoubleProperty( OUTLINE_WIDTH, ProgramImage.this, "outlineWidth", DEFAULT_OUTLINE_WIDTH ) {
+
+				@Override
+				protected void invalidated() {
+					fireRender();
+				}
+
+			};
+		}
+		return outlineWidth;
 	}
 
 	public ProgramImage setSize( double size ) {
@@ -576,7 +570,7 @@ public abstract class ProgramImage extends Canvas {
 	protected void draw( Paint paint ) {
 		getGraphicsContext2D().setStroke( paint );
 		getGraphicsContext2D().stroke();
-		getGraphicsContext2D().setStroke( getIconDrawColor() );
+		getGraphicsContext2D().setStroke( getOutlinePaint() );
 	}
 
 	protected void draw( ProgramImage image ) {
@@ -736,13 +730,13 @@ public abstract class ProgramImage extends Canvas {
 	}
 
 	protected double getIconDrawWidth() {
-		return DEFAULT_DRAW_WIDTH;
+		return DEFAULT_OUTLINE_WIDTH;
 	}
 
-	protected Color getIconDrawColor() {
+	protected Paint getIconDrawColor() {
 		//return DEFAULT_OUTLINE_COLOR;
 		//return getThemeDrawColor();
-		return getOutlineColor();
+		return getOutlinePaint();
 	}
 
 	protected Color getIconFillColor() {
@@ -853,11 +847,9 @@ public abstract class ProgramImage extends Canvas {
 
 		try {
 			clone = getClass().getDeclaredConstructor().newInstance();
-			clone.setThemeColor( getThemeColor() );
-			clone.setOutlineColor( getOutlineColor() );
+			clone.setStyle( getStyle() );
 			clone.setHeight( getHeight() );
 			clone.setWidth( getWidth() );
-			//clone.fireRender();
 		} catch( Exception e ) {
 			e.printStackTrace();
 		}
@@ -865,18 +857,26 @@ public abstract class ProgramImage extends Canvas {
 		return clone;
 	}
 
-	private Color getThemeDrawColor() {
-		Color primary = getColorTheme().getPrimary();
-
-		double y = Colors.getLuminance( primary );
-		if( y < 0.2 ) {
-			// Dark primary
-			return primary.deriveColor( 0, 1, 1.75, 1 );
-		} else {
-			// Light primary
-			return primary.deriveColor( 0, 1, 0.25, 1 );
-		}
+	private ColorTheme getColorTheme() {
+		return this.colorTheme;
 	}
+
+	private void setColorTheme( ColorTheme theme ) {
+		this.colorTheme = theme;
+	}
+
+//	private Color getThemeDrawColor() {
+//		Color primary = getColorTheme().getPrimary();
+//
+//		double y = Colors.getLuminance( primary );
+//		if( y < 0.2 ) {
+//			// Dark primary
+//			return primary.deriveColor( 0, 1, 1.75, 1 );
+//		} else {
+//			// Light primary
+//			return primary.deriveColor( 0, 1, 0.25, 1 );
+//		}
+//	}
 
 	private Color getThemeFillColor() {
 		return getColorTheme().getPrimary();
@@ -895,15 +895,15 @@ public abstract class ProgramImage extends Canvas {
 		return scene;
 	}
 
-	ProgramImage fireRender() {
+	protected ProgramImage fireRender() {
 		double size = Math.min( getWidth(), getHeight() );
 
 		// Set the defaults
 		getGraphicsContext2D().setLineCap( StrokeLineCap.ROUND );
 		getGraphicsContext2D().setLineJoin( StrokeLineJoin.ROUND );
-		getGraphicsContext2D().setLineWidth( xformX( getDrawWidth() ) );
+		getGraphicsContext2D().setLineWidth( xformX( getOutlineWidth() ) );
 
-		getGraphicsContext2D().setStroke( getIconDrawColor() );
+		getGraphicsContext2D().setStroke( getOutlinePaint() );
 		getGraphicsContext2D().setFill( getIconFillPaint() );
 		getGraphicsContext2D().setFillRule( FillRule.EVEN_ODD );
 
