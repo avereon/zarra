@@ -90,6 +90,8 @@ public abstract class ProgramImage extends Canvas {
 
 	protected static final double DEGREES_PER_RADIAN = 180 / Math.PI;
 
+	protected static final String TEST_STYLE = "-xe-theme-color: magenta; -xe-outline-paint: purple;";
+
 	private static final double DEFAULT_SIZE = 256;
 
 	private static final List<CssMetaData<? extends Styleable, ?>> STYLEABLES;
@@ -111,6 +113,8 @@ public abstract class ProgramImage extends Canvas {
 
 	private ObjectProperty<Color> themeColor;
 
+	private Color themeColorOverride;
+
 	private ObjectProperty<Paint> outlinePaint;
 
 	private Paint outlinePaintOverride;
@@ -119,11 +123,11 @@ public abstract class ProgramImage extends Canvas {
 
 	private Double outlineWidthOverride;
 
-	private ColorTheme colorTheme;
+	//private ColorTheme colorTheme;
 
 	private Font font;
 
-	private GraphicsContext overrideContext;
+	private GraphicsContext graphicsContextOverride;
 
 	private Transform baseTransform = new Affine();
 
@@ -179,8 +183,6 @@ public abstract class ProgramImage extends Canvas {
 	public ProgramImage() {
 		setSize( DEFAULT_SIZE );
 		getStyleClass().add( "xe-image" );
-		colorTheme = new ColorTheme( getThemeColor() );
-		themeColorProperty().addListener( ( v, o, n ) -> colorTheme = new ColorTheme( n ) );
 		parentProperty().addListener( ( v, o, n ) -> { if( n != null ) fireRender(); } );
 	}
 
@@ -194,11 +196,11 @@ public abstract class ProgramImage extends Canvas {
 	}
 
 	public Color getThemeColor() {
-		return themeColorProperty().get();
+		return themeColorOverride != null ? themeColorOverride : themeColorProperty().get();
 	}
 
 	public void setThemeColor( Color color ) {
-		themeColorProperty().set( color );
+		themeColorOverride = color;
 	}
 
 	public ObjectProperty<Color> themeColorProperty() {
@@ -219,8 +221,8 @@ public abstract class ProgramImage extends Canvas {
 		return outlinePaintOverride != null ? outlinePaintOverride : outlinePaintProperty().get();
 	}
 
-	public void setOutlinePaint( Paint outlinePaint ) {
-		outlinePaintOverride = outlinePaint;
+	public void setOutlinePaint( Paint paint ) {
+		outlinePaintOverride = paint;
 	}
 
 	public ObjectProperty<Paint> outlinePaintProperty() {
@@ -241,8 +243,8 @@ public abstract class ProgramImage extends Canvas {
 		return outlineWidthOverride != null ? outlineWidthOverride : outlineWidthProperty().get();
 	}
 
-	public void setOutlineWidth( double outlineWidth ) {
-		outlineWidthOverride = outlineWidth == Double.NaN ? null : outlineWidth;
+	public void setOutlineWidth( double width ) {
+		outlineWidthOverride = width == Double.NaN ? null : width;
 	}
 
 	public DoubleProperty outlineWidthProperty() {
@@ -323,10 +325,20 @@ public abstract class ProgramImage extends Canvas {
 	}
 
 	public static void proof( ProgramIcon icon ) {
-		proof( icon, null );
+		proof( icon, null, null );
 	}
 
 	public static void proof( ProgramIcon icon, Paint fill ) {
+		proof( icon, null, fill );
+	}
+
+	public static void proof( ProgramIcon icon, String style ) {
+		proof( icon, style, null );
+	}
+
+	public static void proof( ProgramIcon icon, String style, Paint fill ) {
+		if( style != null ) icon.setStyle( style );
+
 		JavaFxStarter.startAndWait( 1000 );
 
 		// Now show the icon window
@@ -474,11 +486,11 @@ public abstract class ProgramImage extends Canvas {
 
 	@Override
 	public GraphicsContext getGraphicsContext2D() {
-		return overrideContext == null ? super.getGraphicsContext2D() : overrideContext;
+		return graphicsContextOverride == null ? super.getGraphicsContext2D() : graphicsContextOverride;
 	}
 
 	public void setGraphicsContext2D( GraphicsContext context ) {
-		this.overrideContext = context;
+		this.graphicsContextOverride = context;
 	}
 
 	//	protected void setDrawWidth( double width ) {
@@ -491,6 +503,10 @@ public abstract class ProgramImage extends Canvas {
 
 	protected void setLineJoin( StrokeLineJoin join ) {
 		getGraphicsContext2D().setLineJoin( join );
+	}
+
+	protected void setDrawWidth( double width ) {
+		getGraphicsContext2D().setLineWidth( width );
 	}
 
 	protected void setDrawPaint( Paint paint ) {
@@ -847,6 +863,9 @@ public abstract class ProgramImage extends Canvas {
 
 		try {
 			clone = getClass().getDeclaredConstructor().newInstance();
+			clone.themeColorOverride = this.themeColorOverride;
+			clone.outlinePaintOverride = this.outlinePaintOverride;
+			clone.outlineWidthOverride = this.outlineWidthOverride;
 			clone.setStyle( getStyle() );
 			clone.setHeight( getHeight() );
 			clone.setWidth( getWidth() );
@@ -858,12 +877,12 @@ public abstract class ProgramImage extends Canvas {
 	}
 
 	private ColorTheme getColorTheme() {
-		return this.colorTheme;
+		return new ColorTheme( getThemeColor() );
 	}
 
-	private void setColorTheme( ColorTheme theme ) {
-		this.colorTheme = theme;
-	}
+//	private void setColorTheme( ColorTheme theme ) {
+//		this.colorTheme = theme;
+//	}
 
 //	private Color getThemeDrawColor() {
 //		Color primary = getColorTheme().getPrimary();
@@ -908,7 +927,7 @@ public abstract class ProgramImage extends Canvas {
 		getGraphicsContext2D().setFillRule( FillRule.EVEN_ODD );
 
 		// Start rendering by clearing the icon area
-		if( overrideContext == null ) {
+		if( graphicsContextOverride == null ) {
 			clearRect( 0, 0, 1, 1 );
 			getGraphicsContext2D().setTransform( new Affine() );
 			baseTransform = Transform.scale( size, size );
