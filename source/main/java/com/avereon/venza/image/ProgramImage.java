@@ -876,7 +876,7 @@ public abstract class ProgramImage extends Canvas {
 		return clone;
 	}
 
-	private ColorTheme getColorTheme() {
+	protected ColorTheme getColorTheme() {
 		return new ColorTheme( getThemeColor() );
 	}
 
