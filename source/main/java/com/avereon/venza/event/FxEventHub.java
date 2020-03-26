@@ -16,7 +16,7 @@ public class FxEventHub extends EventHub {
 		this.fxHandlers = new ConcurrentHashMap<>();
 	}
 
-	public FxEventHub parent( FxEventHub parent ) {
+	public FxEventHub parent( EventHub parent ) {
 		super.parent( parent );
 		return this;
 	}
