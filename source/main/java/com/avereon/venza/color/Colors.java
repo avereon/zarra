@@ -88,14 +88,11 @@ public class Colors {
 	 * @return A number between 0.0 and 1.0 representing the luminance.
 	 */
 	public static double getLuminance( Color color ) {
-		double r = color.getRed();
-		double g = color.getGreen();
-		double b = color.getBlue();
+		// Per http://stackoverflow.com/questions/596216/formula-to-determine-brightness-of-rgb-color
+		//return  (0.2126*color.getRed()) + (0.7152*color.getGreen()) + (0.0722*color.getBlue());
 
-		//float y = (float)Math.sqrt(0.299 * r*r + 0.587 * g*g + 0.114 * b*b);
-		double y = 0.2126f * r + 0.7152f * g + 0.0722f * b;
-
-		return y;
+		// Per com.sun.javafx.util.Utils.calculateBrightness(Color)
+		return (0.3 * color.getRed()) + (0.59 * color.getGreen()) + (0.11 * color.getBlue());
 	}
 
 	private static double clamp( double value ) {
