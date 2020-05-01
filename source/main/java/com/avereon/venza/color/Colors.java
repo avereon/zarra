@@ -16,6 +16,10 @@ public class Colors {
 		return String.format( "#%02x%02x%02x%02x", r, g, b, o );
 	}
 
+	public static Color opaque( Color color ) {
+		return new Color( color.getRed(), color.getGreen(), color.getBlue(), 1.0 );
+	}
+
 	public static Color mix( Color color, Color mixer, double factor ) {
 		if( color == null || mixer == null ) return null;
 		factor = clamp( factor );
