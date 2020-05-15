@@ -124,7 +124,7 @@ public class FxUtil {
 		}
 	}
 
-	public static void checkFxUserThread() {
+	public static void assertFxThread() {
 		if( !Platform.isFxApplicationThread() ) {
 			throw new IllegalStateException( "Not on FX application thread; currentThread = " + Thread.currentThread().getName() );
 		}
