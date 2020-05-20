@@ -35,14 +35,8 @@ public abstract class RenderedIcon extends RenderedImage {
 		Platform.runLater( () -> {
 			Application.setUserAgentStylesheet( Application.STYLESHEET_MODENA );
 
-			Pane darkPane = proofPane( icon );
-			darkPane.getStyleClass().add( "root" );
-			darkPane.getStylesheets().add( DARK_THEME );
-
-			Pane lightPane = proofPane( icon );
-			lightPane.getStyleClass().add( "root" );
-			lightPane.getStylesheets().add( LIGHT_THEME );
-
+			Pane darkPane = proofPane( icon.copy(), DARK_THEME );
+			Pane lightPane = proofPane( icon.copy(), LIGHT_THEME );
 			Scene scene = new Scene( new HBox( darkPane, lightPane ) );
 
 			List<Image> stageIcons = new ArrayList<>();
@@ -65,7 +59,8 @@ public abstract class RenderedIcon extends RenderedImage {
 		} );
 	}
 
-	private static Pane proofPane( RenderedIcon icon ) {
+	private static Pane proofPane( RenderedIcon icon, String stylesheet ) {
+		if( stylesheet != null ) icon.getProperties().put( "stylesheet", stylesheet );
 		ImageView imageView16 = new ImageView( Images.resample( icon.copy().resize( 16 ).getImage(), 16 ) );
 		ImageView imageView32 = new ImageView( Images.resample( icon.copy().resize( 32 ).getImage(), 8 ) );
 
@@ -97,6 +92,10 @@ public abstract class RenderedIcon extends RenderedImage {
 		pane.add( imageView16, 2, 1 );
 		pane.add( imageView32, 2, 2 );
 		pane.add( iconPane, 1, 2 );
+		if( stylesheet != null ) {
+			pane.getStyleClass().add( "root" );
+			pane.getStylesheets().add( stylesheet );
+		}
 
 		return pane;
 	}

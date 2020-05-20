@@ -5,6 +5,7 @@ import javafx.scene.image.Image;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+@Deprecated
 public class ProgramImageIcon extends ProgramIcon {
 
 	private static final Map<String, Image> CACHE = new ConcurrentHashMap<>();

@@ -1,5 +1,6 @@
 package com.avereon.venza.image;
 
+@Deprecated
 public abstract class ProgramIcon extends ProgramImage {
 
 	public ProgramIcon() {

@@ -78,6 +78,7 @@ ZN - 27
 ZO - 29
 ZP - 31
 */
+@Deprecated
 public abstract class ProgramImage extends Canvas {
 
 	protected enum GradientTone {

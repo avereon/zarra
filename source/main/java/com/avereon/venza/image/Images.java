@@ -1,6 +1,8 @@
 package com.avereon.venza.image;
 
+import com.avereon.venza.icon.BrokenIcon;
 import com.avereon.venza.icon.BrokenIconOld;
+import com.avereon.venza.icon.RenderedIcon;
 import javafx.scene.image.Image;
 import javafx.scene.image.PixelReader;
 import javafx.scene.image.PixelWriter;
@@ -43,4 +45,19 @@ public class Images {
 		}
 		return images;
 	}
+
+
+	public static Image[] getStageIcons( RenderedIcon image ) {
+		return getStageIcons( image, 16, 24, 32, 48, 64, 128, 256 );
+	}
+
+	public static Image[] getStageIcons( RenderedIcon image, int... sizes ) {
+		Image[] images = new Image[ sizes.length ];
+		for( int index = 0; index < sizes.length; index++ ) {
+			if( image == null ) image = new BrokenIcon();
+			images[ index ] = image.resize( sizes[ index ] ).getImage();
+		}
+		return images;
+	}
+
 }

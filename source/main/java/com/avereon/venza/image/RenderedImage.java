@@ -317,13 +317,14 @@ public abstract class RenderedImage extends Canvas {
 		render();
 	}
 
-	protected <T extends RenderedImage> T copy() {
+	public <T extends RenderedImage> T copy() {
 		RenderedImage copy = null;
 
 		try {
 			copy = getClass().getDeclaredConstructor().newInstance();
 			copy.renderPaintOverride = this.renderPaintOverride;
 			copy.strokeWidthOverride = this.strokeWidthOverride;
+			copy.getProperties().putAll( this.getProperties() );
 			copy.setHeight( getHeight() );
 			copy.setWidth( getWidth() );
 			copy.setStyle( getStyle() );
@@ -343,7 +344,10 @@ public abstract class RenderedImage extends Canvas {
 	}
 
 	private static Scene getImageScene( RenderedImage image, double imageWidth, double imageHeight ) {
+		String stylesheet = (String)image.getProperties().get( "stylesheet" );
+
 		Pane pane = new Pane( image );
+		if( stylesheet != null ) pane.getStylesheets().add( stylesheet );
 		pane.setBackground( Background.EMPTY );
 		pane.setPrefSize( imageWidth, imageHeight );
 		Scene scene = new Scene( pane );
