@@ -1,21 +1,23 @@
 package com.avereon.venza.icon;
 
-import com.avereon.venza.image.ProgramIcon;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.StrokeLineCap;
 
-public class BrokenIcon extends ProgramIcon {
+public class BrokenIcon extends RenderedIcon {
 
-	protected void render() {
+	@Override
+	public void render() {
 		double min = g( 8 );
 		double max = g( 24 );
 
-		setDrawPaint( Color.MAGENTA );
-		setLineCap( StrokeLineCap.ROUND );
+		setDrawPaint( Color.RED );
 		setDrawWidth( g( 6 ) );
 
-		drawLine( min, min, max, max );
-		drawLine( max, min, min, max );
+		startPath();
+		moveTo(min, min );
+		lineTo(max, max);
+		moveTo(max, min );
+		lineTo( min, max );
+		draw();
 	}
 
 	public static void main( String[] commands ) {

@@ -1,6 +1,6 @@
 package com.avereon.venza.image;
 
-import com.avereon.venza.icon.BrokenIcon;
+import com.avereon.venza.icon.BrokenIconOld;
 import org.junit.jupiter.api.Test;
 
 import java.nio.file.Files;
@@ -16,18 +16,18 @@ public class ProgramImageWriterTest {
 
 	@Test
 	void testSavePng() throws Exception {
-		runTest( "testicon.png", ( path ) -> new ProgramImageWriter().save( new BrokenIcon(), path ) );
+		runTest( "testicon.png", ( path ) -> new ProgramImageWriter().save( new BrokenIconOld(), path ) );
 	}
 
 	@Test
 	void testSaveIco() throws Exception {
-		runTest( "testicon.ico", ( path ) -> new ProgramImageWriter().save( new BrokenIcon(), path ) );
+		runTest( "testicon.ico", ( path ) -> new ProgramImageWriter().save( new BrokenIconOld(), path ) );
 	}
 
 	@Test
 	void testSavePngWithOffset() throws Exception {
 		runTest( "testiconoffset.png", ( path ) -> {
-			ProgramIcon icon = new BrokenIcon();
+			ProgramIcon icon = new BrokenIconOld();
 			double size = icon.getSize();
 			double pad = 0.2 * size;
 			icon.relocate( pad, pad );

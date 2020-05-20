@@ -182,7 +182,7 @@ public abstract class ProgramImage extends Canvas {
 
 	public ProgramImage() {
 		setSize( DEFAULT_SIZE );
-		getStyleClass().add( "xe-image" );
+		getStyleClass().add( "xe-image-old" );
 		parentProperty().addListener( ( v, o, n ) -> { if( n != null ) fireRender(); } );
 	}
 

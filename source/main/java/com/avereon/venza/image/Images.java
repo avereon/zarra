@@ -1,6 +1,6 @@
 package com.avereon.venza.image;
 
-import com.avereon.venza.icon.BrokenIcon;
+import com.avereon.venza.icon.BrokenIconOld;
 import javafx.scene.image.Image;
 import javafx.scene.image.PixelReader;
 import javafx.scene.image.PixelWriter;
@@ -38,7 +38,7 @@ public class Images {
 	public static Image[] getStageIcons( ProgramImage image, int... sizes ) {
 		Image[] images = new Image[ sizes.length ];
 		for( int index = 0; index < sizes.length; index++ ) {
-			if( image == null ) image = new BrokenIcon();
+			if( image == null ) image = new BrokenIconOld();
 			images[ index ] = image.setSize( sizes[ index ] ).getImage();
 		}
 		return images;

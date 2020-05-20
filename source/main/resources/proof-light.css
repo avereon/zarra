@@ -1,0 +1,17 @@
+.root{
+	-fx-base: #E0E0E0FF;
+	-fx-background: derive(-fx-base, 25%);
+}
+
+/*******************************************************************************
+ * Icons
+ ******************************************************************************/
+.xe-icon {
+	-xe-scheme-color: #c0c0c0;
+	-xe-render-paint: ladder(
+		-fx-text-background-color,
+		derive(-xe-scheme-color, -50%) 50%,
+		derive(-xe-scheme-color, 50%) 50%
+	);
+	-xe-stroke-width: 0.125; /* 4/32 */
+}
