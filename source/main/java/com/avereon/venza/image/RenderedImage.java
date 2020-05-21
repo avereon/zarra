@@ -262,6 +262,14 @@ public abstract class RenderedImage extends Canvas {
 		getGraphicsContext2D().arc( cx, cy, rx, ry, start, extent );
 	}
 
+	protected void curveTo( double xc, double yc, double x1, double y1 ) {
+		getGraphicsContext2D().quadraticCurveTo( xc, yc, x1, y1 );
+	}
+
+	protected void curveTo( double xc1, double yc1, double xc2, double yc2, double x1, double y1 ) {
+		getGraphicsContext2D().bezierCurveTo( xc1, yc1, xc2, yc2, x1, y1 );
+	}
+
 	protected void closePath() {
 		getGraphicsContext2D().closePath();
 	}
