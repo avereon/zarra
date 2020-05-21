@@ -1,5 +1,6 @@
 package com.avereon.venza.image;
 
+import com.avereon.venza.font.FontUtil;
 import com.avereon.venza.javafx.JavaFxStarter;
 import javafx.application.Platform;
 import javafx.beans.property.DoubleProperty;
@@ -12,11 +13,13 @@ import javafx.scene.image.Image;
 import javafx.scene.image.WritableImage;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.Pane;
-import javafx.scene.paint.Color;
-import javafx.scene.paint.Paint;
+import javafx.scene.paint.*;
 import javafx.scene.shape.FillRule;
 import javafx.scene.shape.StrokeLineCap;
 import javafx.scene.shape.StrokeLineJoin;
+import javafx.scene.text.Font;
+import javafx.scene.text.FontPosture;
+import javafx.scene.text.FontWeight;
 import javafx.scene.transform.Affine;
 import javafx.scene.transform.Transform;
 import javafx.stage.Stage;
@@ -276,6 +279,29 @@ public abstract class RenderedImage extends Canvas {
 
 	protected void closePath() {
 		getGraphicsContext2D().closePath();
+	}
+
+	protected Paint linearPaint( double x1, double y1, double x2, double y2, Stop... stops ) {
+		return new LinearGradient( x1, y1, x2, y2, false, CycleMethod.NO_CYCLE, stops );
+	}
+
+	protected Paint linearPaint( double x1, double y1, double x2, double y2, List<Stop> stops ) {
+		return new LinearGradient( x1, y1, x2, y2, false, CycleMethod.NO_CYCLE, stops );
+	}
+
+	protected Paint radialPaint( double x, double y, double r, Stop... stops ) {
+		return new RadialGradient( 0, 0, x, y, r, false, CycleMethod.NO_CYCLE, stops );
+	}
+
+	protected Paint radialPaint( double x, double y, double r, List<Stop> stops ) {
+		return new RadialGradient( 0, 0, x, y, r, false, CycleMethod.NO_CYCLE, stops );
+	}
+
+	protected Font deriveFont( Font font, double size ) {
+		if( font == null ) font = getGraphicsContext2D().getFont();
+		FontWeight fontWeight = FontUtil.getFontWeight( font.getStyle() );
+		FontPosture fontPosture = FontUtil.getFontPosture( font.getStyle() );
+		return Font.font( font.getFamily(), fontWeight, fontPosture, size );
 	}
 
 	protected void setDrawCap( StrokeLineCap cap ) {
