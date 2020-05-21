@@ -258,8 +258,12 @@ public abstract class RenderedImage extends Canvas {
 		getGraphicsContext2D().lineTo( x, y );
 	}
 
-	protected void addCenteredArc( double cx, double cy, double rx, double ry, double start, double extent ) {
+	protected void addArc( double cx, double cy, double rx, double ry, double start, double extent ) {
 		getGraphicsContext2D().arc( cx, cy, rx, ry, start, extent );
+	}
+
+	protected void addRect( double x, double y, double w, double h ) {
+		getGraphicsContext2D().rect( x, y, w, h );
 	}
 
 	protected void curveTo( double xc, double yc, double x1, double y1 ) {
@@ -300,6 +304,13 @@ public abstract class RenderedImage extends Canvas {
 
 	protected void fill() {
 		getGraphicsContext2D().fill();
+	}
+
+	protected void fill( Paint paint ) {
+		getGraphicsContext2D().save();
+		getGraphicsContext2D().setFill( paint );
+		getGraphicsContext2D().fill();
+		getGraphicsContext2D().restore();
 	}
 
 	protected void fireRender() {
