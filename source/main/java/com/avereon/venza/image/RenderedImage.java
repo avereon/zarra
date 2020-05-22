@@ -244,6 +244,14 @@ public abstract class RenderedImage extends Canvas {
 		getGraphicsContext2D().clip();
 	}
 
+	protected void save() {
+		getGraphicsContext2D().save();
+	}
+
+	protected void restore() {
+		getGraphicsContext2D().restore();
+	}
+
 	protected void startPath() {
 		getGraphicsContext2D().beginPath();
 	}
