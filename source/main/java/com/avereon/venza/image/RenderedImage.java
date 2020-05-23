@@ -65,6 +65,7 @@ public abstract class RenderedImage extends Canvas {
 	private Transform baseTransform = new Affine();
 
 	static {
+		// Don't forget to update the test style sheets
 		CSS_STROKE_PAINT = new CssMetaData<>( "-fx-stroke", StyleConverter.getPaintConverter() ) {
 
 			@Override
@@ -80,6 +81,7 @@ public abstract class RenderedImage extends Canvas {
 
 		};
 
+		// Don't forget to update the test style sheets
 		CSS_ACCENT_PAINT = new CssMetaData<>( "-fx-accent-color", StyleConverter.getPaintConverter() ) {
 
 			@Override
@@ -95,6 +97,7 @@ public abstract class RenderedImage extends Canvas {
 
 		};
 
+		// Don't forget to update the test style sheets
 		CSS_STROKE_WIDTH = new CssMetaData<>( "-fx-stroke-width", StyleConverter.getSizeConverter() ) {
 
 			@Override

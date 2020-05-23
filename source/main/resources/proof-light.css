@@ -8,10 +8,11 @@
  ******************************************************************************/
 .xe-icon {
 	-xe-scheme-color: #c0c0c0;
-	-xe-render-paint: ladder(
+	-fx-stroke: ladder(
 		-fx-text-background-color,
 		derive(-xe-scheme-color, -50%) 50%,
 		derive(-xe-scheme-color, 50%) 50%
 	);
-	-xe-stroke-width: 0.125; /* 4/32 */
+	-fx-accent-color: #C06000;
+	-fx-stroke-width: 0.125; /* 4/32 */
 }
