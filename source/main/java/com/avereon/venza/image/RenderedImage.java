@@ -36,17 +36,25 @@ public abstract class RenderedImage extends Canvas {
 
 	private static final List<CssMetaData<? extends Styleable, ?>> STYLEABLES;
 
-	private static final CssMetaData<RenderedImage, Paint> CSS_RENDER_PAINT;
+	private static final CssMetaData<RenderedImage, Paint> CSS_STROKE_PAINT;
+
+	private static final CssMetaData<RenderedImage, Paint> CSS_ACCENT_PAINT;
 
 	private static final CssMetaData<RenderedImage, Number> CSS_STROKE_WIDTH;
 
-	private static final Paint DEFAULT_RENDER_PAINT = Color.web( "#404040" );
+	private static final Paint DEFAULT_RENDER_PAINT = Color.web( "#808080" );
+
+	private static final Paint DEFAULT_ACCENT_PAINT = Color.web( "#4DB6AC" );
 
 	private static final double DEFAULT_STROKE_WIDTH = 4.0 / 32.0;
 
-	private ObjectProperty<Paint> renderPaint;
+	private ObjectProperty<Paint> strokePaint;
 
-	private Paint renderPaintOverride;
+	private ObjectProperty<Paint> accentPaint;
+
+	private Paint strokePaintOverride;
+
+	private Paint accentPaintOverride;
 
 	private DoubleProperty strokeWidth;
 
@@ -57,26 +65,41 @@ public abstract class RenderedImage extends Canvas {
 	private Transform baseTransform = new Affine();
 
 	static {
-		CSS_RENDER_PAINT = new CssMetaData<>( "-xe-render-paint", StyleConverter.getPaintConverter() ) {
+		CSS_STROKE_PAINT = new CssMetaData<>( "-fx-stroke", StyleConverter.getPaintConverter() ) {
 
 			@Override
 			public boolean isSettable( RenderedImage styleable ) {
-				return styleable.renderPaint == null || !styleable.renderPaint.isBound();
+				return styleable.strokePaint == null || !styleable.strokePaint.isBound();
 			}
 
 			@Override
 			@SuppressWarnings( "unchecked" )
 			public StyleableProperty<Paint> getStyleableProperty( RenderedImage styleable ) {
-				return (StyleableProperty<Paint>)styleable.renderPaintProperty();
+				return (StyleableProperty<Paint>)styleable.strokePaintProperty();
 			}
 
 		};
 
-		CSS_STROKE_WIDTH = new CssMetaData<>( "-xe-stroke-width", StyleConverter.getSizeConverter() ) {
+		CSS_ACCENT_PAINT = new CssMetaData<>( "-fx-accent-color", StyleConverter.getPaintConverter() ) {
 
 			@Override
 			public boolean isSettable( RenderedImage styleable ) {
-				return styleable.renderPaint == null || !styleable.renderPaint.isBound();
+				return styleable.accentPaint == null || !styleable.accentPaint.isBound();
+			}
+
+			@Override
+			@SuppressWarnings( "unchecked" )
+			public StyleableProperty<Paint> getStyleableProperty( RenderedImage styleable ) {
+				return (StyleableProperty<Paint>)styleable.accentPaintProperty();
+			}
+
+		};
+
+		CSS_STROKE_WIDTH = new CssMetaData<>( "-fx-stroke-width", StyleConverter.getSizeConverter() ) {
+
+			@Override
+			public boolean isSettable( RenderedImage styleable ) {
+				return styleable.strokePaint == null || !styleable.strokePaint.isBound();
 			}
 
 			@Override
@@ -87,7 +110,7 @@ public abstract class RenderedImage extends Canvas {
 
 		};
 
-		STYLEABLES = List.of( CSS_RENDER_PAINT, CSS_STROKE_WIDTH );
+		STYLEABLES = List.of( CSS_STROKE_PAINT, CSS_ACCENT_PAINT, CSS_STROKE_WIDTH );
 	}
 
 	protected RenderedImage() {
@@ -107,17 +130,17 @@ public abstract class RenderedImage extends Canvas {
 		return getClassCssMetaData();
 	}
 
-	public Paint getRenderPaint() {
-		return renderPaintOverride != null ? renderPaintOverride : renderPaintProperty().get();
+	public Paint getStrokePaint() {
+		return strokePaintOverride != null ? strokePaintOverride : strokePaintProperty().get();
 	}
 
-	public void setRenderPaint( Paint paint ) {
-		renderPaintOverride = paint;
+	public void setStrokePaint( Paint paint ) {
+		strokePaintOverride = paint;
 	}
 
-	public ObjectProperty<Paint> renderPaintProperty() {
-		if( renderPaint == null ) {
-			renderPaint = new SimpleStyleableObjectProperty<>( CSS_RENDER_PAINT, RenderedImage.this, "outlinePaint", DEFAULT_RENDER_PAINT ) {
+	public ObjectProperty<Paint> strokePaintProperty() {
+		if( strokePaint == null ) {
+			strokePaint = new SimpleStyleableObjectProperty<>( CSS_STROKE_PAINT, RenderedImage.this, "strokePaint", DEFAULT_RENDER_PAINT ) {
 
 				@Override
 				protected void invalidated() {
@@ -126,7 +149,29 @@ public abstract class RenderedImage extends Canvas {
 
 			};
 		}
-		return renderPaint;
+		return strokePaint;
+	}
+
+	public Paint getAccentPaint() {
+		return accentPaintOverride != null ? accentPaintOverride : accentPaintProperty().get();
+	}
+
+	public void setAccentPaint( Paint paint ) {
+		accentPaintOverride = paint;
+	}
+
+	public ObjectProperty<Paint> accentPaintProperty() {
+		if( accentPaint == null ) {
+			accentPaint = new SimpleStyleableObjectProperty<>( CSS_STROKE_PAINT, RenderedImage.this, "accentPaint", DEFAULT_ACCENT_PAINT ) {
+
+				@Override
+				protected void invalidated() {
+					fireRender();
+				}
+
+			};
+		}
+		return accentPaint;
 	}
 
 	public double getStrokeWidth() {
@@ -134,7 +179,7 @@ public abstract class RenderedImage extends Canvas {
 	}
 
 	public void setStrokeWidth( double width ) {
-		strokeWidthOverride = width == Double.NaN ? null : width;
+		strokeWidthOverride = Double.isNaN( width ) ? null : width;
 	}
 
 	public DoubleProperty strokeWidthProperty() {
@@ -361,8 +406,8 @@ public abstract class RenderedImage extends Canvas {
 		getGraphicsContext2D().setFillRule( FillRule.EVEN_ODD );
 
 		getGraphicsContext2D().setLineWidth( getStrokeWidth() );
-		getGraphicsContext2D().setStroke( getRenderPaint() );
-		getGraphicsContext2D().setFill( getRenderPaint() );
+		getGraphicsContext2D().setStroke( getStrokePaint() );
+		getGraphicsContext2D().setFill( getStrokePaint() );
 
 		// Start rendering by clearing the icon area
 		if( graphicsContextOverride == null ) {
@@ -389,7 +434,7 @@ public abstract class RenderedImage extends Canvas {
 
 		try {
 			copy = getClass().getDeclaredConstructor().newInstance();
-			copy.renderPaintOverride = this.renderPaintOverride;
+			copy.strokePaintOverride = this.strokePaintOverride;
 			copy.strokeWidthOverride = this.strokeWidthOverride;
 			copy.getProperties().putAll( this.getProperties() );
 			copy.setHeight( getHeight() );
