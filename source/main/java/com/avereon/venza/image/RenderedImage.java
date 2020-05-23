@@ -273,6 +273,11 @@ public abstract class RenderedImage extends Canvas {
 		getGraphicsContext2D().arc( cx, cy, rx, ry, start, extent );
 	}
 
+	protected void addLine( double x1, double y1, double x2, double y2 ) {
+		moveTo( x1, y1 );
+		lineTo( x2, y2 );
+	}
+
 	protected void addRect( double x, double y, double w, double h ) {
 		getGraphicsContext2D().rect( x, y, w, h );
 	}
