@@ -5,13 +5,13 @@ import com.avereon.venza.image.RenderedImage;
 import com.avereon.venza.javafx.JavaFxStarter;
 import javafx.application.Application;
 import javafx.application.Platform;
+import javafx.geometry.Insets;
+import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.GridPane;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.Pane;
+import javafx.scene.layout.*;
+import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
 import java.util.ArrayList;
@@ -88,16 +88,25 @@ public abstract class RenderedIcon extends RenderedImage {
 		iconPane.getChildren().addAll( icon128, icon64, icon32, icon16, icon8 );
 
 		GridPane pane = new GridPane();
-		pane.add( icon.copy().resize( DEFAULT_SIZE ), 1, 1 );
+		pane.add( samplePane( icon.copy().resize( DEFAULT_SIZE ), Color.web( "#80808020" ) ), 1, 1 );
 		pane.add( imageView16, 2, 1 );
-		pane.add( imageView32, 2, 2 );
-		pane.add( iconPane, 1, 2 );
+		pane.add( imageView32, 1, 2 );
+		pane.add( samplePane( iconPane, Color.web( "#80808020" ) ), 2, 2 );
 		if( stylesheet != null ) {
 			pane.getStyleClass().add( "root" );
 			pane.getStylesheets().add( stylesheet );
 		}
 
 		return pane;
+	}
+
+	private static Pane samplePane( Node node, Color color ) {
+		return setBackground( new Pane( node ), color );
+	}
+
+	private static <T extends Region> T setBackground( T region, Color color ) {
+		region.setBackground( new Background( new BackgroundFill( color, CornerRadii.EMPTY, Insets.EMPTY ) ) );
+		return region;
 	}
 
 }
