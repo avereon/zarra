@@ -60,7 +60,7 @@ public abstract class RenderedIcon extends RenderedImage {
 	}
 
 	private static Pane proofPane( RenderedIcon icon, String stylesheet ) {
-		if( stylesheet != null ) icon.getProperties().put( "stylesheet", stylesheet );
+		//if( stylesheet != null ) icon.getProperties().put( "stylesheet", stylesheet );
 		ImageView imageView16 = new ImageView( Images.resample( icon.copy().resize( 16 ).getImage(), 16 ) );
 		ImageView imageView32 = new ImageView( Images.resample( icon.copy().resize( 32 ).getImage(), 8 ) );
 
