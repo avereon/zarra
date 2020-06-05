@@ -67,8 +67,8 @@ public class FxUtil {
 		return false;
 	}
 
-	public static boolean isParentOf( TreeItem item, TreeItem child ) {
-		TreeItem parent = child;
+	public static boolean isParentOf( TreeItem<?> item, TreeItem<?> child ) {
+		TreeItem<?> parent = child;
 
 		while( parent != null ) {
 			if( item.equals( parent ) ) return true;
@@ -116,14 +116,6 @@ public class FxUtil {
 		return list;
 	}
 
-	public static void runLater( Runnable runnable ) {
-		if( Platform.isFxApplicationThread() ) {
-			runnable.run();
-		} else {
-			Platform.runLater( runnable );
-		}
-	}
-
 	public static void assertFxThread() {
 		if( !Platform.isFxApplicationThread() ) {
 			throw new IllegalStateException( "Not on FX application thread; currentThread = " + Thread.currentThread().getName() );
@@ -132,9 +124,7 @@ public class FxUtil {
 
 	public static boolean isFxRunning() {
 		try {
-			Platform.runLater( () -> {
-				System.out.print( "" );
-			} );
+			Platform.runLater( () -> {} );
 			return true;
 		} catch( Throwable throwable ) {
 			return false;
