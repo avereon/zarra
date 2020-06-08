@@ -10,7 +10,7 @@ import java.util.concurrent.TimeoutException;
 
 public class FxEventWatcher implements EventHandler<Event> {
 
-	public static final long DEFAULT_WAIT_TIMEOUT = 2000;
+	public static final long DEFAULT_WAIT_TIMEOUT = 5000;
 
 	private Queue<Event> events = new ConcurrentLinkedQueue<>();
 
