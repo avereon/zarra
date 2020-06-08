@@ -30,6 +30,8 @@ public abstract class RenderedImage extends Canvas {
 
 	public static final double DEFAULT_SIZE = 256;
 
+	protected static final String STYLESHEET = "venza.css";
+
 	protected static final String DARK_THEME = "proof-dark.css";
 
 	protected static final String LIGHT_THEME = "proof-light.css";
@@ -487,6 +489,7 @@ public abstract class RenderedImage extends Canvas {
 		pane.setBackground( Background.EMPTY );
 		pane.setPrefSize( imageWidth, imageHeight );
 		Scene scene = new Scene( pane );
+		scene.getStylesheets().addAll( STYLESHEET );
 		scene.setFill( Color.TRANSPARENT );
 		return scene;
 	}

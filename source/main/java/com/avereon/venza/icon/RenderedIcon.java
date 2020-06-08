@@ -94,7 +94,7 @@ public abstract class RenderedIcon extends RenderedImage {
 		pane.add( samplePane( iconPane, Color.web( "#80808020" ) ), 2, 2 );
 		if( stylesheet != null ) {
 			pane.getStyleClass().add( "root" );
-			pane.getStylesheets().add( stylesheet );
+			pane.getStylesheets().addAll( STYLESHEET, stylesheet );
 		}
 
 		return pane;
