@@ -563,11 +563,11 @@ public abstract class RenderedImage extends Canvas {
 		String stylesheet = (String)image.getProperties().get( "stylesheet" );
 
 		Pane pane = new Pane( image );
-		if( stylesheet != null ) pane.getStylesheets().add( stylesheet );
 		pane.setBackground( Background.EMPTY );
 		pane.setPrefSize( imageWidth, imageHeight );
 		Scene scene = new Scene( pane );
-		scene.getStylesheets().addAll( STYLESHEET );
+		scene.getStylesheets().add( STYLESHEET );
+		if(stylesheet != null) scene.getStylesheets().add( stylesheet );
 		scene.setFill( fill == null ? Color.TRANSPARENT : fill );
 		return scene;
 	}
