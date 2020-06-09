@@ -7,6 +7,7 @@ import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.css.*;
 import javafx.geometry.VPos;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
@@ -561,19 +562,34 @@ public abstract class RenderedImage extends Canvas {
 	}
 
 	private static Scene getImageScene( RenderedImage image, double imageWidth, double imageHeight, Paint fill ) {
-		String stylesheet = (String)image.getProperties().get( "stylesheet" );
-
 		Pane pane = new Pane( image );
 		pane.setBackground( Background.EMPTY );
 		pane.setPrefSize( imageWidth, imageHeight );
 		Scene scene = new Scene( pane );
-		scene.getStylesheets().add( STYLESHEET );
-		if(stylesheet != null) scene.getStylesheets().add( stylesheet );
+		addStylesheets( image, scene );
 		scene.setFill( fill == null ? Color.TRANSPARENT : fill );
 		return scene;
 	}
 
-	private void renderText( String text, double x, double y, double textSize, double maxWidth, boolean draw ) {
+	/**
+	 * Should be kept aligned with {@link #addStylesheets(RenderedImage,Parent)}
+ 	 */
+	private static void addStylesheets( RenderedImage image, Scene scene ) {
+		String stylesheet = (String)image.getProperties().get( "stylesheet" );
+		scene.getStylesheets().add( STYLESHEET );
+		if(stylesheet != null) scene.getStylesheets().add( stylesheet );
+	}
+
+	/**
+	 * Should be kept aligned with {@link #addStylesheets(RenderedImage,Scene)}
+	 */
+	protected static void addStylesheets( RenderedImage image, Parent node ) {
+		String stylesheet = (String)image.getProperties().get( "stylesheet" );
+		node.getStylesheets().add( STYLESHEET );
+		if(stylesheet != null) node.getStylesheets().add( stylesheet );
+	}
+
+	void renderText( String text, double x, double y, double textSize, double maxWidth, boolean draw ) {
 		// Font sizes smaller than one don't scale as expected
 		// so the workaround is to scale according the text size
 		// and divide the coordinates by the size.

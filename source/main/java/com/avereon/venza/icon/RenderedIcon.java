@@ -35,7 +35,7 @@ public abstract class RenderedIcon extends RenderedImage {
 		Platform.runLater( () -> {
 			Application.setUserAgentStylesheet( Application.STYLESHEET_MODENA );
 
-			Pane darkPane = proofPane( icon.copy(), DARK_THEME );
+			Pane darkPane = proofPane( icon.copy(), null );
 			Pane lightPane = proofPane( icon.copy(), LIGHT_THEME );
 			Scene scene = new Scene( new HBox( darkPane, lightPane ) );
 
@@ -92,10 +92,8 @@ public abstract class RenderedIcon extends RenderedImage {
 		pane.add( imageView16, 2, 1 );
 		pane.add( imageView32, 1, 2 );
 		pane.add( samplePane( iconPane, Color.web( "#80808020" ) ), 2, 2 );
-		if( stylesheet != null ) {
-			pane.getStyleClass().add( "root" );
-			pane.getStylesheets().addAll( STYLESHEET, stylesheet );
-		}
+		pane.getStyleClass().add( "root" );
+		addStylesheets( icon, pane );
 
 		return pane;
 	}
