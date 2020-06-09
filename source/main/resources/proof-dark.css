@@ -1,4 +1,4 @@
 .root{
-	-fx-base: #333333FF;
-	-fx-background: derive(-fx-base, -25%);
+	-fx-base: #202020FF;
+	-fx-text-background-color: #E0E0E0FF;
 }

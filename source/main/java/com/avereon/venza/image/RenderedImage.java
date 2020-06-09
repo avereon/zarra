@@ -45,7 +45,7 @@ public abstract class RenderedImage extends Canvas {
 
 	private static final CssMetaData<RenderedImage, Font> CSS_FONT;
 
-	private static final Paint DEFAULT_RENDER_PAINT = Color.web( "#808080" );
+	private static final Paint DEFAULT_STROKE_PAINT = Color.web( "#808080" );
 
 	private static final Paint DEFAULT_ACCENT_PAINT = Color.web( "#4DB6AC" );
 
@@ -168,7 +168,7 @@ public abstract class RenderedImage extends Canvas {
 
 	public ObjectProperty<Paint> strokePaintProperty() {
 		if( strokePaint == null ) {
-			strokePaint = new SimpleStyleableObjectProperty<>( CSS_STROKE_PAINT, RenderedImage.this, "strokePaint", DEFAULT_RENDER_PAINT ) {
+			strokePaint = new SimpleStyleableObjectProperty<>( CSS_STROKE_PAINT, RenderedImage.this, "strokePaint", DEFAULT_STROKE_PAINT ) {
 
 				@Override
 				protected void invalidated() {
@@ -246,6 +246,7 @@ public abstract class RenderedImage extends Canvas {
 		return font;
 	}
 
+	@SuppressWarnings( "unchecked" )
 	public <T extends RenderedImage> T resize( double size ) {
 		resize( size, size );
 		return (T)this;

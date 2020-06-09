@@ -1,18 +1,23 @@
 .root{
-	-fx-base: #E0E0E0FF;
-	-fx-background: derive(-fx-base, 25%);
+	-fx-base: #202020FF;
+	-xe-scheme-color: #C0C0C0;
 }
 
 /*******************************************************************************
  * Icons
  ******************************************************************************/
 .xe-icon {
-	-xe-scheme-color: #c0c0c0;
 	-fx-stroke: ladder(
 		-fx-text-background-color,
 		derive(-xe-scheme-color, -50%) 50%,
 		derive(-xe-scheme-color, 50%) 50%
 	);
-	-fx-accent-color: #3F51B5;
 	-fx-stroke-width: 0.125; /* 4/32 */
+
+	/* FIXME Maybe this attribute should be named -fx-highlight or -fx-primary */
+	-fx-accent-color: ladder(
+		-fx-text-background-color,
+		#206080 50%,
+		#6390a6 50%
+	);
 }
