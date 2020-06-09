@@ -6,6 +6,7 @@ import javafx.application.Platform;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.css.*;
+import javafx.geometry.VPos;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
@@ -17,9 +18,7 @@ import javafx.scene.paint.*;
 import javafx.scene.shape.FillRule;
 import javafx.scene.shape.StrokeLineCap;
 import javafx.scene.shape.StrokeLineJoin;
-import javafx.scene.text.Font;
-import javafx.scene.text.FontPosture;
-import javafx.scene.text.FontWeight;
+import javafx.scene.text.*;
 import javafx.scene.transform.Affine;
 import javafx.scene.transform.Transform;
 import javafx.stage.Stage;
@@ -44,23 +43,31 @@ public abstract class RenderedImage extends Canvas {
 
 	private static final CssMetaData<RenderedImage, Number> CSS_STROKE_WIDTH;
 
+	private static final CssMetaData<RenderedImage, Font> CSS_FONT;
+
 	private static final Paint DEFAULT_RENDER_PAINT = Color.web( "#808080" );
 
 	private static final Paint DEFAULT_ACCENT_PAINT = Color.web( "#4DB6AC" );
 
 	private static final double DEFAULT_STROKE_WIDTH = 4.0 / 32.0;
 
+	private static final Font DEFAULT_FONT = Font.getDefault();
+
 	private ObjectProperty<Paint> strokePaint;
 
-	private ObjectProperty<Paint> accentPaint;
-
 	private Paint strokePaintOverride;
+
+	private ObjectProperty<Paint> accentPaint;
 
 	private Paint accentPaintOverride;
 
 	private DoubleProperty strokeWidth;
 
 	private Double strokeWidthOverride;
+
+	private ObjectProperty<Font> font;
+
+	private Font fontOverride;
 
 	private GraphicsContext graphicsContextOverride;
 
@@ -115,7 +122,23 @@ public abstract class RenderedImage extends Canvas {
 
 		};
 
-		STYLEABLES = List.of( CSS_STROKE_PAINT, CSS_ACCENT_PAINT, CSS_STROKE_WIDTH );
+		// Don't forget to update the test style sheets
+		CSS_FONT = new CssMetaData<>( "-fx-font", StyleConverter.getFontConverter() ) {
+
+			@Override
+			public boolean isSettable( RenderedImage styleable ) {
+				return styleable.font == null || !styleable.font.isBound();
+			}
+
+			@Override
+			@SuppressWarnings( "unchecked" )
+			public StyleableProperty<Font> getStyleableProperty( RenderedImage styleable ) {
+				return (StyleableProperty<Font>)styleable.fontProperty();
+			}
+
+		};
+
+		STYLEABLES = List.of( CSS_STROKE_PAINT, CSS_ACCENT_PAINT, CSS_STROKE_WIDTH, CSS_FONT );
 	}
 
 	protected RenderedImage() {
@@ -201,6 +224,28 @@ public abstract class RenderedImage extends Canvas {
 		return strokeWidth;
 	}
 
+	public Font getFont() {
+		return fontOverride != null ? fontOverride : fontProperty().get();
+	}
+
+	public void setFont( Font font ) {
+		fontOverride = font;
+	}
+
+	public ObjectProperty<Font> fontProperty() {
+		if( font == null ) {
+			font = new SimpleStyleableObjectProperty<>( CSS_FONT, RenderedImage.this, "font", DEFAULT_FONT ) {
+
+				@Override
+				protected void invalidated() {
+					fireRender();
+				}
+
+			};
+		}
+		return font;
+	}
+
 	public <T extends RenderedImage> T resize( double size ) {
 		resize( size, size );
 		return (T)this;
@@ -235,7 +280,7 @@ public abstract class RenderedImage extends Canvas {
 		Platform.runLater( () -> {
 			Stage stage = new Stage();
 			stage.setTitle( image.getClass().getSimpleName() );
-			stage.setScene( getImageScene( image, width, height ) );
+			stage.setScene( getImageScene( image, width, height, fill ) );
 			// The following line causes the stage not to show on Linux
 			//stage.setResizable( false );
 			stage.centerOnScreen();
@@ -265,6 +310,24 @@ public abstract class RenderedImage extends Canvas {
 		// snapshot image.
 		WritableImage snapshot = getImageScene( this, width, height ).snapshot( new WritableImage( (int)width, (int)height ) );
 		return new WritableImage( snapshot.getPixelReader(), (int)snapshot.getWidth(), (int)snapshot.getHeight() );
+	}
+
+	public <T extends RenderedImage> T copy() {
+		RenderedImage copy = null;
+
+		try {
+			copy = getClass().getDeclaredConstructor().newInstance();
+			copy.strokePaintOverride = this.strokePaintOverride;
+			copy.strokeWidthOverride = this.strokeWidthOverride;
+			copy.getProperties().putAll( this.getProperties() );
+			copy.setHeight( getHeight() );
+			copy.setWidth( getWidth() );
+			copy.setStyle( getStyle() );
+		} catch( Exception exception ) {
+			exception.printStackTrace();
+		}
+
+		return (T)copy;
 	}
 
 	/**
@@ -353,6 +416,22 @@ public abstract class RenderedImage extends Canvas {
 		getGraphicsContext2D().closePath();
 	}
 
+	protected void fillText( String text, double x, double y, double textSize ) {
+		fillText( text, x, y, textSize, 0 );
+	}
+
+	protected void fillText( String text, double x, double y, double textSize, double maxWidth ) {
+		renderText( text, x, y, textSize, maxWidth, false );
+	}
+
+	protected void drawText( String text, double x, double y, double textSize ) {
+		fillText( text, x, y, textSize, 0 );
+	}
+
+	protected void drawText( String text, double x, double y, double textSize, double maxWidth ) {
+		renderText( text, x, y, textSize, maxWidth, true );
+	}
+
 	protected Paint linearPaint( double x1, double y1, double x2, double y2, Stop... stops ) {
 		return new LinearGradient( x1, y1, x2, y2, false, CycleMethod.NO_CYCLE, stops );
 	}
@@ -396,6 +475,14 @@ public abstract class RenderedImage extends Canvas {
 		getGraphicsContext2D().setFill( paint );
 	}
 
+	protected void setTextAlign( TextAlignment alignment ) {
+		getGraphicsContext2D().setTextAlign( alignment );
+	}
+
+	protected void setTextBaseLine( VPos baseline ) {
+		getGraphicsContext2D().setTextBaseline( baseline );
+	}
+
 	protected void drawImage( Image image ) {
 		drawImage( image, 0, 0 );
 	}
@@ -421,6 +508,11 @@ public abstract class RenderedImage extends Canvas {
 		getGraphicsContext2D().setFill( paint );
 		getGraphicsContext2D().fill();
 		getGraphicsContext2D().restore();
+	}
+
+	protected void render( RenderedImage image ) {
+		image.setGraphicsContext2D( getGraphicsContext2D() );
+		image.render();
 	}
 
 	protected void fireRender() {
@@ -455,24 +547,6 @@ public abstract class RenderedImage extends Canvas {
 		render();
 	}
 
-	public <T extends RenderedImage> T copy() {
-		RenderedImage copy = null;
-
-		try {
-			copy = getClass().getDeclaredConstructor().newInstance();
-			copy.strokePaintOverride = this.strokePaintOverride;
-			copy.strokeWidthOverride = this.strokeWidthOverride;
-			copy.getProperties().putAll( this.getProperties() );
-			copy.setHeight( getHeight() );
-			copy.setWidth( getWidth() );
-			copy.setStyle( getStyle() );
-		} catch( Exception exception ) {
-			exception.printStackTrace();
-		}
-
-		return (T)copy;
-	}
-
 	protected double g( double value ) {
 		return value / 32d;
 	}
@@ -482,6 +556,10 @@ public abstract class RenderedImage extends Canvas {
 	}
 
 	private static Scene getImageScene( RenderedImage image, double imageWidth, double imageHeight ) {
+		return getImageScene( image, imageWidth, imageHeight, null );
+	}
+
+	private static Scene getImageScene( RenderedImage image, double imageWidth, double imageHeight, Paint fill ) {
 		String stylesheet = (String)image.getProperties().get( "stylesheet" );
 
 		Pane pane = new Pane( image );
@@ -490,8 +568,34 @@ public abstract class RenderedImage extends Canvas {
 		pane.setPrefSize( imageWidth, imageHeight );
 		Scene scene = new Scene( pane );
 		scene.getStylesheets().addAll( STYLESHEET );
-		scene.setFill( Color.TRANSPARENT );
+		scene.setFill( fill == null ? Color.TRANSPARENT : fill );
 		return scene;
+	}
+
+	private void renderText( String text, double x, double y, double textSize, double maxWidth, boolean draw ) {
+		// Font sizes smaller than one don't scale as expected
+		// so the workaround is to scale according the text size
+		// and divide the coordinates by the size.
+
+		double fontSize = 72;
+		double scale = textSize / fontSize;
+
+		// Scale the transform
+		Affine transform = getGraphicsContext2D().getTransform().clone();
+		getGraphicsContext2D().scale( scale, scale );
+
+		getGraphicsContext2D().setFont( deriveFont( getFont(), fontSize ) );
+		getGraphicsContext2D().setFontSmoothingType( FontSmoothingType.GRAY );
+
+		// Stroke or fill the text
+		if( draw ) {
+			getGraphicsContext2D().strokeText( text, x / scale, y / scale, maxWidth / scale );
+		} else {
+			getGraphicsContext2D().fillText( text, x / scale, y / scale, maxWidth / scale );
+		}
+
+		// Reset transform
+		getGraphicsContext2D().setTransform( transform );
 	}
 
 }
