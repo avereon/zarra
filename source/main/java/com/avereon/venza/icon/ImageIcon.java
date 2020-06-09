@@ -11,21 +11,27 @@ public class ImageIcon extends RenderedIcon {
 
 	private String url;
 
-	/**
-	 * This constructor is used to copy the icon.
-	 */
-	@SuppressWarnings( "unused" )
-	ImageIcon() {}
+	public ImageIcon() {}
 
 	public ImageIcon( String url ) {
-		this.url = url;
+		setUrl( url );
 	}
 
 	@Override
+	@SuppressWarnings( "unchecked" )
 	public RenderedIcon copy() {
 		ImageIcon image = super.copy();
 		image.url = this.url;
 		return image;
+	}
+
+	public String getUrl() {
+		return url;
+	}
+
+	public ImageIcon setUrl( String url ) {
+		this.url = url;
+		return this;
 	}
 
 	@Override
@@ -43,12 +49,12 @@ public class ImageIcon extends RenderedIcon {
 	}
 
 	private Image getImage( String url ) {
-		Image source = CACHE.computeIfAbsent( url, Image::new );
+		int w = (int)getWidth();
+		int h = (int)getHeight();
+		String key = url + "?w=" + w + "&h=" + h;
+		Image source = CACHE.computeIfAbsent( key, Image::new );
 
 		// TODO This was an attempt to store pre-scaled images
-		//		int w = (int)getWidth();
-		//		int h = (int)getHeight();
-		//		String key = url + "-" + w + "-" + h;
 		//		Image cached = CACHE.computeIfAbsent( key, ( k) -> {
 		//			return Images.scaleImage( source, w,h );
 		//		} );

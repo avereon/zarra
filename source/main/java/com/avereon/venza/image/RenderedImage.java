@@ -314,6 +314,7 @@ public abstract class RenderedImage extends Canvas {
 		return new WritableImage( snapshot.getPixelReader(), (int)snapshot.getWidth(), (int)snapshot.getHeight() );
 	}
 
+	@SuppressWarnings( "unchecked" )
 	public <T extends RenderedImage> T copy() {
 		RenderedImage copy = null;
 
@@ -589,7 +590,7 @@ public abstract class RenderedImage extends Canvas {
 		if(stylesheet != null) node.getStylesheets().add( stylesheet );
 	}
 
-	void renderText( String text, double x, double y, double textSize, double maxWidth, boolean draw ) {
+	private void renderText( String text, double x, double y, double textSize, double maxWidth, boolean draw ) {
 		// Font sizes smaller than one don't scale as expected
 		// so the workaround is to scale according the text size
 		// and divide the coordinates by the size.
