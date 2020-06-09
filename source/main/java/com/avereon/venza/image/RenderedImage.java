@@ -419,7 +419,7 @@ public abstract class RenderedImage extends Canvas {
 	}
 
 	protected void fillText( String text, double x, double y, double textSize ) {
-		fillText( text, x, y, textSize, 0 );
+		fillText( text, x, y, textSize, -1 );
 	}
 
 	protected void fillText( String text, double x, double y, double textSize, double maxWidth ) {
@@ -427,7 +427,7 @@ public abstract class RenderedImage extends Canvas {
 	}
 
 	protected void drawText( String text, double x, double y, double textSize ) {
-		fillText( text, x, y, textSize, 0 );
+		fillText( text, x, y, textSize, -1 );
 	}
 
 	protected void drawText( String text, double x, double y, double textSize, double maxWidth ) {
@@ -606,9 +606,17 @@ public abstract class RenderedImage extends Canvas {
 
 		// Stroke or fill the text
 		if( draw ) {
-			getGraphicsContext2D().strokeText( text, x / scale, y / scale, maxWidth / scale );
+			if( maxWidth < 0 ) {
+				getGraphicsContext2D().strokeText( text, x / scale, y / scale );
+			} else {
+				getGraphicsContext2D().strokeText( text, x / scale, y / scale, maxWidth / scale );
+			}
 		} else {
-			getGraphicsContext2D().fillText( text, x / scale, y / scale, maxWidth / scale );
+			if( maxWidth < 0 ) {
+				getGraphicsContext2D().fillText( text, x / scale, y / scale );
+			} else {
+				getGraphicsContext2D().fillText( text, x / scale, y / scale, maxWidth / scale );
+			}
 		}
 
 		// Reset transform
