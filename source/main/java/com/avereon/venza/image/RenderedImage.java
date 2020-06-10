@@ -32,9 +32,9 @@ public abstract class RenderedImage extends Canvas {
 
 	protected static final String STYLESHEET = "venza.css";
 
-	protected static final String DARK_THEME = "proof-dark.css";
+	protected static final String DARK_THEME = "avn-dark.css";
 
-	protected static final String LIGHT_THEME = "proof-light.css";
+	protected static final String LIGHT_THEME = "avn-light.css";
 
 	private static final List<CssMetaData<? extends Styleable, ?>> STYLEABLES;
 
