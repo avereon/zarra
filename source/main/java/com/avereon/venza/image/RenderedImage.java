@@ -30,7 +30,7 @@ public abstract class RenderedImage extends Canvas {
 
 	public static final double DEFAULT_SIZE = 256;
 
-	protected static final String STYLESHEET = "venza.css";
+	protected static final String STYLESHEET = "icon-default.css";
 
 	protected static final String DARK_THEME = "avn-dark.css";
 
@@ -38,33 +38,41 @@ public abstract class RenderedImage extends Canvas {
 
 	private static final List<CssMetaData<? extends Styleable, ?>> STYLEABLES;
 
+	private static final CssMetaData<RenderedImage, Number> CSS_STROKE_WIDTH;
+
 	private static final CssMetaData<RenderedImage, Paint> CSS_STROKE_PAINT;
 
-	private static final CssMetaData<RenderedImage, Paint> CSS_ACCENT_PAINT;
+	private static final CssMetaData<RenderedImage, Paint> CSS_PRIMARY_PAINT;
 
-	private static final CssMetaData<RenderedImage, Number> CSS_STROKE_WIDTH;
+	private static final CssMetaData<RenderedImage, Paint> CSS_SECONDARY_PAINT;
 
 	private static final CssMetaData<RenderedImage, Font> CSS_FONT;
 
-	private static final Paint DEFAULT_STROKE_PAINT = Color.web( "#808080" );
-
-	private static final Paint DEFAULT_ACCENT_PAINT = Color.web( "#4DB6AC" );
-
 	private static final double DEFAULT_STROKE_WIDTH = 4.0 / 32.0;
 
+	private static final Paint DEFAULT_STROKE_PAINT = Color.web( "#808080" );
+
+	private static final Paint DEFAULT_PRIMARY_PAINT = Color.web( "#4DB6AC" );
+
+	private static final Paint DEFAULT_SECONDARY_PAINT = Color.web( "#ACB64D" );
+
 	private static final Font DEFAULT_FONT = Font.getDefault();
+
+	private DoubleProperty strokeWidth;
+
+	private Double strokeWidthOverride;
 
 	private ObjectProperty<Paint> strokePaint;
 
 	private Paint strokePaintOverride;
 
-	private ObjectProperty<Paint> accentPaint;
+	private ObjectProperty<Paint> primaryPaint;
 
-	private Paint accentPaintOverride;
+	private Paint primaryPaintOverride;
 
-	private DoubleProperty strokeWidth;
+	private ObjectProperty<Paint> secondaryPaint;
 
-	private Double strokeWidthOverride;
+	private Paint secondaryPaintOverride;
 
 	private ObjectProperty<Font> font;
 
@@ -75,6 +83,22 @@ public abstract class RenderedImage extends Canvas {
 	private Transform baseTransform = new Affine();
 
 	static {
+		// Don't forget to update the test style sheets
+		CSS_STROKE_WIDTH = new CssMetaData<>( "-fx-stroke-width", StyleConverter.getSizeConverter() ) {
+
+			@Override
+			public boolean isSettable( RenderedImage styleable ) {
+				return styleable.strokePaint == null || !styleable.strokePaint.isBound();
+			}
+
+			@Override
+			@SuppressWarnings( "unchecked" )
+			public StyleableProperty<Number> getStyleableProperty( RenderedImage styleable ) {
+				return (StyleableProperty<Number>)styleable.strokeWidthProperty();
+			}
+
+		};
+
 		// Don't forget to update the test style sheets
 		CSS_STROKE_PAINT = new CssMetaData<>( "-fx-stroke", StyleConverter.getPaintConverter() ) {
 
@@ -92,33 +116,33 @@ public abstract class RenderedImage extends Canvas {
 		};
 
 		// Don't forget to update the test style sheets
-		CSS_ACCENT_PAINT = new CssMetaData<>( "-fx-accent-color", StyleConverter.getPaintConverter() ) {
+		CSS_PRIMARY_PAINT = new CssMetaData<>( "-fx-primary", StyleConverter.getPaintConverter() ) {
 
 			@Override
 			public boolean isSettable( RenderedImage styleable ) {
-				return styleable.accentPaint == null || !styleable.accentPaint.isBound();
+				return styleable.primaryPaint == null || !styleable.primaryPaint.isBound();
 			}
 
 			@Override
 			@SuppressWarnings( "unchecked" )
 			public StyleableProperty<Paint> getStyleableProperty( RenderedImage styleable ) {
-				return (StyleableProperty<Paint>)styleable.accentPaintProperty();
+				return (StyleableProperty<Paint>)styleable.primaryPaintProperty();
 			}
 
 		};
 
 		// Don't forget to update the test style sheets
-		CSS_STROKE_WIDTH = new CssMetaData<>( "-fx-stroke-width", StyleConverter.getSizeConverter() ) {
+		CSS_SECONDARY_PAINT = new CssMetaData<>( "-fx-secondary", StyleConverter.getPaintConverter() ) {
 
 			@Override
 			public boolean isSettable( RenderedImage styleable ) {
-				return styleable.strokePaint == null || !styleable.strokePaint.isBound();
+				return styleable.secondaryPaint == null || !styleable.secondaryPaint.isBound();
 			}
 
 			@Override
 			@SuppressWarnings( "unchecked" )
-			public StyleableProperty<Number> getStyleableProperty( RenderedImage styleable ) {
-				return (StyleableProperty<Number>)styleable.strokeWidthProperty();
+			public StyleableProperty<Paint> getStyleableProperty( RenderedImage styleable ) {
+				return (StyleableProperty<Paint>)styleable.secondaryPaintProperty();
 			}
 
 		};
@@ -139,7 +163,7 @@ public abstract class RenderedImage extends Canvas {
 
 		};
 
-		STYLEABLES = List.of( CSS_STROKE_PAINT, CSS_ACCENT_PAINT, CSS_STROKE_WIDTH, CSS_FONT );
+		STYLEABLES = List.of( CSS_STROKE_WIDTH, CSS_STROKE_PAINT, CSS_PRIMARY_PAINT, CSS_SECONDARY_PAINT, CSS_FONT );
 	}
 
 	protected RenderedImage() {
@@ -157,6 +181,28 @@ public abstract class RenderedImage extends Canvas {
 	@Override
 	public List<CssMetaData<? extends Styleable, ?>> getCssMetaData() {
 		return getClassCssMetaData();
+	}
+
+	public double getStrokeWidth() {
+		return strokeWidthOverride != null ? strokeWidthOverride : strokeWidthProperty().get();
+	}
+
+	public void setStrokeWidth( double width ) {
+		strokeWidthOverride = Double.isNaN( width ) ? null : width;
+	}
+
+	public DoubleProperty strokeWidthProperty() {
+		if( strokeWidth == null ) {
+			strokeWidth = new SimpleStyleableDoubleProperty( CSS_STROKE_WIDTH, RenderedImage.this, "outlineWidth", DEFAULT_STROKE_WIDTH ) {
+
+				@Override
+				protected void invalidated() {
+					fireRender();
+				}
+
+			};
+		}
+		return strokeWidth;
 	}
 
 	public Paint getStrokePaint() {
@@ -181,17 +227,17 @@ public abstract class RenderedImage extends Canvas {
 		return strokePaint;
 	}
 
-	public Paint getAccentPaint() {
-		return accentPaintOverride != null ? accentPaintOverride : accentPaintProperty().get();
+	public Paint getPrimaryPaint() {
+		return primaryPaintOverride != null ? primaryPaintOverride : primaryPaintProperty().get();
 	}
 
-	public void setAccentPaint( Paint paint ) {
-		accentPaintOverride = paint;
+	public void setPrimaryPaint( Paint paint ) {
+		primaryPaintOverride = paint;
 	}
 
-	public ObjectProperty<Paint> accentPaintProperty() {
-		if( accentPaint == null ) {
-			accentPaint = new SimpleStyleableObjectProperty<>( CSS_STROKE_PAINT, RenderedImage.this, "accentPaint", DEFAULT_ACCENT_PAINT ) {
+	public ObjectProperty<Paint> primaryPaintProperty() {
+		if( primaryPaint == null ) {
+			primaryPaint = new SimpleStyleableObjectProperty<>( CSS_PRIMARY_PAINT, RenderedImage.this, "primaryPaint", DEFAULT_PRIMARY_PAINT ) {
 
 				@Override
 				protected void invalidated() {
@@ -200,20 +246,20 @@ public abstract class RenderedImage extends Canvas {
 
 			};
 		}
-		return accentPaint;
+		return primaryPaint;
 	}
 
-	public double getStrokeWidth() {
-		return strokeWidthOverride != null ? strokeWidthOverride : strokeWidthProperty().get();
+	public Paint getSecondaryPaint() {
+		return secondaryPaintOverride != null ? secondaryPaintOverride : secondaryPaintProperty().get();
 	}
 
-	public void setStrokeWidth( double width ) {
-		strokeWidthOverride = Double.isNaN( width ) ? null : width;
+	public void setSecondaryPaint( Paint paint ) {
+		secondaryPaintOverride = paint;
 	}
 
-	public DoubleProperty strokeWidthProperty() {
-		if( strokeWidth == null ) {
-			strokeWidth = new SimpleStyleableDoubleProperty( CSS_STROKE_WIDTH, RenderedImage.this, "outlineWidth", DEFAULT_STROKE_WIDTH ) {
+	public ObjectProperty<Paint> secondaryPaintProperty() {
+		if( secondaryPaint == null ) {
+			secondaryPaint = new SimpleStyleableObjectProperty<>( CSS_SECONDARY_PAINT, RenderedImage.this, "secondaryPaint", DEFAULT_SECONDARY_PAINT ) {
 
 				@Override
 				protected void invalidated() {
@@ -222,7 +268,7 @@ public abstract class RenderedImage extends Canvas {
 
 			};
 		}
-		return strokeWidth;
+		return secondaryPaint;
 	}
 
 	public Font getFont() {
@@ -566,28 +612,19 @@ public abstract class RenderedImage extends Canvas {
 		Pane pane = new Pane( image );
 		pane.setBackground( Background.EMPTY );
 		pane.setPrefSize( imageWidth, imageHeight );
+		applyContainerStylesheets( image, pane );
 		Scene scene = new Scene( pane );
-		addStylesheets( image, scene );
 		scene.setFill( fill == null ? Color.TRANSPARENT : fill );
 		return scene;
 	}
 
-	/**
-	 * Should be kept aligned with {@link #addStylesheets(RenderedImage,Parent)}
- 	 */
-	private static void addStylesheets( RenderedImage image, Scene scene ) {
-		String stylesheet = (String)image.getProperties().get( "stylesheet" );
-		scene.getStylesheets().add( STYLESHEET );
-		if(stylesheet != null) scene.getStylesheets().add( stylesheet );
-	}
-
-	/**
-	 * Should be kept aligned with {@link #addStylesheets(RenderedImage,Scene)}
-	 */
-	protected static void addStylesheets( RenderedImage image, Parent node ) {
-		String stylesheet = (String)image.getProperties().get( "stylesheet" );
+	protected static void applyContainerStylesheets( RenderedImage image, Parent node ) {
+		// Add the default container stylesheet
 		node.getStylesheets().add( STYLESHEET );
-		if(stylesheet != null) node.getStylesheets().add( stylesheet );
+
+		// Add extra container style
+		String style = (String)image.getProperties().get( "container-style" );
+		if( style != null ) node.setStyle( style );
 	}
 
 	private void renderText( String text, double x, double y, double textSize, double maxWidth, boolean draw ) {

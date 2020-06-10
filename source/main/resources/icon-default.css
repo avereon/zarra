@@ -1,0 +1,24 @@
+/*******************************************************************************
+ * Icons
+ ******************************************************************************/
+.xe-icon {
+	-fx-stroke-width: 0.125; /* 4/32 */
+
+	-fx-stroke: ladder(
+		-fx-text-background-color,
+		#606060 50%,
+		#E0E0E0 50%
+	);
+
+	-fx-primary: ladder(
+		-fx-text-background-color,
+		#206080 50%,
+		#73b9dc 50%
+	);
+
+	-fx-secondary: ladder(
+		-fx-text-background-color,
+		#804020 50%,
+		#dc9673 50%
+	);
+}

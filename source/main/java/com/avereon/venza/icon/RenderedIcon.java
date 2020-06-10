@@ -1,12 +1,12 @@
 package com.avereon.venza.icon;
 
+import com.avereon.venza.color.Colors;
 import com.avereon.venza.image.Images;
 import com.avereon.venza.image.RenderedImage;
 import com.avereon.venza.javafx.JavaFxStarter;
 import javafx.application.Application;
 import javafx.application.Platform;
-import javafx.geometry.Insets;
-import javafx.scene.Node;
+import javafx.geometry.Orientation;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -19,6 +19,12 @@ import java.util.List;
 
 public abstract class RenderedIcon extends RenderedImage {
 
+	public static final String DARK_THEME = "-fx-text-background-color: #E0E0E0FF;";
+
+	public static final String LIGHT_THEME = "-fx-text-background-color: #202020FF;";
+
+	private static final Color FILL = Color.GRAY;
+
 	public RenderedIcon() {
 		super();
 		getStyleClass().add( "xe-icon" );
@@ -28,16 +34,26 @@ public abstract class RenderedIcon extends RenderedImage {
 		return getWidth();
 	}
 
+	public void setTheme( String theme ) {
+		super.setStyle( theme );
+	}
+
 	public static void proof( RenderedIcon icon ) {
+		proof( icon, null, null );
+	}
+
+	public static void proof( RenderedIcon icon, Color darkFill, Color lightFill ) {
 		JavaFxStarter.startAndWait( 1000 );
 
 		// Now show the icon window
 		Platform.runLater( () -> {
 			Application.setUserAgentStylesheet( Application.STYLESHEET_MODENA );
 
-			Pane darkPane = proofPane( icon.copy(), null );
-			Pane lightPane = proofPane( icon.copy(), LIGHT_THEME );
-			Scene scene = new Scene( new HBox( darkPane, lightPane ) );
+			Pane darkPane = proofPane( icon.copy(), DARK_THEME, darkFill == null ? Color.web( "#404040" ) : darkFill );
+			Pane lightPane = proofPane( icon.copy(), LIGHT_THEME, lightFill == null ? Color.web( "#C0C0C0" ) : lightFill );
+			HBox box = new HBox( 5, darkPane, lightPane );
+			box.setStyle( "-fx-background-color: " + Colors.web( FILL ) + ";" );
+			Scene scene = new Scene( box );
 
 			List<Image> stageIcons = new ArrayList<>();
 			stageIcons.add( icon.copy().resize( 256 ).getImage() );
@@ -59,10 +75,19 @@ public abstract class RenderedIcon extends RenderedImage {
 		} );
 	}
 
-	private static Pane proofPane( RenderedIcon icon, String stylesheet ) {
-		if( stylesheet != null ) icon.getProperties().put( "stylesheet", stylesheet );
+	private static Pane proofPane( RenderedIcon icon, String theme, Color fill ) {
+		icon.setTheme( theme );
+
+		String style = "";
+		if( fill != null ) style += "-fx-background-color: " + Colors.web( fill ) + ";";
+		icon.getProperties().put( "container-style", style );
+
 		ImageView imageView16 = new ImageView( Images.resample( icon.copy().resize( 16 ).getImage(), 16 ) );
 		ImageView imageView32 = new ImageView( Images.resample( icon.copy().resize( 32 ).getImage(), 8 ) );
+
+		RenderedIcon icon256 = icon.copy().resize( DEFAULT_SIZE );
+		AnchorPane.setTopAnchor( icon256, 0.0 );
+		AnchorPane.setLeftAnchor( icon256, 0.0 );
 
 		RenderedIcon icon128 = icon.copy().resize( 128 );
 		AnchorPane.setTopAnchor( icon128, 0.0 );
@@ -84,27 +109,34 @@ public abstract class RenderedIcon extends RenderedImage {
 		AnchorPane.setTopAnchor( icon8, 240.0 );
 		AnchorPane.setLeftAnchor( icon8, 240.0 );
 
-		AnchorPane iconPane = new AnchorPane();
-		iconPane.getChildren().addAll( icon128, icon64, icon32, icon16, icon8 );
+		AnchorPane scaledIconPane = new AnchorPane();
+		scaledIconPane.getChildren().addAll( icon128, icon64, icon32, icon16, icon8 );
 
-		GridPane pane = new GridPane();
-		pane.add( samplePane( icon.copy().resize( DEFAULT_SIZE ), Color.web( "#80808020" ) ), 1, 1 );
-		pane.add( imageView16, 2, 1 );
-		pane.add( imageView32, 1, 2 );
-		pane.add( samplePane( iconPane, Color.web( "#80808020" ) ), 2, 2 );
-		pane.getStyleClass().add( "root" );
-		addStylesheets( icon, pane );
+		StackPane iconPane256 = new StackPane( icon256 );
+		StackPane iconPane16 = new StackPane( imageView16 );
+		StackPane iconPane32 = new StackPane( imageView32 );
 
-		return pane;
-	}
+		applyContainerStylesheets( icon, iconPane256 );
+		applyContainerStylesheets( icon, iconPane16 );
+		applyContainerStylesheets( icon, iconPane32 );
+		applyContainerStylesheets( icon, scaledIconPane );
 
-	private static Pane samplePane( Node node, Color color ) {
-		return setBackground( new Pane( node ), color );
-	}
+		TilePane pane = new TilePane( Orientation.HORIZONTAL, 5, 5 );
+		pane.setPrefColumns( 2 );
+		pane.setPrefRows( 2 );
+		pane.setHgap( 5 );
+		pane.setVgap( 5 );
+		pane.getChildren().add( iconPane256 );
+		pane.getChildren().add( iconPane16 );
+		pane.getChildren().add( iconPane32 );
+		pane.getChildren().add( scaledIconPane );
 
-	private static <T extends Region> T setBackground( T region, Color color ) {
-		region.setBackground( new Background( new BackgroundFill( color, CornerRadii.EMPTY, Insets.EMPTY ) ) );
-		return region;
+		StackPane root = new StackPane( pane );
+		root.getStyleClass().add( "root" );
+		root.setStyle( "-fx-background-color: " + Colors.web( FILL ) + ";" );
+		// This applies the icon container stylesheet
+		//applyContainerStylesheets( icon, root );
+		return root;
 	}
 
 }
