@@ -2,6 +2,7 @@ package com.avereon.venza.image;
 
 import com.avereon.venza.font.FontUtil;
 import com.avereon.venza.javafx.JavaFxStarter;
+import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.ObjectProperty;
@@ -30,11 +31,11 @@ public abstract class RenderedImage extends Canvas {
 
 	public static final double DEFAULT_SIZE = 256;
 
-	public static final String DARK_THEME = "-fx-text-background-color: #E0E0E0FF;";
+	protected static final String DARK_THEME = "-fx-text-background-color: #E0E0E0FF;";
 
-	public static final String LIGHT_THEME = "-fx-text-background-color: #202020FF;";
+	protected static final String LIGHT_THEME = "-fx-text-background-color: #202020FF;";
 
-	protected static final String STYLESHEET = "icon-default.css";
+	private static final String STYLESHEET = "venza.css";
 
 	private static final List<CssMetaData<? extends Styleable, ?>> STYLEABLES;
 
@@ -179,6 +180,10 @@ public abstract class RenderedImage extends Canvas {
 
 	public void setTheme( String theme ) {
 		setStyle( theme );
+	}
+
+	public String getTheme() {
+		return getStyle();
 	}
 
 	public static List<CssMetaData<? extends Styleable, ?>> getClassCssMetaData() {
@@ -568,6 +573,9 @@ public abstract class RenderedImage extends Canvas {
 
 	protected void render( RenderedImage image ) {
 		image.setGraphicsContext2D( getGraphicsContext2D() );
+		image.setStrokePaint( getStrokePaint() );
+		image.setPrimaryPaint( getPrimaryPaint() );
+		image.setSecondaryPaint( getSecondaryPaint() );
 		image.render();
 	}
 
