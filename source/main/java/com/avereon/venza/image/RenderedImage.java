@@ -30,11 +30,11 @@ public abstract class RenderedImage extends Canvas {
 
 	public static final double DEFAULT_SIZE = 256;
 
+	public static final String DARK_THEME = "-fx-text-background-color: #E0E0E0FF;";
+
+	public static final String LIGHT_THEME = "-fx-text-background-color: #202020FF;";
+
 	protected static final String STYLESHEET = "icon-default.css";
-
-	protected static final String DARK_THEME = "avn-dark.css";
-
-	protected static final String LIGHT_THEME = "avn-light.css";
 
 	private static final List<CssMetaData<? extends Styleable, ?>> STYLEABLES;
 
@@ -173,6 +173,10 @@ public abstract class RenderedImage extends Canvas {
 	}
 
 	protected abstract void render();
+
+	public void setTheme( String theme ) {
+		setStyle( theme );
+	}
 
 	public static List<CssMetaData<? extends Styleable, ?>> getClassCssMetaData() {
 		return STYLEABLES;

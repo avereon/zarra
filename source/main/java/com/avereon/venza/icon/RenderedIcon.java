@@ -19,10 +19,6 @@ import java.util.List;
 
 public abstract class RenderedIcon extends RenderedImage {
 
-	public static final String DARK_THEME = "-fx-text-background-color: #E0E0E0FF;";
-
-	public static final String LIGHT_THEME = "-fx-text-background-color: #202020FF;";
-
 	private static final Color FILL = Color.GRAY;
 
 	public RenderedIcon() {
@@ -32,10 +28,6 @@ public abstract class RenderedIcon extends RenderedImage {
 
 	public double getSize() {
 		return getWidth();
-	}
-
-	public void setTheme( String theme ) {
-		super.setStyle( theme );
 	}
 
 	public static void proof( RenderedIcon icon ) {
