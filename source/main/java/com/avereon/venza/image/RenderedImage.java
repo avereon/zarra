@@ -50,11 +50,14 @@ public abstract class RenderedImage extends Canvas {
 
 	private static final double DEFAULT_STROKE_WIDTH = 4.0 / 32.0;
 
-	private static final Paint DEFAULT_STROKE_PAINT = Color.web( "#808080" );
+	// This is set to a bright color to reveal when style is not working right
+	private static final Paint DEFAULT_STROKE_PAINT = Color.MAGENTA;
 
-	private static final Paint DEFAULT_PRIMARY_PAINT = Color.web( "#4DB6AC" );
+	// This is set to a bright color to reveal when style is not working right
+	private static final Paint DEFAULT_PRIMARY_PAINT = Color.RED;
 
-	private static final Paint DEFAULT_SECONDARY_PAINT = Color.web( "#ACB64D" );
+	// This is set to a bright color to reveal when style is not working right
+	private static final Paint DEFAULT_SECONDARY_PAINT = Color.YELLOW;
 
 	private static final Font DEFAULT_FONT = Font.getDefault();
 
