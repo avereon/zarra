@@ -2,7 +2,6 @@ package com.avereon.venza.image;
 
 import com.avereon.venza.font.FontUtil;
 import com.avereon.venza.javafx.JavaFxStarter;
-import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.ObjectProperty;
@@ -558,6 +557,13 @@ public abstract class RenderedImage extends Canvas {
 
 	protected void draw() {
 		getGraphicsContext2D().stroke();
+	}
+
+	protected void draw( Paint paint ) {
+		getGraphicsContext2D().save();
+		getGraphicsContext2D().setStroke( paint );
+		getGraphicsContext2D().stroke();
+		getGraphicsContext2D().restore();
 	}
 
 	protected void fill() {
