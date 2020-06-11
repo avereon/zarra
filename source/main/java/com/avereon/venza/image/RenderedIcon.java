@@ -1,8 +1,6 @@
-package com.avereon.venza.icon;
+package com.avereon.venza.image;
 
 import com.avereon.venza.color.Colors;
-import com.avereon.venza.image.Images;
-import com.avereon.venza.image.RenderedImage;
 import com.avereon.venza.javafx.JavaFxStarter;
 import javafx.application.Application;
 import javafx.application.Platform;
@@ -126,8 +124,6 @@ public abstract class RenderedIcon extends RenderedImage {
 		StackPane root = new StackPane( pane );
 		root.getStyleClass().add( "root" );
 		root.setStyle( "-fx-background-color: " + Colors.web( FILL ) + ";" );
-		// This applies the icon container stylesheet
-		//applyContainerStylesheets( icon, root );
 		return root;
 	}
 

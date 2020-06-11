@@ -30,9 +30,9 @@ public abstract class RenderedImage extends Canvas {
 
 	public static final double DEFAULT_SIZE = 256;
 
-	protected static final String DARK_THEME = "-fx-text-background-color: #E0E0E0FF;";
+	static final String DARK_THEME = "-fx-text-background-color: #E0E0E0FF;";
 
-	protected static final String LIGHT_THEME = "-fx-text-background-color: #202020FF;";
+	static final String LIGHT_THEME = "-fx-text-background-color: #202020FF;";
 
 	private static final String STYLESHEET = "venza.css";
 
@@ -178,7 +178,14 @@ public abstract class RenderedImage extends Canvas {
 	protected abstract void render();
 
 	public void setTheme( String theme ) {
-		setStyle( theme );
+		String style = getStyle();
+		if( style == null ) {
+			style = theme;
+		} else {
+			style += theme;
+		}
+
+		setStyle( style );
 	}
 
 	public String getTheme() {

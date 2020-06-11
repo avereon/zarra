@@ -1,4 +1,4 @@
-package com.avereon.venza.icon;
+package com.avereon.venza.image;
 
 import javafx.scene.image.Image;
 

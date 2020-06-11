@@ -1,7 +1,5 @@
 package com.avereon.venza.image;
 
-import com.avereon.venza.icon.BrokenIcon;
-import com.avereon.venza.icon.RenderedIcon;
 import org.junit.jupiter.api.Test;
 
 import java.nio.file.Files;
