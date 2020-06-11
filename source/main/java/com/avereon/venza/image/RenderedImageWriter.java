@@ -48,7 +48,7 @@ public class RenderedImageWriter {
 	 * @throws Exception If an error occurs
 	 */
 	public void save( RenderedImage renderer, Path path, double width, double height, Color fill ) throws Exception {
-		BufferedImage image = doCreateAwtImage( renderer, width, height, fill );
+		BufferedImage image = createAwtImage( renderer, width, height, fill );
 		saveAwtImages( image == null ? List.of() : List.of( image ), path );
 	}
 
@@ -72,7 +72,7 @@ public class RenderedImageWriter {
 	public void save( List<RenderedImage> renderers, Path path, Color fill ) throws Exception {
 		List<BufferedImage> images = new ArrayList<>();
 		for( RenderedImage renderer : renderers ) {
-			images.add( doCreateAwtImage( renderer, renderer.getWidth(), renderer.getHeight(), fill ) );
+			images.add( createAwtImage( renderer, renderer.getWidth(), renderer.getHeight(), fill ) );
 		}
 		saveAwtImages( images, path );
 	}
@@ -93,12 +93,12 @@ public class RenderedImageWriter {
 		}
 	}
 
-	private BufferedImage doCreateAwtImage( RenderedImage renderer, double width, double height, Color fill ) throws Exception {
+	private BufferedImage createAwtImage( RenderedImage renderer, double width, double height, Color fill ) throws Exception {
 		String style = "";
 		if( fill != null ) style += "-fx-background-color: " + Colors.web( fill ) + ";";
 		renderer.getProperties().put( "container-style", style );
 
-		Runnable createImage = () -> doCreateAwtImage( renderer, width, height );
+		Runnable createImage = () -> doCreateAwtImageFx( renderer, width, height, fill );
 		try {
 			Platform.runLater( createImage );
 		} catch( IllegalStateException exception ) {
@@ -109,8 +109,11 @@ public class RenderedImageWriter {
 		return this.image;
 	}
 
-	private void doCreateAwtImage( RenderedImage renderer, double width, double height ) {
-		BufferedImage buffer = new BufferedImage( (int)width, (int)height, BufferedImage.TYPE_INT_ARGB );
+	private void doCreateAwtImageFx( RenderedImage renderer, double width, double height, Color fill ) {
+		int type = BufferedImage.TYPE_INT_ARGB;
+		if( fill != null && fill.isOpaque() ) type = BufferedImage.TYPE_INT_RGB;
+
+		BufferedImage buffer = new BufferedImage( (int)width, (int)height, type );
 		this.image = SwingFXUtils.fromFXImage( renderer.getImage( width, height ), buffer );
 	}
 
