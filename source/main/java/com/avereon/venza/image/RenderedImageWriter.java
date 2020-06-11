@@ -2,9 +2,11 @@ package com.avereon.venza.image;
 
 import com.avereon.util.FileUtil;
 import com.avereon.util.TextUtil;
+import com.avereon.venza.color.Colors;
 import com.avereon.venza.javafx.FxUtil;
 import javafx.application.Platform;
 import javafx.embed.swing.SwingFXUtils;
+import javafx.scene.paint.Color;
 import net.sf.image4j.codec.ico.ICOEncoder;
 
 import javax.imageio.ImageIO;
@@ -19,8 +21,18 @@ public class RenderedImageWriter {
 
 	private BufferedImage image;
 
+	/**
+	 * @see #save(RenderedImage, Path, double, double, Color)
+	 */
 	public void save( RenderedImage renderer, Path path ) throws Exception {
 		save( List.of( renderer ), path );
+	}
+
+	/**
+	 * @see #save(RenderedImage, Path, double, double, Color)
+	 */
+	public void save( RenderedImage renderer, Path path, double width, double height ) throws Exception {
+		save( renderer, path, width, height, null );
 	}
 
 	/**
@@ -32,22 +44,40 @@ public class RenderedImageWriter {
 	 * @param path The path of the saved image
 	 * @param width The image width
 	 * @param height The image height
-	 * @throws Exception
+	 * @param fill The background fill color
+	 * @throws Exception If an error occurs
 	 */
-	public void save( RenderedImage renderer, Path path, double width, double height ) throws Exception {
-		BufferedImage image = doCreateImage( renderer, width, height );
-		saveImage( image == null ? List.of() : List.of( image ), path );
+	public void save( RenderedImage renderer, Path path, double width, double height, Color fill ) throws Exception {
+		BufferedImage image = doCreateAwtImage( renderer, width, height, fill );
+		saveAwtImages( image == null ? List.of() : List.of( image ), path );
 	}
 
+	/**
+	 * @see #save(List, Path, Color)
+	 */
 	public void save( List<RenderedImage> renderers, Path path ) throws Exception {
+		save( renderers, path, null );
+	}
+
+	/**
+	 * Save a list of images as an icon. If the icon format supports multiple
+	 * images then all images are used. If the icon format does not support
+	 * multiple images then only the first image is used.
+	 *
+	 * @param renderers The list of image renderers
+	 * @param path The path of the saved image
+	 * @param fill The background fill color
+	 * @throws Exception If an error occurs
+	 */
+	public void save( List<RenderedImage> renderers, Path path, Color fill ) throws Exception {
 		List<BufferedImage> images = new ArrayList<>();
 		for( RenderedImage renderer : renderers ) {
-			images.add( doCreateImage( renderer ) );
+			images.add( doCreateAwtImage( renderer, renderer.getWidth(), renderer.getHeight(), fill ) );
 		}
-		saveImage( images, path );
+		saveAwtImages( images, path );
 	}
 
-	void saveImage( List<BufferedImage> images, Path path ) throws Exception {
+	private void saveAwtImages( List<BufferedImage> images, Path path ) throws Exception {
 		Path parent = path.getParent();
 		if( !Files.exists( parent ) ) Files.createDirectories( parent );
 		File absoluteFile = path.toFile().getAbsoluteFile();
@@ -61,25 +91,25 @@ public class RenderedImageWriter {
 		}
 	}
 
-	private BufferedImage doCreateImage( RenderedImage image ) throws Exception {
-		return doCreateImage( image, image.getWidth(), image.getHeight() );
-	}
+	private BufferedImage doCreateAwtImage( RenderedImage renderer, double width, double height, Color fill ) throws Exception {
+		String style = "";
+		if( fill != null ) style += "-fx-background-color: " + Colors.web( fill ) + ";";
+		renderer.getProperties().put( "container-style", style );
 
-	private BufferedImage doCreateImage( RenderedImage image, double width, double height ) throws Exception {
-		Runnable createImage = () -> doCreateImageFx( image, width, height );
+		Runnable createImage = () -> doCreateAwtImage( renderer, width, height );
 		try {
 			Platform.runLater( createImage );
 		} catch( IllegalStateException exception ) {
 			Platform.startup( createImage );
 		}
 		FxUtil.fxWait( 1000 );
-		if( this.image == null )throw new NullPointerException( "Image not created" );
+		if( this.image == null ) throw new NullPointerException( "Image not created" );
 		return this.image;
 	}
 
-	private void doCreateImageFx( RenderedImage image, double width, double height ) {
+	private void doCreateAwtImage( RenderedImage renderer, double width, double height ) {
 		BufferedImage buffer = new BufferedImage( (int)width, (int)height, BufferedImage.TYPE_INT_ARGB );
-		this.image = SwingFXUtils.fromFXImage( image.getImage( width, height ), buffer );
+		this.image = SwingFXUtils.fromFXImage( renderer.getImage( width, height ), buffer );
 	}
 
 }
