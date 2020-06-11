@@ -85,6 +85,8 @@ public abstract class RenderedImage extends Canvas {
 
 	private Transform baseTransform = new Affine();
 
+	private Theme theme;
+
 	static {
 		// Don't forget to update the test style sheets
 		CSS_STROKE_WIDTH = new CssMetaData<>( "-fx-stroke-width", StyleConverter.getSizeConverter() ) {
@@ -171,25 +173,19 @@ public abstract class RenderedImage extends Canvas {
 
 	protected RenderedImage() {
 		resize( DEFAULT_SIZE );
+		setTheme( Theme.DARK );
 		getStyleClass().add( "xe-image" );
 		parentProperty().addListener( ( v, o, n ) -> { if( n != null ) fireRender(); } );
 	}
 
 	protected abstract void render();
 
-	public void setTheme( String theme ) {
-		String style = getStyle();
-		if( style == null ) {
-			style = theme;
-		} else {
-			style += theme;
-		}
-
-		setStyle( style );
+	public void setTheme( Theme theme ) {
+		this.theme = theme;
 	}
 
-	public String getTheme() {
-		return getStyle();
+	public Theme getTheme() {
+		return theme;
 	}
 
 	public static List<CssMetaData<? extends Styleable, ?>> getClassCssMetaData() {
@@ -390,6 +386,7 @@ public abstract class RenderedImage extends Canvas {
 			copy.setHeight( getHeight() );
 			copy.setWidth( getWidth() );
 			copy.setStyle( getStyle() );
+			copy.setTheme( getTheme() );
 		} catch( Exception exception ) {
 			exception.printStackTrace();
 		}
@@ -492,7 +489,7 @@ public abstract class RenderedImage extends Canvas {
 	}
 
 	protected void drawText( String text, double x, double y, double textSize ) {
-		fillText( text, x, y, textSize, -1 );
+		drawText( text, x, y, textSize, -1 );
 	}
 
 	protected void drawText( String text, double x, double y, double textSize, double maxWidth ) {
@@ -628,31 +625,13 @@ public abstract class RenderedImage extends Canvas {
 		return value / 32d;
 	}
 
+	void setAndApplyTheme( Theme theme ) {
+		setTheme( theme );
+		applyTheme();
+	}
+
 	private void setGraphicsContext2D( GraphicsContext context ) {
 		this.graphicsContextOverride = context;
-	}
-
-	private static Scene getImageScene( RenderedImage image, double imageWidth, double imageHeight ) {
-		return getImageScene( image, imageWidth, imageHeight, null );
-	}
-
-	private static Scene getImageScene( RenderedImage image, double imageWidth, double imageHeight, Paint fill ) {
-		Pane pane = new Pane( image );
-		pane.setBackground( Background.EMPTY );
-		pane.setPrefSize( imageWidth, imageHeight );
-		applyContainerStylesheets( image, pane );
-		Scene scene = new Scene( pane );
-		scene.setFill( fill == null ? Color.TRANSPARENT : fill );
-		return scene;
-	}
-
-	protected static void applyContainerStylesheets( RenderedImage image, Parent node ) {
-		// Add the default container stylesheet
-		node.getStylesheets().add( STYLESHEET );
-
-		// Add extra container style
-		String style = (String)image.getProperties().get( "container-style" );
-		if( style != null ) node.setStyle( style );
 	}
 
 	private void renderText( String text, double x, double y, double textSize, double maxWidth, boolean draw ) {
@@ -664,7 +643,7 @@ public abstract class RenderedImage extends Canvas {
 		double scale = textSize / fontSize;
 
 		// Scale the transform
-		Affine transform = getGraphicsContext2D().getTransform().clone();
+		getGraphicsContext2D().save();
 		getGraphicsContext2D().scale( scale, scale );
 
 		getGraphicsContext2D().setFont( deriveFont( getFont(), fontSize ) );
@@ -685,8 +664,47 @@ public abstract class RenderedImage extends Canvas {
 			}
 		}
 
-		// Reset transform
-		getGraphicsContext2D().setTransform( transform );
+		getGraphicsContext2D().restore();
 	}
 
+	private void applyTheme() {
+		String style = removeTheme();
+		Theme theme = this.theme == null ? Theme.DARK : this.theme;
+		setStyle( style == null ? theme.getStyle() : style + theme.getStyle() );
+	}
+
+	private String removeTheme() {
+		String style = getStyle();
+		for( Theme t : Theme.values() ) {
+			int index = style.indexOf( t.getStyle() );
+			if( index > -1 ) style = style.replace( t.getStyle(), "" );
+		}
+		setStyle( style );
+		return style;
+	}
+
+	static void applyContainerStylesheets( RenderedImage image, Parent node ) {
+		// Add the default container stylesheet
+		node.getStylesheets().add( STYLESHEET );
+
+		// Add extra container style
+		String style = (String)image.getProperties().get( "container-style" );
+		if( style != null ) node.setStyle( style );
+	}
+
+
+	private static Scene getImageScene( RenderedImage image, double imageWidth, double imageHeight ) {
+		return getImageScene( image, imageWidth, imageHeight, null );
+	}
+
+	private static Scene getImageScene( RenderedImage image, double imageWidth, double imageHeight, Paint fill ) {
+		image.applyTheme();
+		Pane pane = new Pane( image );
+		pane.setBackground( Background.EMPTY );
+		pane.setPrefSize( imageWidth, imageHeight );
+		applyContainerStylesheets( image, pane );
+		Scene scene = new Scene( pane );
+		scene.setFill( fill == null ? Color.TRANSPARENT : fill );
+		return scene;
+	}
 }

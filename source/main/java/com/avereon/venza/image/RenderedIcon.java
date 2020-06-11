@@ -2,7 +2,6 @@ package com.avereon.venza.image;
 
 import com.avereon.venza.color.Colors;
 import com.avereon.venza.javafx.JavaFxStarter;
-import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.geometry.Orientation;
 import javafx.scene.Scene;
@@ -37,10 +36,8 @@ public abstract class RenderedIcon extends RenderedImage {
 
 		// Now show the icon window
 		Platform.runLater( () -> {
-			Application.setUserAgentStylesheet( Application.STYLESHEET_MODENA );
-
-			Pane darkPane = proofPane( icon.copy(), DARK_THEME, darkFill == null ? Color.web( "#404040" ) : darkFill );
-			Pane lightPane = proofPane( icon.copy(), LIGHT_THEME, lightFill == null ? Color.web( "#C0C0C0" ) : lightFill );
+			Pane darkPane = proofPane( icon.copy(), Theme.DARK, darkFill == null ? Color.web( "#404040" ) : darkFill );
+			Pane lightPane = proofPane( icon.copy(), Theme.LIGHT, lightFill == null ? Color.web( "#C0C0C0" ) : lightFill );
 			HBox box = new HBox( 5, darkPane, lightPane );
 			box.setStyle( "-fx-background-color: " + Colors.web( FILL ) + ";" );
 			Scene scene = new Scene( box );
@@ -65,8 +62,8 @@ public abstract class RenderedIcon extends RenderedImage {
 		} );
 	}
 
-	private static Pane proofPane( RenderedIcon icon, String theme, Color fill ) {
-		icon.setTheme( theme );
+	private static Pane proofPane( RenderedIcon icon, Theme theme, Color fill ) {
+		icon.setAndApplyTheme( theme );
 
 		String style = "";
 		if( fill != null ) style += "-fx-background-color: " + Colors.web( fill ) + ";";
