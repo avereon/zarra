@@ -83,11 +83,13 @@ public class RenderedImageWriter {
 		File absoluteFile = path.toFile().getAbsoluteFile();
 		String type = FileUtil.getExtension( path );
 		if( TextUtil.isEmpty( type ) ) type = "png";
+		type = type.toLowerCase();
 
 		if( "ico".equals( type ) ) {
 			ICOEncoder.write( images, absoluteFile );
 		} else {
-			ImageIO.write( images.get( 0 ), type, absoluteFile );
+			boolean result = ImageIO.write( images.get( 0 ), type, absoluteFile );
+			if( !result ) throw new IllegalArgumentException( "Image writer not available for " + type );
 		}
 	}
 
