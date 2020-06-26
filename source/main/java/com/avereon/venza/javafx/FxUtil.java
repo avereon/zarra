@@ -131,6 +131,14 @@ public class FxUtil {
 		}
 	}
 
+	public static void fxWaitIgnoreInterrupted( long timeout ) {
+		try {
+			fxWait( timeout );
+		} catch( InterruptedException exception ) {
+			// Intentionally ignore exception
+		}
+	}
+
 	public static void fxWait( long timeout ) throws InterruptedException {
 		WaitToken token = new WaitToken();
 		Platform.runLater( token );
