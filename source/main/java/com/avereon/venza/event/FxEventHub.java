@@ -38,7 +38,8 @@ public class FxEventHub extends EventHub {
 		}
 
 		// If there is a parent event hub, pass the event to it
-		if( getParent() != null ) getParent().dispatch( event );
+		EventHub parent = super.getParent();
+		if( parent instanceof FxEventHub ) ((FxEventHub)parent).dispatch( event );
 
 		return this;
 	}
@@ -56,9 +57,9 @@ public class FxEventHub extends EventHub {
 		return this;
 	}
 
-	protected FxEventHub getParent() {
-		return (FxEventHub)super.getParent();
-	}
+//	protected FxEventHub getParent() {
+//		return (FxEventHub)super.getParent();
+//	}
 
 	private static class FxEventHandlerWrapper<T extends javafx.event.Event> implements javafx.event.EventDispatcher, javafx.event.EventHandler<T> {
 
