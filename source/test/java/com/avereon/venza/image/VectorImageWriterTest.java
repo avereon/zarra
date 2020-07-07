@@ -9,18 +9,18 @@ import java.nio.file.Paths;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class RenderedImageWriterTest {
+public class VectorImageWriterTest {
 
 	private Path targetFolder = Paths.get( "target", "images" );
 
 	@Test
 	void testSavePng() throws Exception {
-		runTest( "testicon.png", ( path ) -> new RenderedImageWriter().save( new BrokenIcon(), path ) );
+		runTest( "testicon.png", ( path ) -> new VectorImageWriter().save( new BrokenIcon(), path ) );
 	}
 
 	@Test
 	void testSaveIco() throws Exception {
-		runTest( "testicon.ico", ( path ) -> new RenderedImageWriter().save( new BrokenIcon(), path ) );
+		runTest( "testicon.ico", ( path ) -> new VectorImageWriter().save( new BrokenIcon(), path ) );
 	}
 
 	@Test
@@ -30,7 +30,7 @@ public class RenderedImageWriterTest {
 			double size = icon.getSize();
 			double pad = 0.2 * size;
 			icon.relocate( pad, pad );
-			new RenderedImageWriter().save( icon, path, size + 2 * pad, size + 2 * pad );
+			new VectorImageWriter().save( icon, path, size + 2 * pad, size + 2 * pad );
 		} );
 	}
 

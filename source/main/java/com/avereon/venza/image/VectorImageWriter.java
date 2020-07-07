@@ -17,21 +17,21 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
-public class RenderedImageWriter {
+public class VectorImageWriter {
 
 	private BufferedImage image;
 
 	/**
-	 * @see #save(RenderedImage, Path, double, double, Color)
+	 * @see #save(VectorImage, Path, double, double, Color)
 	 */
-	public void save( RenderedImage renderer, Path path ) throws Exception {
+	public void save( VectorImage renderer, Path path ) throws Exception {
 		save( List.of( renderer ), path );
 	}
 
 	/**
-	 * @see #save(RenderedImage, Path, double, double, Color)
+	 * @see #save(VectorImage, Path, double, double, Color)
 	 */
-	public void save( RenderedImage renderer, Path path, double width, double height ) throws Exception {
+	public void save( VectorImage renderer, Path path, double width, double height ) throws Exception {
 		save( renderer, path, width, height, null );
 	}
 
@@ -47,7 +47,7 @@ public class RenderedImageWriter {
 	 * @param fill The background fill color
 	 * @throws Exception If an error occurs
 	 */
-	public void save( RenderedImage renderer, Path path, double width, double height, Color fill ) throws Exception {
+	public void save( VectorImage renderer, Path path, double width, double height, Color fill ) throws Exception {
 		BufferedImage image = createAwtImage( renderer, width, height, fill );
 		saveAwtImages( image == null ? List.of() : List.of( image ), path );
 	}
@@ -55,7 +55,7 @@ public class RenderedImageWriter {
 	/**
 	 * @see #save(List, Path, Color)
 	 */
-	public void save( List<RenderedImage> renderers, Path path ) throws Exception {
+	public void save( List<VectorImage> renderers, Path path ) throws Exception {
 		save( renderers, path, null );
 	}
 
@@ -69,9 +69,9 @@ public class RenderedImageWriter {
 	 * @param fill The background fill color
 	 * @throws Exception If an error occurs
 	 */
-	public void save( List<RenderedImage> renderers, Path path, Color fill ) throws Exception {
+	public void save( List<VectorImage> renderers, Path path, Color fill ) throws Exception {
 		List<BufferedImage> images = new ArrayList<>();
-		for( RenderedImage renderer : renderers ) {
+		for( VectorImage renderer : renderers ) {
 			images.add( createAwtImage( renderer, renderer.getWidth(), renderer.getHeight(), fill ) );
 		}
 		saveAwtImages( images, path );
@@ -93,7 +93,7 @@ public class RenderedImageWriter {
 		}
 	}
 
-	private BufferedImage createAwtImage( RenderedImage renderer, double width, double height, Color fill ) throws Exception {
+	private BufferedImage createAwtImage( VectorImage renderer, double width, double height, Color fill ) throws Exception {
 		String style = "";
 		if( fill != null ) style += "-fx-background-color: " + Colors.web( fill ) + ";";
 		renderer.getProperties().put( "container-style", style );
@@ -109,7 +109,7 @@ public class RenderedImageWriter {
 		return this.image;
 	}
 
-	private void doCreateAwtImageFx( RenderedImage renderer, double width, double height, Color fill ) {
+	private void doCreateAwtImageFx( VectorImage renderer, double width, double height, Color fill ) {
 		int type = BufferedImage.TYPE_INT_ARGB;
 		if( fill != null && fill.isOpaque() ) type = BufferedImage.TYPE_INT_RGB;
 
