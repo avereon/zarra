@@ -154,7 +154,6 @@ public abstract class RenderedImage extends VectorImage {
 
 	protected RenderedImage() {
 		resize( DEFAULT_SIZE );
-		parentProperty().addListener( ( v, o, n ) -> { if( n != null ) fireRender(); } );
 	}
 
 	protected abstract void render();
@@ -182,7 +181,7 @@ public abstract class RenderedImage extends VectorImage {
 
 				@Override
 				protected void invalidated() {
-					fireRender();
+					doRender();
 				}
 
 			};
@@ -204,7 +203,7 @@ public abstract class RenderedImage extends VectorImage {
 
 				@Override
 				protected void invalidated() {
-					fireRender();
+					doRender();
 				}
 
 			};
@@ -226,7 +225,7 @@ public abstract class RenderedImage extends VectorImage {
 
 				@Override
 				protected void invalidated() {
-					fireRender();
+					doRender();
 				}
 
 			};
@@ -248,7 +247,7 @@ public abstract class RenderedImage extends VectorImage {
 
 				@Override
 				protected void invalidated() {
-					fireRender();
+					doRender();
 				}
 
 			};
@@ -270,7 +269,7 @@ public abstract class RenderedImage extends VectorImage {
 
 				@Override
 				protected void invalidated() {
-					fireRender();
+					doRender();
 				}
 
 			};
@@ -486,7 +485,7 @@ public abstract class RenderedImage extends VectorImage {
 		image.render();
 	}
 
-	protected void fireRender() {
+	protected void doRender() {
 		double size = Math.min( getWidth(), getHeight() );
 
 		// Set the defaults

@@ -17,15 +17,18 @@ public abstract class VectorImage extends Canvas {
 
 	VectorImage() {
 		this( 1.0, 1.0 );
-		setTheme( Theme.DARK );
-		getStyleClass().add( "xe-image" );
-		if( this instanceof DefIcon ) DefIcon.asIcon( this );
 	}
 
 	VectorImage( double gridWidth, double gridHeight ) {
 		this.gridWidth = gridWidth;
 		this.gridHeight = gridHeight;
+		setTheme( Theme.DARK );
+		getStyleClass().add( "xe-image" );
+		if( this instanceof DefIcon ) DefIcon.asIcon( this );
+		parentProperty().addListener( ( v, o, n ) -> { if( n != null ) doRender(); } );
 	}
+
+	protected void doRender() {}
 
 	public void setTheme( Theme theme ) {
 		this.theme = theme;
