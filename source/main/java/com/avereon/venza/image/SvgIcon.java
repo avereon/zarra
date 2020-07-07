@@ -29,6 +29,7 @@ public class SvgIcon extends VectorIcon {
 
 	@Override
 	protected void doRender() {
+		super.doRender();
 		getGraphicsContext2D().scale( getWidth() / gridX, getHeight() / gridY );
 		getGraphicsContext2D().appendSVGPath( this.svgPath );
 		getGraphicsContext2D().fill();
