@@ -9,4 +9,5 @@ module com.avereon.venza {
 	exports com.avereon.venza.font;
 	exports com.avereon.venza.image;
 	exports com.avereon.venza.javafx;
+	exports com.avereon.venza.style;
 }

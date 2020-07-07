@@ -1,9 +1,18 @@
 package com.avereon.venza.image;
 
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.scene.canvas.Canvas;
 import javafx.scene.image.Image;
 import javafx.scene.image.PixelReader;
 import javafx.scene.image.PixelWriter;
 import javafx.scene.image.WritableImage;
+import javafx.scene.layout.Background;
+import javafx.scene.layout.Pane;
+import javafx.scene.paint.Color;
+import javafx.scene.paint.Paint;
+import com.avereon.venza.style.Stylesheet;
+import com.avereon.venza.style.Theme;
 
 public class Images {
 
@@ -30,17 +39,55 @@ public class Images {
 		return output;
 	}
 
-	public static Image[] getStageIcons( RenderedIcon image ) {
+	public static Image[] getStageIcons( VectorImage image ) {
 		return getStageIcons( image, 16, 24, 32, 48, 64, 128, 256 );
 	}
 
-	public static Image[] getStageIcons( RenderedIcon image, int... sizes ) {
+	public static Image[] getStageIcons( VectorImage image, int... sizes ) {
 		Image[] images = new Image[ sizes.length ];
 		for( int index = 0; index < sizes.length; index++ ) {
 			if( image == null ) image = new BrokenIcon();
 			images[ index ] = image.resize( sizes[ index ] ).getImage();
 		}
 		return images;
+	}
+
+	static Scene getImageScene( Canvas canvas, double imageWidth, double imageHeight, Paint fill ) {
+		if( canvas instanceof VectorImage ) {
+			VectorImage image = (VectorImage)canvas;
+			applyTheme( image, image.getTheme() );
+		}
+		Pane pane = new Pane( canvas );
+		pane.setBackground( Background.EMPTY );
+		pane.setPrefSize( imageWidth, imageHeight );
+		applyContainerStylesheets( canvas, pane );
+		Scene scene = new Scene( pane );
+		scene.setFill( fill == null ? Color.TRANSPARENT : fill );
+		return scene;
+	}
+
+	static void applyContainerStylesheets( Canvas image, Parent node ) {
+		// Add the default container stylesheet
+		node.getStylesheets().add( Stylesheet.VENZA );
+
+		// Add extra container style
+		String style = (String)image.getProperties().get( "container-style" );
+		if( style != null ) node.setStyle( style );
+	}
+
+	private static void applyTheme( VectorImage node, Theme theme ) {
+		String style = removeTheme( node );
+		node.setStyle( style == null ? theme.getStyle() : style + theme.getStyle() );
+	}
+
+	private static String removeTheme( Canvas node ) {
+		String style = node.getStyle();
+		for( Theme t : Theme.values() ) {
+			int index = style.indexOf( t.getStyle() );
+			if( index > -1 ) style = style.replace( t.getStyle(), "" );
+		}
+		node.setStyle( style );
+		return style;
 	}
 
 }

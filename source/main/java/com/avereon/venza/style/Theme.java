@@ -1,4 +1,4 @@
-package com.avereon.venza.image;
+package com.avereon.venza.style;
 
 public enum Theme {
 

@@ -1,20 +1,12 @@
 package com.avereon.venza.image;
 
 import com.avereon.venza.font.FontUtil;
-import com.avereon.venza.javafx.JavaFxStarter;
-import javafx.application.Platform;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.css.*;
 import javafx.geometry.VPos;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
-import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
-import javafx.scene.image.WritableImage;
-import javafx.scene.layout.Background;
-import javafx.scene.layout.Pane;
 import javafx.scene.paint.*;
 import javafx.scene.shape.FillRule;
 import javafx.scene.shape.StrokeLineCap;
@@ -22,19 +14,10 @@ import javafx.scene.shape.StrokeLineJoin;
 import javafx.scene.text.*;
 import javafx.scene.transform.Affine;
 import javafx.scene.transform.Transform;
-import javafx.stage.Stage;
 
 import java.util.List;
 
-public abstract class RenderedImage extends Canvas {
-
-	public static final double DEFAULT_SIZE = 256;
-
-	protected static final String DARK_THEME = "-fx-text-background-color: #E0E0E0FF;";
-
-	protected static final String LIGHT_THEME = "-fx-text-background-color: #202020FF;";
-
-	private static final String STYLESHEET = "venza.css";
+public abstract class RenderedImage extends VectorImage {
 
 	private static final List<CssMetaData<? extends Styleable, ?>> STYLEABLES;
 
@@ -84,8 +67,6 @@ public abstract class RenderedImage extends Canvas {
 	private GraphicsContext graphicsContextOverride;
 
 	private Transform baseTransform = new Affine();
-
-	private Theme theme;
 
 	static {
 		// Don't forget to update the test style sheets
@@ -173,20 +154,10 @@ public abstract class RenderedImage extends Canvas {
 
 	protected RenderedImage() {
 		resize( DEFAULT_SIZE );
-		setTheme( Theme.DARK );
-		getStyleClass().add( "xe-image" );
 		parentProperty().addListener( ( v, o, n ) -> { if( n != null ) fireRender(); } );
 	}
 
 	protected abstract void render();
-
-	public void setTheme( Theme theme ) {
-		this.theme = theme;
-	}
-
-	public Theme getTheme() {
-		return theme;
-	}
 
 	public static List<CssMetaData<? extends Styleable, ?>> getClassCssMetaData() {
 		return STYLEABLES;
@@ -307,91 +278,17 @@ public abstract class RenderedImage extends Canvas {
 		return font;
 	}
 
-	@SuppressWarnings( "unchecked" )
-	public <T extends RenderedImage> T resize( double size ) {
-		resize( size, size );
-		return (T)this;
-	}
-
-	@Override
-	public void resize( double width, double height ) {
-		setWidth( width );
-		setHeight( height );
-	}
-
 	@Override
 	public GraphicsContext getGraphicsContext2D() {
 		return graphicsContextOverride == null ? super.getGraphicsContext2D() : graphicsContextOverride;
 	}
 
-	public static void proof( RenderedImage image ) {
-		proof( image, null );
-	}
-
-	public static void proof( RenderedImage image, Paint fill ) {
-		proof( image, image.getWidth(), image.getHeight(), fill );
-	}
-
-	public static void proof( RenderedImage image, double width, double height ) {
-		proof( image, width, height, null );
-	}
-
-	public static void proof( RenderedImage image, double width, double height, Paint fill ) {
-		JavaFxStarter.startAndWait( 1000 );
-
-		Platform.runLater( () -> {
-			Stage stage = new Stage();
-			stage.setTitle( image.getClass().getSimpleName() );
-			stage.setScene( getImageScene( image, width, height, fill ) );
-			// The following line causes the stage not to show on Linux
-			//stage.setResizable( false );
-			stage.centerOnScreen();
-			stage.sizeToScene();
-			stage.show();
-		} );
-	}
-
-	public Image getImage() {
-		return getImage( getWidth(), getHeight() );
-	}
-
-	/**
-	 * Get an image of the rendered ProgramImage. A new image of size width x
-	 * height is created and the ProgramImage is rendered on the new image at the
-	 * ProgramImage's location.
-	 *
-	 * @param width The width of the new image, not the ProgramImage width
-	 * @param height The height of the new image, not the ProgramImage height
-	 * @return An image with the rendered image on it
-	 */
-	public Image getImage( double width, double height ) {
-		// Note that just returning the WritableImage that the snapshot() method
-		// creates did not work when used as a Stage icon. However, creating a new
-		// WritableImage from the snapshot image seemed to solve the problem. That
-		// is why a new Writable image is created instead of just returning the
-		// snapshot image.
-		WritableImage snapshot = getImageScene( this, width, height ).snapshot( new WritableImage( (int)width, (int)height ) );
-		return new WritableImage( snapshot.getPixelReader(), (int)snapshot.getWidth(), (int)snapshot.getHeight() );
-	}
-
-	@SuppressWarnings( "unchecked" )
-	public <T extends RenderedImage> T copy() {
-		RenderedImage copy = null;
-
-		try {
-			copy = getClass().getDeclaredConstructor().newInstance();
-			copy.strokePaintOverride = this.strokePaintOverride;
-			copy.strokeWidthOverride = this.strokeWidthOverride;
-			copy.getProperties().putAll( this.getProperties() );
-			copy.setHeight( getHeight() );
-			copy.setWidth( getWidth() );
-			copy.setStyle( getStyle() );
-			copy.setTheme( getTheme() );
-		} catch( Exception exception ) {
-			exception.printStackTrace();
-		}
-
-		return (T)copy;
+	@Override
+	public <T extends VectorImage> T copy() {
+		T copy = super.copy();
+		((RenderedImage)copy).strokePaintOverride = this.strokePaintOverride;
+		((RenderedImage)copy).strokeWidthOverride = this.strokeWidthOverride;
+		return copy;
 	}
 
 	/**
@@ -625,11 +522,6 @@ public abstract class RenderedImage extends Canvas {
 		return value / 32d;
 	}
 
-	void setAndApplyTheme( Theme theme ) {
-		setTheme( theme );
-		applyTheme();
-	}
-
 	private void setGraphicsContext2D( GraphicsContext context ) {
 		this.graphicsContextOverride = context;
 	}
@@ -667,44 +559,27 @@ public abstract class RenderedImage extends Canvas {
 		getGraphicsContext2D().restore();
 	}
 
-	private void applyTheme() {
-		String style = removeTheme();
-		Theme theme = this.theme == null ? Theme.DARK : this.theme;
-		setStyle( style == null ? theme.getStyle() : style + theme.getStyle() );
-	}
+	//	static void applyContainerStylesheets( RenderedImage image, Parent node ) {
+	//		// Add the default container stylesheet
+	//		node.getStylesheets().add( Stylesheet.VENZA );
+	//
+	//		// Add extra container style
+	//		String style = (String)image.getProperties().get( "container-style" );
+	//		if( style != null ) node.setStyle( style );
+	//	}
 
-	private String removeTheme() {
-		String style = getStyle();
-		for( Theme t : Theme.values() ) {
-			int index = style.indexOf( t.getStyle() );
-			if( index > -1 ) style = style.replace( t.getStyle(), "" );
-		}
-		setStyle( style );
-		return style;
-	}
+	//	private static Scene getImageScene( RenderedImage image, double imageWidth, double imageHeight ) {
+	//		return getImageScene( image, imageWidth, imageHeight, null );
+	//	}
 
-	static void applyContainerStylesheets( RenderedImage image, Parent node ) {
-		// Add the default container stylesheet
-		node.getStylesheets().add( STYLESHEET );
-
-		// Add extra container style
-		String style = (String)image.getProperties().get( "container-style" );
-		if( style != null ) node.setStyle( style );
-	}
-
-
-	private static Scene getImageScene( RenderedImage image, double imageWidth, double imageHeight ) {
-		return getImageScene( image, imageWidth, imageHeight, null );
-	}
-
-	private static Scene getImageScene( RenderedImage image, double imageWidth, double imageHeight, Paint fill ) {
-		image.applyTheme();
-		Pane pane = new Pane( image );
-		pane.setBackground( Background.EMPTY );
-		pane.setPrefSize( imageWidth, imageHeight );
-		applyContainerStylesheets( image, pane );
-		Scene scene = new Scene( pane );
-		scene.setFill( fill == null ? Color.TRANSPARENT : fill );
-		return scene;
-	}
+	//	private static Scene getImageScene( RenderedImage image, double imageWidth, double imageHeight, Paint fill ) {
+	//		image.applyTheme();
+	//		Pane pane = new Pane( image );
+	//		pane.setBackground( Background.EMPTY );
+	//		pane.setPrefSize( imageWidth, imageHeight );
+	//		applyContainerStylesheets( image, pane );
+	//		Scene scene = new Scene( pane );
+	//		scene.setFill( fill == null ? Color.TRANSPARENT : fill );
+	//		return scene;
+	//	}
 }
