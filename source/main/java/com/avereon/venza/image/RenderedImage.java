@@ -152,9 +152,7 @@ public abstract class RenderedImage extends VectorImage {
 		STYLEABLES = List.of( CSS_STROKE_WIDTH, CSS_STROKE_PAINT, CSS_PRIMARY_PAINT, CSS_SECONDARY_PAINT, CSS_FONT );
 	}
 
-	protected RenderedImage() {
-		resize( DEFAULT_SIZE );
-	}
+	protected RenderedImage() {}
 
 	protected abstract void render();
 

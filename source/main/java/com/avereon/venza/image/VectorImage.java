@@ -9,9 +9,9 @@ public abstract class VectorImage extends Canvas {
 
 	public static final double DEFAULT_SIZE = 256;
 
-	private double gridWidth;
+	private final double gridWidth;
 
-	private double gridHeight;
+	private final double gridHeight;
 
 	private Theme theme;
 
@@ -20,6 +20,7 @@ public abstract class VectorImage extends Canvas {
 	}
 
 	VectorImage( double gridWidth, double gridHeight ) {
+		resize( DEFAULT_SIZE );
 		this.gridWidth = gridWidth;
 		this.gridHeight = gridHeight;
 		setTheme( Theme.DARK );
