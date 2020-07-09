@@ -21,7 +21,9 @@ public class SvgIcon extends VectorIcon {
 
 	private List<PaintedPath> paths;
 
-	public SvgIcon() {}
+	public SvgIcon() {
+		this( DEFAULT_GRID, DEFAULT_GRID );
+	}
 
 	protected SvgIcon( double gridX, double gridY ) {
 		this( gridX, gridY, null );
