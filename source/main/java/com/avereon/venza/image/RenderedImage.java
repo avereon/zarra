@@ -12,7 +12,7 @@ import java.util.List;
 
 public abstract class RenderedImage extends VectorImage {
 
-	RenderedImage() {}
+	protected RenderedImage() {}
 
 	protected abstract void render();
 
