@@ -145,8 +145,4 @@ public class Proof {
 		return root;
 	}
 
-	//	public static void proof( VectorImage icon ) {
-	//
-	//	}
-
 }

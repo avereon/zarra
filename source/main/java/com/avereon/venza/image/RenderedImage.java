@@ -2,40 +2,21 @@ package com.avereon.venza.image;
 
 import com.avereon.venza.font.FontUtil;
 import javafx.geometry.VPos;
-import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
 import javafx.scene.paint.*;
 import javafx.scene.shape.StrokeLineCap;
 import javafx.scene.shape.StrokeLineJoin;
 import javafx.scene.text.*;
-import javafx.scene.transform.Affine;
-import javafx.scene.transform.Transform;
 
 import java.util.List;
 
 public abstract class RenderedImage extends VectorImage {
 
-	private GraphicsContext graphicsContextOverride;
-
-	private Transform baseTransform = new Affine();
-
-	protected RenderedImage() {}
+	protected RenderedImage() {
+		super(32,32);
+	}
 
 	protected abstract void render();
-
-	@Override
-	public GraphicsContext getGraphicsContext2D() {
-		return graphicsContextOverride == null ? super.getGraphicsContext2D() : graphicsContextOverride;
-	}
-
-	/**
-	 * Reset the transform back to the initial rendering transform. This
-	 * effectively clears any changes made by the {@link #move} and {@link #spin}
-	 * and {@link #zoom} methods.
-	 */
-	protected void reset() {
-		getGraphicsContext2D().setTransform( new Affine( baseTransform ) );
-	}
 
 	protected void move( double x, double y ) {
 		getGraphicsContext2D().translate( x, y );
@@ -215,35 +196,21 @@ public abstract class RenderedImage extends VectorImage {
 		getGraphicsContext2D().restore();
 	}
 
-	protected void render( RenderedImage image ) {
+	protected void render( VectorImage image ) {
 		image.setGraphicsContext2D( getGraphicsContext2D() );
 		image.setStrokePaint( getStrokePaint() );
 		image.setPrimaryPaint( getPrimaryPaint() );
 		image.setSecondaryPaint( getSecondaryPaint() );
-		image.render();
+		image.doRender();
 	}
 
 	protected void doRender() {
 		super.doRender();
-
-		// Start rendering by clearing the icon area
-		if( graphicsContextOverride == null ) {
-			getGraphicsContext2D().clearRect( 0, 0, 1, 1 );
-			getGraphicsContext2D().setTransform( new Affine() );
-			double size = Math.min( getWidth(), getHeight() );
-			baseTransform = Transform.scale( size, size );
-			reset();
-		}
-
 		render();
 	}
 
 	protected double g( double value ) {
-		return value / 32d;
-	}
-
-	private void setGraphicsContext2D( GraphicsContext context ) {
-		this.graphicsContextOverride = context;
+		return value;
 	}
 
 	private void renderText( String text, double x, double y, double textSize, double maxWidth, boolean draw ) {
@@ -279,27 +246,4 @@ public abstract class RenderedImage extends VectorImage {
 		getGraphicsContext2D().restore();
 	}
 
-	//	static void applyContainerStylesheets( RenderedImage image, Parent node ) {
-	//		// Add the default container stylesheet
-	//		node.getStylesheets().add( Stylesheet.VENZA );
-	//
-	//		// Add extra container style
-	//		String style = (String)image.getProperties().get( "container-style" );
-	//		if( style != null ) node.setStyle( style );
-	//	}
-
-	//	private static Scene getImageScene( RenderedImage image, double imageWidth, double imageHeight ) {
-	//		return getImageScene( image, imageWidth, imageHeight, null );
-	//	}
-
-	//	private static Scene getImageScene( RenderedImage image, double imageWidth, double imageHeight, Paint fill ) {
-	//		image.applyTheme();
-	//		Pane pane = new Pane( image );
-	//		pane.setBackground( Background.EMPTY );
-	//		pane.setPrefSize( imageWidth, imageHeight );
-	//		applyContainerStylesheets( image, pane );
-	//		Scene scene = new Scene( pane );
-	//		scene.setFill( fill == null ? Color.TRANSPARENT : fill );
-	//		return scene;
-	//	}
 }

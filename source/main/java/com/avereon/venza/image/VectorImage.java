@@ -5,6 +5,7 @@ import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.css.*;
 import javafx.scene.canvas.Canvas;
+import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
 import javafx.scene.image.WritableImage;
 import javafx.scene.paint.Color;
@@ -13,6 +14,8 @@ import javafx.scene.shape.FillRule;
 import javafx.scene.shape.StrokeLineCap;
 import javafx.scene.shape.StrokeLineJoin;
 import javafx.scene.text.Font;
+import javafx.scene.transform.Affine;
+import javafx.scene.transform.Transform;
 
 import java.util.List;
 
@@ -45,6 +48,10 @@ public abstract class VectorImage extends Canvas {
 
 	private static final Font DEFAULT_FONT = Font.getDefault();
 
+	private GraphicsContext graphicsContextOverride;
+
+	private Transform baseTransform = new Affine();
+
 	private DoubleProperty strokeWidth;
 
 	private Double strokeWidthOverride;
@@ -65,9 +72,9 @@ public abstract class VectorImage extends Canvas {
 
 	private Font fontOverride;
 
-	private final double gridWidth;
+	private double gridX;
 
-	private final double gridHeight;
+	private double gridY;
 
 	private Theme theme;
 
@@ -159,14 +166,13 @@ public abstract class VectorImage extends Canvas {
 		this( 1.0, 1.0 );
 	}
 
-	VectorImage( double gridWidth, double gridHeight ) {
-		this.gridWidth = gridWidth;
-		this.gridHeight = gridHeight;
+	VectorImage( double gridX, double gridY ) {
+		this.gridX = gridX;
+		this.gridY = gridY;
 		resize( DEFAULT_SIZE );
 		setTheme( Theme.DARK );
 		getStyleClass().add( "xe-image" );
 		if( this instanceof DefIcon ) DefIcon.asIcon( this );
-		parentProperty().addListener( ( v, o, n ) -> { if( n != null ) doRender(); } );
 	}
 
 	protected void doRender() {
@@ -174,9 +180,23 @@ public abstract class VectorImage extends Canvas {
 		getGraphicsContext2D().setLineCap( StrokeLineCap.ROUND );
 		getGraphicsContext2D().setLineJoin( StrokeLineJoin.ROUND );
 		getGraphicsContext2D().setFillRule( FillRule.EVEN_ODD );
-		getGraphicsContext2D().setLineWidth( getStrokeWidth() );
+		getGraphicsContext2D().setLineWidth( getStrokeWidth() * ((getGridX() + getGridY()) / 2) );
 		getGraphicsContext2D().setStroke( getStrokePaint() );
 		getGraphicsContext2D().setFill( getStrokePaint() );
+
+		// Start rendering by clearing the icon area
+		if( graphicsContextOverride == null ) {
+			baseTransform = Transform.scale( getWidth() / getGridX(), getHeight() / getGridY() );
+			getGraphicsContext2D().clearRect( 0, 0, getGridX(), getGridY() );
+			reset();
+		}
+	}
+
+	/**
+	 * Reset the transform back to the initial rendering transform.
+	 */
+	protected void reset() {
+		getGraphicsContext2D().setTransform( new Affine( baseTransform ) );
 	}
 
 	public static List<CssMetaData<? extends Styleable, ?>> getClassCssMetaData() {
@@ -298,12 +318,37 @@ public abstract class VectorImage extends Canvas {
 		return font;
 	}
 
+	@Override
+	public GraphicsContext getGraphicsContext2D() {
+		return graphicsContextOverride == null ? super.getGraphicsContext2D() : graphicsContextOverride;
+	}
+
+	void setGraphicsContext2D( GraphicsContext context ) {
+		this.graphicsContextOverride = context;
+	}
+
 	public void setTheme( Theme theme ) {
 		this.theme = theme;
 	}
 
 	public Theme getTheme() {
 		return theme;
+	}
+
+	public double getGridX() {
+		return gridX;
+	}
+
+	public void setGridX( double gridX ) {
+		this.gridX = gridX;
+	}
+
+	public double getGridY() {
+		return gridY;
+	}
+
+	public void setGridY( double gridY ) {
+		this.gridY = gridY;
 	}
 
 	public boolean isIcon() {
@@ -324,14 +369,6 @@ public abstract class VectorImage extends Canvas {
 	public void resize( double width, double height ) {
 		setWidth( width );
 		setHeight( height );
-	}
-
-	public double getScaleWidth() {
-		return getWidth() / gridWidth;
-	}
-
-	public double getScaleHeight() {
-		return getHeight() / gridHeight;
 	}
 
 	public Image getImage() {
@@ -363,13 +400,19 @@ public abstract class VectorImage extends Canvas {
 
 		try {
 			copy = getClass().getDeclaredConstructor().newInstance();
-			copy.getProperties().putAll( this.getProperties() );
-			copy.strokePaintOverride = this.strokePaintOverride;
-			copy.strokeWidthOverride = this.strokeWidthOverride;
+			copy.getStyleClass().clear();
+			copy.getStyleClass().addAll( this.getStyleClass() );
+			copy.setStyle( getStyle() );
 			copy.setHeight( getHeight() );
 			copy.setWidth( getWidth() );
-			copy.setStyle( getStyle() );
-			copy.setTheme( getTheme() );
+			copy.getProperties().putAll( this.getProperties() );
+			copy.strokeWidthOverride = this.strokeWidthOverride;
+			copy.strokePaintOverride = this.strokePaintOverride;
+			copy.primaryPaintOverride = this.primaryPaintOverride;
+			copy.secondaryPaintOverride = this.secondaryPaintOverride;
+			copy.gridX = this.gridX;
+			copy.gridY = this.gridY;
+			copy.theme = this.theme;
 		} catch( Exception exception ) {
 			exception.printStackTrace();
 		}
