@@ -168,8 +168,35 @@ public abstract class RenderedImage extends VectorImage {
 		drawImage( image, 0, 0 );
 	}
 
+	/**
+	 * Draw an image.
+	 * <p>
+	 * Note that x, y are relative to the grid. The width and height are set to
+	 * the grid width and height.
+	 * </p>
+	 *
+	 * @param image The image to render
+	 * @param x The position x
+	 * @param y The position x
+	 */
 	protected void drawImage( Image image, double x, double y ) {
-		getGraphicsContext2D().drawImage( image, x, y, 1, 1 );
+		drawImage( image, x, y, getGridX(), getGridY() );
+	}
+
+	/**
+	 * Draw an image.
+	 * <p>
+	 * Note that x, y, w and h are relative to the grid.
+	 * </p>
+	 *
+	 * @param image The image to render
+	 * @param x The position x
+	 * @param y The position x
+	 * @param w The width
+	 * @param h The height
+	 */
+	protected void drawImage( Image image, double x, double y, double w, double h ) {
+		getGraphicsContext2D().drawImage( image, x, y, w, h );
 	}
 
 	protected void clearRect( double x, double y, double w, double h ) {
