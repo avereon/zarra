@@ -14,6 +14,10 @@ public abstract class RenderedImage extends VectorImage {
 
 	protected RenderedImage() {}
 
+	protected RenderedImage( double gridX, double gridY ) {
+		super( gridX, gridY );
+	}
+
 	protected abstract void render();
 
 	protected void move( double x, double y ) {
@@ -195,10 +199,10 @@ public abstract class RenderedImage extends VectorImage {
 	}
 
 	protected void render( VectorImage image ) {
-		image.setGraphicsContext2D( getGraphicsContext2D() );
 		image.setStrokePaint( getStrokePaint() );
 		image.setPrimaryPaint( getPrimaryPaint() );
 		image.setSecondaryPaint( getSecondaryPaint() );
+		image.setGraphicsContext2D( getGraphicsContext2D() );
 		image.doRender();
 	}
 
