@@ -1,6 +1,6 @@
 package com.avereon.venza.image;
 
-public class VectorIcon extends VectorImage implements DefIcon {
+public class VectorIcon extends VectorImage implements IconTag {
 
 	VectorIcon() {
 		super();

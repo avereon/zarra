@@ -2,7 +2,7 @@ package com.avereon.venza.image;
 
 import javafx.scene.paint.Color;
 
-public interface DefIcon {
+public interface IconTag {
 
 	static void asIcon( VectorImage image ) {
 		image.getStyleClass().add( "xe-icon" );

@@ -2,7 +2,7 @@
  * Icons
  ******************************************************************************/
 .xe-image, .xe-icon {
-	-fx-stroke-width: 0.125; /* 4/32 */
+	-fx-stroke-width: 4;
 
 	-fx-stroke: ladder(
 		-fx-text-background-color,

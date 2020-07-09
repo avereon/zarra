@@ -12,9 +12,7 @@ import java.util.List;
 
 public abstract class RenderedImage extends VectorImage {
 
-	protected RenderedImage() {
-		super(32,32);
-	}
+	RenderedImage() {}
 
 	protected abstract void render();
 

@@ -25,7 +25,7 @@ public class Proof {
 	private static final Color FILL = Color.GRAY;
 
 	public static void proof( Canvas node ) {
-		if( node instanceof DefIcon ) {
+		if( node instanceof IconTag ) {
 			proof( node, null, null );
 		} else {
 			proof( node, node.getWidth(), node.getHeight(), null );

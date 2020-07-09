@@ -23,6 +23,8 @@ public abstract class VectorImage extends Canvas {
 
 	public static final double DEFAULT_SIZE = 256;
 
+	public static final double DEFAULT_GRID = 32;
+
 	private static final List<CssMetaData<? extends Styleable, ?>> STYLEABLES;
 
 	private static final CssMetaData<VectorImage, Number> CSS_STROKE_WIDTH;
@@ -35,7 +37,7 @@ public abstract class VectorImage extends Canvas {
 
 	private static final CssMetaData<VectorImage, Font> CSS_FONT;
 
-	private static final double DEFAULT_STROKE_WIDTH = 4.0 / 32.0;
+	private static final double DEFAULT_STROKE_WIDTH = 4.0;
 
 	// This is set to a bright color to reveal when style is not working right
 	private static final Paint DEFAULT_STROKE_PAINT = Color.MAGENTA;
@@ -163,7 +165,7 @@ public abstract class VectorImage extends Canvas {
 	}
 
 	VectorImage() {
-		this( 1.0, 1.0 );
+		this( DEFAULT_GRID, DEFAULT_GRID );
 	}
 
 	VectorImage( double gridX, double gridY ) {
@@ -172,7 +174,7 @@ public abstract class VectorImage extends Canvas {
 		resize( DEFAULT_SIZE );
 		setTheme( Theme.DARK );
 		getStyleClass().add( "xe-image" );
-		if( this instanceof DefIcon ) DefIcon.asIcon( this );
+		if( this instanceof IconTag ) IconTag.asIcon( this );
 	}
 
 	protected void doRender() {
@@ -180,13 +182,15 @@ public abstract class VectorImage extends Canvas {
 		getGraphicsContext2D().setLineCap( StrokeLineCap.ROUND );
 		getGraphicsContext2D().setLineJoin( StrokeLineJoin.ROUND );
 		getGraphicsContext2D().setFillRule( FillRule.EVEN_ODD );
-		getGraphicsContext2D().setLineWidth( getStrokeWidth() * ((getGridX() + getGridY()) / 2) );
+		getGraphicsContext2D().setLineWidth( getStrokeWidth() );
 		getGraphicsContext2D().setStroke( getStrokePaint() );
 		getGraphicsContext2D().setFill( getStrokePaint() );
 
 		// Start rendering by clearing the icon area
 		if( graphicsContextOverride == null ) {
-			baseTransform = Transform.scale( getWidth() / getGridX(), getHeight() / getGridY() );
+			double scaleX = getWidth() / getGridX();
+			double scaleY = getHeight() / getGridY();
+			baseTransform = Transform.scale( scaleX, scaleY );
 			getGraphicsContext2D().clearRect( 0, 0, getGridX(), getGridY() );
 			reset();
 		}
@@ -352,7 +356,7 @@ public abstract class VectorImage extends Canvas {
 	}
 
 	public boolean isIcon() {
-		return this instanceof DefIcon;
+		return this instanceof IconTag;
 	}
 
 	public double getSize() {
