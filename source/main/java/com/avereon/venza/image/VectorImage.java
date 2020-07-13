@@ -164,11 +164,11 @@ public abstract class VectorImage extends Canvas {
 		STYLEABLES = List.of( CSS_STROKE_WIDTH, CSS_STROKE_PAINT, CSS_PRIMARY_PAINT, CSS_SECONDARY_PAINT, CSS_FONT );
 	}
 
-	VectorImage() {
+	protected VectorImage() {
 		this( DEFAULT_GRID, DEFAULT_GRID );
 	}
 
-	VectorImage( double gridX, double gridY ) {
+	protected VectorImage( double gridX, double gridY ) {
 		this.gridX = gridX;
 		this.gridY = gridY;
 		resize( DEFAULT_SIZE );
@@ -337,6 +337,11 @@ public abstract class VectorImage extends Canvas {
 
 	public Theme getTheme() {
 		return theme;
+	}
+
+	public void regrid( double width, double height ) {
+		setGridX( width );
+		setGridY( height );
 	}
 
 	public double getGridX() {

@@ -35,6 +35,11 @@ public class SvgIcon extends VectorIcon {
 		add( svgPath );
 	}
 
+	public SvgIcon clear() {
+		paths.clear();
+		return this;
+	}
+
 	public SvgIcon add( String path ) {
 		return add( null, path );
 	}
@@ -60,7 +65,7 @@ public class SvgIcon extends VectorIcon {
 	 * @param r The circle radius
 	 * @return The SVG string for the circle
 	 */
-	protected String circle( double cx, double cy, double r ) {
+	public static String circle( double cx, double cy, double r ) {
 		return "M" + (cx + r) + "," + cy + " A" + r + "," + r + " 0 0 0 " + (cx - r) + "," + cy + " A" + r + "," + r + " 0 0 0 " + (cx + r) + "," + cy;
 	}
 
