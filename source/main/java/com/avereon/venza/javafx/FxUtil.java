@@ -9,6 +9,7 @@ import javafx.scene.layout.BackgroundPosition;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 public class FxUtil {
 
@@ -142,7 +143,7 @@ public class FxUtil {
 	public static void fxWait( long timeout ) throws InterruptedException {
 		WaitToken token = new WaitToken();
 		Platform.runLater( token );
-		token.fxWait( timeout );
+		token.waitFor( timeout, TimeUnit.MILLISECONDS );
 	}
 
 	private static class WaitToken implements Runnable {
@@ -154,10 +155,8 @@ public class FxUtil {
 			this.notifyAll();
 		}
 
-		public synchronized void fxWait( long timeout ) throws InterruptedException {
-			while( !released ) {
-				wait( timeout );
-			}
+		public synchronized void waitFor( long timeout, TimeUnit unit ) throws InterruptedException {
+			if( !released ) unit.timedWait( this, timeout );
 		}
 
 	}
