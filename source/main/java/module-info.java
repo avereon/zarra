@@ -3,6 +3,7 @@ module com.avereon.venza {
 	requires javafx.controls;
 	requires javafx.swing;
 	requires image4j;
+	requires org.hamcrest;
 
 	exports com.avereon.venza.color;
 	exports com.avereon.venza.event;
