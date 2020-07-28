@@ -1,4 +1,4 @@
-name: Avereon Venza Continuous
+name: Avereon Zerra Continuous
 
 on:
   push:
@@ -9,7 +9,7 @@ on:
       - stable
 
 env:
-  AVN_PRODUCT: "venza"
+  AVN_PRODUCT: "zerra"
   # The default release, should be overridden in config.sh
   AVN_RELEASE: "latest"
   # The default platform, should be overridden in the platform binaries jobs below

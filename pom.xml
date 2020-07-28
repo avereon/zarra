@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-				 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
 	<modelVersion>4.0.0</modelVersion>
 
@@ -12,11 +11,11 @@
 	</parent>
 
 	<groupId>com.avereon</groupId>
-	<artifactId>venza</artifactId>
+	<artifactId>zerra</artifactId>
 	<version>0.4-SNAPSHOT</version>
 	<packaging>jar</packaging>
 
-	<name>Venza</name>
+	<name>Zerra</name>
 	<description>Utility library</description>
 	<inceptionYear>2019</inceptionYear>
 
@@ -135,10 +134,10 @@
 				<configuration>
 					<argLine>
 						--add-opens=javafx.graphics/com.sun.javafx.application=ALL-UNNAMED
-						--add-opens=com.avereon.venza/com.avereon.venza.color=ALL-UNNAMED
-						--add-opens=com.avereon.venza/com.avereon.venza.font=ALL-UNNAMED
-						--add-opens=com.avereon.venza/com.avereon.venza.image=ALL-UNNAMED
-						--add-opens=com.avereon.venza/com.avereon.venza.javafx=ALL-UNNAMED
+						--add-opens=com.avereon.zerra/com.avereon.zerra.color=ALL-UNNAMED
+						--add-opens=com.avereon.zerra/com.avereon.zerra.font=ALL-UNNAMED
+						--add-opens=com.avereon.zerra/com.avereon.zerra.image=ALL-UNNAMED
+						--add-opens=com.avereon.zerra/com.avereon.zerra.javafx=ALL-UNNAMED
 					</argLine>
 				</configuration>
 			</plugin>
