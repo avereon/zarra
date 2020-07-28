@@ -1,5 +1,4 @@
 module com.avereon.venza {
-	requires transitive org.hamcrest;
 	requires com.avereon.zevra;
 	requires javafx.controls;
 	requires javafx.swing;
@@ -11,5 +10,4 @@ module com.avereon.venza {
 	exports com.avereon.venza.image;
 	exports com.avereon.venza.javafx;
 	exports com.avereon.venza.style;
-	exports com.avereon.venza.test;
 }
