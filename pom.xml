@@ -48,10 +48,16 @@
 		<image4j.version>0.7.2</image4j.version>
 
 		<!-- Test dependencies -->
-		<testfx.version>4.0.16-alpha</testfx.version>
+		<zarra.version>[0.4-SNAPSHOT,)</zarra.version>
 	</properties>
 
 	<dependencies>
+
+		<dependency>
+			<groupId>com.avereon</groupId>
+			<artifactId>zarra</artifactId>
+			<version>${zarra.version}</version>
+		</dependency>
 
 		<dependency>
 			<groupId>com.avereon</groupId>
@@ -86,37 +92,11 @@
 		</dependency>
 
 		<dependency>
-			<groupId>org.testfx</groupId>
-			<artifactId>testfx-core</artifactId>
-			<version>${testfx.version}</version>
-			<scope>test</scope>
-			<exclusions>
-				<!-- Exclude the openjfx libraries, they are already available -->
-				<exclusion>
-					<groupId>org.openjfx</groupId>
-					<artifactId>*</artifactId>
-				</exclusion>
-			</exclusions>
+			<groupId>com.avereon</groupId>
+			<artifactId>zarra</artifactId>
+			<version>${zarra.version}</version>
 		</dependency>
 
-		<dependency>
-			<groupId>org.testfx</groupId>
-			<artifactId>testfx-junit5</artifactId>
-			<version>${testfx.version}</version>
-			<scope>test</scope>
-			<exclusions>
-				<!-- Exclude the junit-jupiter-api, it is already available-->
-				<exclusion>
-					<groupId>org.junit.jupiter</groupId>
-					<artifactId>junit-jupiter-api</artifactId>
-				</exclusion>
-				<!-- Exclude the openjfx libraries, they are already available -->
-				<exclusion>
-					<groupId>org.openjfx</groupId>
-					<artifactId>*</artifactId>
-				</exclusion>
-			</exclusions>
-		</dependency>
 		<dependency>
 			<groupId>org.hamcrest</groupId>
 			<artifactId>hamcrest</artifactId>
