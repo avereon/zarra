@@ -5,10 +5,13 @@ import javafx.geometry.*;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.control.TreeItem;
+import javafx.scene.input.DragEvent;
+import javafx.scene.input.TransferMode;
 import javafx.scene.layout.BackgroundPosition;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 public class FxUtil {
@@ -192,6 +195,24 @@ public class FxUtil {
 		}
 
 		return parent;
+	}
+
+	public static void setTransferMode( DragEvent e ) {
+		setTransferMode( e, TransferMode.MOVE );
+	}
+
+	public static void setTransferMode( DragEvent e, TransferMode... defaultModes ) {
+		e.acceptTransferModes( TransferMode.COPY_OR_MOVE );
+	}
+
+	private static void setTransferModeWorkaround( DragEvent e, TransferMode... defaultModes ) {
+		// FIXME This does not work the same when the drag comes from an external application,
+		// including other JVMs, as it does internally. Very annoying.
+		Set<TransferMode> modes = e.getDragboard().getTransferModes();
+		System.out.println( "dtms=" + modes + " tm=" + e.getTransferMode() + " atm=" + e.getAcceptedTransferMode() );
+		if( modes.isEmpty() ) return;
+		TransferMode[] mode = modes.size() == 1 ? TransferMode.ANY : defaultModes;
+		e.acceptTransferModes( mode );
 	}
 
 }
