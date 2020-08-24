@@ -3,7 +3,7 @@ package com.avereon.zerra.image;
 import com.avereon.util.FileUtil;
 import com.avereon.util.TextUtil;
 import com.avereon.zerra.color.Colors;
-import com.avereon.zerra.javafx.FxUtil;
+import com.avereon.zerra.javafx.Fx;
 import javafx.application.Platform;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.scene.paint.Color;
@@ -100,11 +100,11 @@ public class VectorImageWriter {
 
 		Runnable createImage = () -> doCreateAwtImageFx( renderer, width, height, fill );
 		try {
-			Platform.runLater( createImage );
+			Fx.run( createImage );
 		} catch( IllegalStateException exception ) {
 			Platform.startup( createImage );
 		}
-		FxUtil.fxWaitWithInterrupt( 5000 );
+		Fx.waitForWithInterrupt( 5000 );
 		if( this.image == null ) throw new NullPointerException( "Image not created" );
 		return this.image;
 	}

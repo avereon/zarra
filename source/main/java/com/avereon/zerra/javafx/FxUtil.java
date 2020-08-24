@@ -12,7 +12,6 @@ import javafx.scene.layout.BackgroundPosition;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
-import java.util.concurrent.TimeUnit;
 
 public class FxUtil {
 
@@ -124,56 +123,6 @@ public class FxUtil {
 		if( !Platform.isFxApplicationThread() ) {
 			throw new IllegalStateException( "Not on FX application thread; currentThread = " + Thread.currentThread().getName() );
 		}
-	}
-
-	public static boolean isFxRunning() {
-		try {
-			Platform.runLater( () -> {} );
-			return true;
-		} catch( Throwable throwable ) {
-			return false;
-		}
-	}
-
-	public static void fxWait( long timeout ) {
-		try {
-			fxWaitWithInterrupt( timeout );
-		} catch( InterruptedException exception ) {
-			// Intentionally ignore exception
-		}
-	}
-
-	public static void fxWait( int count, long timeout ) {
-		for( int index = 0; index < count; index++ ) {
-			fxWait( timeout );
-		}
-	}
-
-	public static void fxWaitWithInterrupt( int count, long timeout ) throws InterruptedException {
-		for( int index = 0; index < count; index++ ) {
-			fxWaitWithInterrupt( timeout );
-		}
-	}
-
-	public static void fxWaitWithInterrupt( long timeout ) throws InterruptedException {
-		WaitToken token = new WaitToken();
-		Platform.runLater( token );
-		token.waitFor( timeout, TimeUnit.MILLISECONDS );
-	}
-
-	private static class WaitToken implements Runnable {
-
-		boolean released;
-
-		public synchronized void run() {
-			this.released = true;
-			this.notifyAll();
-		}
-
-		public synchronized void waitFor( long timeout, TimeUnit unit ) throws InterruptedException {
-			if( !released ) unit.timedWait( this, timeout );
-		}
-
 	}
 
 	/**
