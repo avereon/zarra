@@ -13,6 +13,14 @@ public class FxEventWatcher extends EventWatcher implements EventHandler<Event> 
 
 	private final Queue<Event> events = new ConcurrentLinkedQueue<>();
 
+	public FxEventWatcher() {
+		super();
+	}
+
+	public FxEventWatcher( long timeout ) {
+		super( timeout );
+	}
+
 	@Override
 	public synchronized void handle( Event event ) {
 		events.offer( event );
