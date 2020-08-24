@@ -104,7 +104,7 @@ public class VectorImageWriter {
 		} catch( IllegalStateException exception ) {
 			Platform.startup( createImage );
 		}
-		FxUtil.fxWait( 5000 );
+		FxUtil.fxWaitWithInterrupt( 5000 );
 		if( this.image == null ) throw new NullPointerException( "Image not created" );
 		return this.image;
 	}
