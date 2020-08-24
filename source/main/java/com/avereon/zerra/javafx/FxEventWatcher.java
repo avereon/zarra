@@ -1,5 +1,6 @@
 package com.avereon.zerra.javafx;
 
+import com.avereon.event.EventWatcher;
 import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.event.EventType;
@@ -8,11 +9,9 @@ import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.TimeoutException;
 
-public class FxEventWatcher implements EventHandler<Event> {
+public class FxEventWatcher extends EventWatcher implements EventHandler<Event> {
 
-	public static final long DEFAULT_WAIT_TIMEOUT = 5000;
-
-	private Queue<Event> events = new ConcurrentLinkedQueue<>();
+	private final Queue<Event> events = new ConcurrentLinkedQueue<>();
 
 	@Override
 	public synchronized void handle( Event event ) {
@@ -21,11 +20,11 @@ public class FxEventWatcher implements EventHandler<Event> {
 	}
 
 	public void waitForEvent( EventType<? extends Event> type ) throws InterruptedException, TimeoutException {
-		waitForEvent( type, DEFAULT_WAIT_TIMEOUT );
+		waitForEvent( type, getTimeout() );
 	}
 
 	public void waitForNextEvent( EventType<? extends Event> type ) throws InterruptedException, TimeoutException {
-		waitForNextEvent( type, DEFAULT_WAIT_TIMEOUT );
+		waitForNextEvent( type, getTimeout() );
 	}
 
 	/**
