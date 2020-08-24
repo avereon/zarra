@@ -143,6 +143,18 @@ public class FxUtil {
 		}
 	}
 
+	public static void fxWait( int count, long timeout ) {
+		for( int index = 0; index < count; index++ ) {
+			fxWait( timeout );
+		}
+	}
+
+	public static void fxWaitWithInterrupt( int count, long timeout ) throws InterruptedException {
+		for( int index = 0; index < count; index++ ) {
+			fxWaitWithInterrupt( timeout );
+		}
+	}
+
 	public static void fxWaitWithInterrupt( long timeout ) throws InterruptedException {
 		WaitToken token = new WaitToken();
 		Platform.runLater( token );
