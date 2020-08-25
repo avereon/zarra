@@ -112,7 +112,7 @@ public class SvgIcon extends VectorIcon {
 		) );
 	}
 
-	private class PaintedPath {
+	private static class PaintedPath {
 
 		private final Paint paint;
 
