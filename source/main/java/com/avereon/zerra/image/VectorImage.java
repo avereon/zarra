@@ -25,6 +25,8 @@ public abstract class VectorImage extends Canvas {
 
 	public static final double DEFAULT_GRID = 32;
 
+	public static final double DEFAULT_STROKE_WIDTH = 4.0;
+
 	private static final List<CssMetaData<? extends Styleable, ?>> STYLEABLES;
 
 	private static final CssMetaData<VectorImage, Number> CSS_STROKE_WIDTH;
@@ -36,8 +38,6 @@ public abstract class VectorImage extends Canvas {
 	private static final CssMetaData<VectorImage, Paint> CSS_SECONDARY_PAINT;
 
 	private static final CssMetaData<VectorImage, Font> CSS_FONT;
-
-	private static final double DEFAULT_STROKE_WIDTH = 4.0;
 
 	// This is set to a bright color to reveal when style is not working right
 	private static final Paint DEFAULT_STROKE_PAINT = Color.MAGENTA;

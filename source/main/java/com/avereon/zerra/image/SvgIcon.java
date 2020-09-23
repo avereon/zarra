@@ -2,6 +2,8 @@ package com.avereon.zerra.image;
 
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Paint;
+import javafx.scene.shape.StrokeLineCap;
+import javafx.scene.shape.StrokeLineJoin;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,7 +21,7 @@ public class SvgIcon extends VectorIcon {
 	 */
 	protected static final Paint SECONDARY = Paint.valueOf( "#000000" );
 
-	private List<PaintedPath> paths;
+	private List<RenderAction> actions;
 
 	public SvgIcon() {
 		this( DEFAULT_GRID, DEFAULT_GRID );
@@ -31,28 +33,52 @@ public class SvgIcon extends VectorIcon {
 
 	protected SvgIcon( double gridX, double gridY, String svgPath ) {
 		super( gridX, gridY );
-		paths = new CopyOnWriteArrayList<>();
-		add( svgPath );
+		actions = new CopyOnWriteArrayList<>();
+		fill( svgPath );
 	}
 
 	public SvgIcon clear() {
-		paths.clear();
+		actions.clear();
 		return this;
 	}
 
-	public SvgIcon add( String path ) {
-		return add( null, path );
+	public SvgIcon fill( String path ) {
+		return fill( path, null );
 	}
 
 	/**
-	 * Add a paint and SVG path entry to the icon.
+	 * Add a filled SVG path entry to the icon.
 	 *
-	 * @param paint The paint to use to fill the path
 	 * @param path The SVG path to fill
+	 * @param paint The paint to use to fill the path
 	 * @return This {@link SvgIcon}
 	 */
-	public SvgIcon add( Paint paint, String path ) {
-		if( path != null ) paths.add( new PaintedPath( paint, path ) );
+	public SvgIcon fill( String path, Paint paint ) {
+		if( path != null ) actions.add( new FilledPath( path, paint ) );
+		return this;
+	}
+
+	public SvgIcon draw( String path ) {
+		return draw( path, null );
+	}
+
+	/**
+	 * Add a stroked SVG path entry to the icon.
+	 *
+	 * @param path The SVG path to fill
+	 * @param paint The paint to use to fill the path
+	 * @return This {@link SvgIcon}
+	 */
+	public SvgIcon draw( String path, Paint paint ) {
+		return draw( path, paint, DEFAULT_STROKE_WIDTH, StrokeLineCap.ROUND, StrokeLineJoin.ROUND, 0 );
+	}
+
+	public SvgIcon draw( String path, Paint paint, double width, StrokeLineCap cap, StrokeLineJoin join ) {
+		return draw( path, paint, width, cap, join, 0 );
+	}
+
+	public SvgIcon draw( String path, Paint paint, double width, StrokeLineCap cap, StrokeLineJoin join, double dashOffset, double... dashes ) {
+		if( path != null ) actions.add( new StrokedPath( path, paint, width, cap, join, dashOffset, dashes ) );
 		return this;
 	}
 
@@ -94,14 +120,14 @@ public class SvgIcon extends VectorIcon {
 	@Override
 	public <T extends VectorImage> T copy() {
 		T copy = super.copy();
-		((SvgIcon)copy).paths = new ArrayList<>( this.paths );
+		((SvgIcon)copy).actions = new ArrayList<>( this.actions );
 		return copy;
 	}
 
 	@Override
 	protected void doRender() {
 		super.doRender();
-		for( PaintedPath path : paths ) path.render( this );
+		for( RenderAction action : actions ) action.render( this );
 	}
 
 	public static void main( String[] commands ) {
@@ -112,23 +138,29 @@ public class SvgIcon extends VectorIcon {
 		) );
 	}
 
-	private static class PaintedPath {
+	private interface RenderAction {
 
-		private final Paint paint;
+		void render( SvgIcon icon );
+
+	}
+
+	private static class FilledPath implements RenderAction {
 
 		private final String path;
 
-		public PaintedPath( Paint paint, String path ) {
-			this.paint = paint;
-			this.path = path;
-		}
+		private final Paint paint;
 
-		public Paint getPaint() {
-			return paint;
+		public FilledPath( String path, Paint paint ) {
+			this.path = path;
+			this.paint = paint;
 		}
 
 		public String getPath() {
 			return path;
+		}
+
+		public Paint getPaint() {
+			return paint;
 		}
 
 		public void render( SvgIcon icon ) {
@@ -145,6 +177,63 @@ public class SvgIcon extends VectorIcon {
 			context.beginPath();
 			context.appendSVGPath( path );
 			context.fill();
+		}
+
+	}
+
+	private static class StrokedPath implements RenderAction {
+
+		private final String path;
+
+		private final Paint paint;
+
+		private final double width;
+
+		private final StrokeLineCap cap;
+
+		private final StrokeLineJoin join;
+
+		private final double dashOffset;
+
+		private final double[] dashes;
+
+		public StrokedPath( String path, Paint paint, double width, StrokeLineCap cap, StrokeLineJoin join, double dashOffset, double... dashes ) {
+			this.path = path;
+			this.paint = paint;
+			this.width = width;
+			this.cap = cap;
+			this.join = join;
+			this.dashOffset = dashOffset;
+			this.dashes = dashes;
+		}
+
+		public Paint getPaint() {
+			return paint;
+		}
+
+		public String getPath() {
+			return path;
+		}
+
+		public void render( SvgIcon icon ) {
+			GraphicsContext context = icon.getGraphicsContext2D();
+			if( paint == null ) {
+				context.setStroke( icon.getStrokePaint() );
+			} else if( paint == PRIMARY ) {
+				context.setStroke( icon.getPrimaryPaint() );
+			} else if( paint == SECONDARY ) {
+				context.setStroke( icon.getSecondaryPaint() );
+			} else {
+				context.setStroke( paint );
+			}
+			context.setLineWidth( width );
+			context.setLineCap( cap );
+			context.setLineJoin( join );
+			context.setLineDashOffset( dashOffset );
+			context.setLineDashes( dashes );
+			context.beginPath();
+			context.appendSVGPath( path );
+			context.stroke();
 		}
 
 	}
