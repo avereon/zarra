@@ -22,7 +22,7 @@ public class Fx {
 
 	public static void waitFor( long timeout ) {
 		try {
-			waitForWithInterrupt( timeout );
+			doWaitForWithInterrupt( timeout );
 		} catch( InterruptedException exception ) {
 			// Intentionally ignore exception
 		}
@@ -34,13 +34,17 @@ public class Fx {
 		}
 	}
 
+	public static void waitForWithInterrupt( long timeout ) throws InterruptedException {
+		waitForWithInterrupt( 2, timeout );
+	}
+
 	public static void waitForWithInterrupt( int count, long timeout ) throws InterruptedException {
 		for( int index = 0; index < count; index++ ) {
-			waitForWithInterrupt( timeout );
+			doWaitForWithInterrupt( timeout );
 		}
 	}
 
-	public static void waitForWithInterrupt( long timeout ) throws InterruptedException {
+	public static void doWaitForWithInterrupt( long timeout ) throws InterruptedException {
 		WaitToken token = new WaitToken();
 		Fx.run( token );
 		token.waitFor( timeout, TimeUnit.MILLISECONDS );
