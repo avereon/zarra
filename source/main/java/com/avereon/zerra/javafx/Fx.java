@@ -20,6 +20,12 @@ public class Fx {
 		}
 	}
 
+	public static void assertFxThread() {
+		if( !Platform.isFxApplicationThread() ) {
+			throw new IllegalStateException( "Not on FX application thread; currentThread = " + Thread.currentThread().getName() );
+		}
+	}
+
 	public static void waitFor( long timeout ) {
 		try {
 			doWaitForWithInterrupt( timeout );
@@ -44,7 +50,7 @@ public class Fx {
 		}
 	}
 
-	public static void doWaitForWithInterrupt( long timeout ) throws InterruptedException {
+	private static void doWaitForWithInterrupt( long timeout ) throws InterruptedException {
 		WaitToken token = new WaitToken();
 		Fx.run( token );
 		token.waitFor( timeout, TimeUnit.MILLISECONDS );

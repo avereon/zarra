@@ -1,6 +1,5 @@
 package com.avereon.zerra.javafx;
 
-import javafx.application.Platform;
 import javafx.geometry.*;
 import javafx.scene.Node;
 import javafx.scene.Parent;
@@ -117,12 +116,6 @@ public class FxUtil {
 		item.getChildren().forEach( ( child ) -> list.addAll( flatTree( child, true ) ) );
 
 		return list;
-	}
-
-	public static void assertFxThread() {
-		if( !Platform.isFxApplicationThread() ) {
-			throw new IllegalStateException( "Not on FX application thread; currentThread = " + Thread.currentThread().getName() );
-		}
 	}
 
 	/**
