@@ -70,7 +70,15 @@ public class SvgIcon extends VectorIcon {
 	 * @return This {@link SvgIcon}
 	 */
 	public SvgIcon draw( String path, Paint paint ) {
-		return draw( path, paint, DEFAULT_STROKE_WIDTH, StrokeLineCap.ROUND, StrokeLineJoin.ROUND, 0 );
+		return draw( path, paint, DEFAULT_STROKE_WIDTH );
+	}
+
+	public SvgIcon draw( String path, double width ) {
+		return draw( path, null, width, DEFAULT_STROKE_CAP, DEFAULT_STROKE_JOIN, 0 );
+	}
+
+	public SvgIcon draw( String path, Paint paint, double width ) {
+		return draw( path, paint, width, DEFAULT_STROKE_CAP, DEFAULT_STROKE_JOIN, 0 );
 	}
 
 	public SvgIcon draw( String path, Paint paint, double width, StrokeLineCap cap, StrokeLineJoin join ) {

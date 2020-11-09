@@ -27,6 +27,10 @@ public abstract class VectorImage extends Canvas {
 
 	public static final double DEFAULT_STROKE_WIDTH = 4.0;
 
+	public static final StrokeLineCap DEFAULT_STROKE_CAP = StrokeLineCap.ROUND;
+
+	public static final StrokeLineJoin DEFAULT_STROKE_JOIN = StrokeLineJoin.ROUND;
+
 	private static final List<CssMetaData<? extends Styleable, ?>> STYLEABLES;
 
 	private static final CssMetaData<VectorImage, Number> CSS_STROKE_WIDTH;
