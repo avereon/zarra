@@ -5,10 +5,12 @@ import javafx.scene.paint.Color;
 public class Colors {
 
 	public static Color web( String string ) {
+		if( string == null ) return null;
 		return Color.web( string );
 	}
 
 	public static String web( Color color ) {
+		if( color == null ) return null;
 		int r = (int)Math.round( color.getRed() * 255.0 );
 		int g = (int)Math.round( color.getGreen() * 255.0 );
 		int b = (int)Math.round( color.getBlue() * 255.0 );

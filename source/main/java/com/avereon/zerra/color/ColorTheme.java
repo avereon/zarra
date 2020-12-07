@@ -4,9 +4,9 @@ import javafx.scene.paint.Color;
 
 public class ColorTheme {
 
-	private Color primary;
+	private final Color primary;
 
-	private Color complement;
+	private final Color complement;
 
 	public ColorTheme( Color color ) {
 		this.primary = color;
