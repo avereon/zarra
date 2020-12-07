@@ -17,7 +17,7 @@ public class Paints {
 
 	public static String toString( Color color ) {
 		if( color == null ) return null;
-		return Colors.web( color );
+		return Colors.toString( color );
 	}
 
 	public static String toString( LinearGradient gradient ) {
@@ -34,11 +34,11 @@ public class Paints {
 		// # - color
 		// [] - linear gradient
 		// () - radial gradient
-		if( string.startsWith( "#" ) ) return Colors.web( string );
-		if( string.startsWith( "[" ) ) return Colors.web( string );
-		if( string.startsWith( "(" ) ) return Colors.web( string );
+		if( string.startsWith( "#" ) ) return Colors.parse( string );
+		if( string.startsWith( "[" ) ) return Colors.parse( string );
+		if( string.startsWith( "(" ) ) return Colors.parse( string );
 
-		return Colors.web( string );
+		return Colors.parse( string );
 	}
 
 }

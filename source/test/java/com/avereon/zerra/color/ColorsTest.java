@@ -10,21 +10,21 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 class ColorsTest {
 
 	@Test
-	void testWebWithColor() {
-		assertThat( Colors.web( Color.TRANSPARENT ), is( "#00000000"));
-		assertThat( Colors.web( Color.BLACK ), is( "#000000ff"));
-		assertThat( Colors.web( Color.WHITE ), is( "#ffffffff"));
-		assertThat( Colors.web( Color.GRAY ), is( "#808080ff"));
-		assertNull( Colors.web( (Color)null ) );
+	void testToString() {
+		assertThat( Colors.toString( Color.TRANSPARENT ), is( "#00000000"));
+		assertThat( Colors.toString( Color.BLACK ), is( "#000000ff"));
+		assertThat( Colors.toString( Color.WHITE ), is( "#ffffffff"));
+		assertThat( Colors.toString( Color.GRAY ), is( "#808080ff"));
+		assertNull( Colors.toString( null ) );
 	}
 
 	@Test
-	void testWebWithString() {
-		assertThat( Colors.web( "#00000000"), is( Color.TRANSPARENT ));
-		assertThat( Colors.web( "#000000ff"), is( Color.BLACK ));
-		assertThat( Colors.web( "#ffffffff"), is( Color.WHITE ));
-		assertThat( Colors.web( "#808080ff"), is( Color.GRAY ));
-		assertNull( Colors.web( (String)null ) );
+	void testParse() {
+		assertThat( Colors.parse( "#00000000"), is( Color.TRANSPARENT ));
+		assertThat( Colors.parse( "#000000ff"), is( Color.BLACK ));
+		assertThat( Colors.parse( "#ffffffff"), is( Color.WHITE ));
+		assertThat( Colors.parse( "#808080ff"), is( Color.GRAY ));
+		assertNull( Colors.parse( null ) );
 	}
 
 }

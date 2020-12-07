@@ -61,7 +61,7 @@ public class Proof {
 		Pane darkPane = proofPane( icon.copy(), Theme.DARK, darkFill == null ? Color.web( "#404040" ) : darkFill );
 		Pane lightPane = proofPane( icon.copy(), Theme.LIGHT, lightFill == null ? Color.web( "#C0C0C0" ) : lightFill );
 		HBox box = new HBox( 5, darkPane, lightPane );
-		box.setStyle( "-fx-background-color: " + Colors.web( FILL ) + ";" );
+		box.setStyle( "-fx-background-color: " + Colors.toString( FILL ) + ";" );
 		Scene scene = new Scene( box );
 
 		List<Image> stageIcons = new ArrayList<>();
@@ -87,7 +87,7 @@ public class Proof {
 		icon.setAndApplyTheme( theme );
 
 		String style = "";
-		if( fill != null ) style += "-fx-background-color: " + Colors.web( fill ) + ";";
+		if( fill != null ) style += "-fx-background-color: " + Colors.toString( fill ) + ";";
 		icon.getProperties().put( "container-style", style );
 
 		ImageView imageView16 = new ImageView( Images.resample( icon.copy().resize( 16 ).getImage(), 16 ) );
@@ -141,7 +141,7 @@ public class Proof {
 
 		StackPane root = new StackPane( pane );
 		root.getStyleClass().add( "root" );
-		root.setStyle( "-fx-background-color: " + Colors.web( FILL ) + ";" );
+		root.setStyle( "-fx-background-color: " + Colors.toString( FILL ) + ";" );
 		return root;
 	}
 

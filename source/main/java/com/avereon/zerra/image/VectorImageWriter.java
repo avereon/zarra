@@ -95,7 +95,7 @@ public class VectorImageWriter {
 
 	private BufferedImage createAwtImage( VectorImage renderer, double width, double height, Color fill ) throws Exception {
 		String style = "";
-		if( fill != null ) style += "-fx-background-color: " + Colors.web( fill ) + ";";
+		if( fill != null ) style += "-fx-background-color: " + Colors.toString( fill ) + ";";
 		renderer.getProperties().put( "container-style", style );
 
 		Runnable createImage = () -> doCreateAwtImageFx( renderer, width, height, fill );
