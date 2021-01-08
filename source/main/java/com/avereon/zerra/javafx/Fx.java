@@ -20,12 +20,6 @@ public class Fx {
 		}
 	}
 
-	public static void assertFxThread() {
-		if( !Platform.isFxApplicationThread() ) {
-			throw new IllegalStateException( "Not on FX application thread; currentThread = " + Thread.currentThread().getName() );
-		}
-	}
-
 	public static void waitFor( long timeout ) {
 		try {
 			doWaitForWithInterrupt( timeout );
