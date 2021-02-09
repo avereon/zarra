@@ -20,6 +20,10 @@ public class Fx {
 		}
 	}
 
+	public static boolean isFxThread() {
+		return Platform.isFxApplicationThread();
+	}
+
 	public static void waitFor( long timeout ) {
 		try {
 			doWaitForWithInterrupt( timeout );
