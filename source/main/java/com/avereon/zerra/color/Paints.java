@@ -41,4 +41,12 @@ public class Paints {
 		return Colors.parse( string );
 	}
 
+	public static Paint parseWithNullOnException( String string ) {
+		try {
+			return parse( string );
+		} catch( IllegalArgumentException exception ) {
+			return null;
+		}
+	}
+
 }
