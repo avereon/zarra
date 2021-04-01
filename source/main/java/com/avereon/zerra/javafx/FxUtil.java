@@ -97,12 +97,22 @@ public class FxUtil {
 		return result;
 	}
 
-	public static Insets add( Insets a, Insets b ) {
-		return new Insets( a.getTop() + b.getTop(), a.getRight() + b.getRight(), a.getBottom() + b.getBottom(), a.getLeft() + b.getLeft() );
+	public static Bounds merge( Bounds a, Bounds b ) {
+		double minX = Math.min( a.getMinX(), b.getMinX() );
+		double minY = Math.min( a.getMinY(), b.getMinY() );
+		double minZ = Math.min( a.getMinZ(), b.getMinZ() );
+		double maxX = Math.max( a.getMaxX(), b.getMaxX() );
+		double maxY = Math.max( a.getMaxY(), b.getMaxY() );
+		double maxZ = Math.max( a.getMaxZ(), b.getMaxZ() );
+		return new BoundingBox( minX, minY, minZ, maxX - minX, maxY - minY, maxZ - minZ );
 	}
 
 	public static Bounds add( Bounds a, Insets b ) {
 		return new BoundingBox( a.getMinX(), a.getMinY(), a.getWidth() + b.getLeft() + b.getRight(), a.getHeight() + b.getTop() + b.getBottom() );
+	}
+
+	public static Insets add( Insets a, Insets b ) {
+		return new Insets( a.getTop() + b.getTop(), a.getRight() + b.getRight(), a.getBottom() + b.getBottom(), a.getLeft() + b.getLeft() );
 	}
 
 	public static <T> List<TreeItem<T>> flatTree( TreeItem<T> item ) {
