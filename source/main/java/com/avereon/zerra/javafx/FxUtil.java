@@ -98,6 +98,8 @@ public class FxUtil {
 	}
 
 	public static Bounds merge( Bounds a, Bounds b ) {
+		if( a == null ) return b;
+		if( b == null ) return a;
 		double minX = Math.min( a.getMinX(), b.getMinX() );
 		double minY = Math.min( a.getMinY(), b.getMinY() );
 		double minZ = Math.min( a.getMinZ(), b.getMinZ() );
