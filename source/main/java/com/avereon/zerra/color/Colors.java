@@ -22,8 +22,14 @@ public class Colors {
 		return new Color( color.getRed(), color.getGreen(), color.getBlue(), 1.0 );
 	}
 
+	public static Color translucent( Color color, double factor ) {
+		return new Color( color.getRed(), color.getGreen(), color.getBlue(), factor );
+	}
+
 	public static Color mix( Color color, Color mixer, double factor ) {
 		if( color == null || mixer == null ) return null;
+		if( Color.TRANSPARENT.equals( mixer ) ) return translucent( color, factor );
+
 		factor = clamp( factor );
 		double mixFactor = 1 - factor;
 
@@ -36,11 +42,6 @@ public class Colors {
 		double mixerG = mixer.getGreen() * factor;
 		double mixerB = mixer.getBlue() * factor;
 		double mixerA = mixer.getOpacity() * factor;
-
-		double diffR = mixerR - colorR;
-		double diffG = mixerG - colorG;
-		double diffB = mixerB - colorB;
-		double diffA = mixerA - colorA;
 
 		double r = colorR + mixerR;
 		double g = colorG + mixerG;
