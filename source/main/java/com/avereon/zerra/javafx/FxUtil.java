@@ -3,14 +3,13 @@ package com.avereon.zerra.javafx;
 import javafx.geometry.*;
 import javafx.scene.Node;
 import javafx.scene.Parent;
+import javafx.scene.control.MenuItem;
 import javafx.scene.control.TreeItem;
 import javafx.scene.input.DragEvent;
 import javafx.scene.input.TransferMode;
 import javafx.scene.layout.BackgroundPosition;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 public class FxUtil {
 
@@ -161,6 +160,14 @@ public class FxUtil {
 		}
 
 		return parent;
+	}
+
+	public static <T extends Node> T findById( Collection<? extends T> nodes, String id ) {
+		return nodes.stream().filter( n -> Objects.equals(n.getId(), id)).findFirst().orElse( null );
+	}
+
+	public static <T extends MenuItem> T findMenuItemById( Collection<? extends T> nodes, String id ) {
+		return nodes.stream().filter( n -> Objects.equals(n.getId(), id)).findFirst().orElse( null );
 	}
 
 	public static void setTransferMode( DragEvent e ) {
