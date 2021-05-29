@@ -7,12 +7,12 @@
 	<parent>
 		<groupId>com.avereon.pom</groupId>
 		<artifactId>jar</artifactId>
-		<version>3.1.0</version>
+		<version>3.2.0-SNAPSHOT</version>
 	</parent>
 
 	<groupId>com.avereon</groupId>
 	<artifactId>zerra</artifactId>
-	<version>0.4</version>
+	<version>0.5-SNAPSHOT</version>
 	<packaging>jar</packaging>
 
 	<name>Zerra</name>
@@ -47,12 +47,12 @@
 
 		<!-- Version numbers updated 02 Jul 2020 -->
 		<!-- Runtime dependencies -->
-		<zevra.version>[0.5,)</zevra.version>
+		<zevra.version>[0.6-SNAPSHOT,)</zevra.version>
 		<openjfx.version>14.0.1</openjfx.version>
 		<image4j.version>0.7.2</image4j.version>
 
 		<!-- Test dependencies -->
-		<zarra.version>[0.4,)</zarra.version>
+		<zarra.version>[0.5-SNAPSHOT,)</zarra.version>
 	</properties>
 
 	<dependencies>
