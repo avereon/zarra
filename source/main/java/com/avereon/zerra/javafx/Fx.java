@@ -7,7 +7,11 @@ import java.util.concurrent.TimeUnit;
 public class Fx {
 
 	public static void startup() {
-		Platform.startup( () -> {} );
+		try {
+			Fx.run( () -> {} );
+		} catch( IllegalStateException exception ) {
+			Platform.startup( () -> {} );
+		}
 	}
 
 	// Convenience method to call Platform.runLater
