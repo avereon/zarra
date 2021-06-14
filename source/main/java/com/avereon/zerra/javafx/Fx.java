@@ -6,6 +6,10 @@ import java.util.concurrent.TimeUnit;
 
 public class Fx {
 
+	public static void startup() {
+		Platform.startup( () -> {} );
+	}
+
 	// Convenience method to call Platform.runLater
 	public static void run( Runnable runnable ) {
 		Platform.runLater( runnable );

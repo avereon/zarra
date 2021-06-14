@@ -14,10 +14,6 @@ import java.util.*;
 
 public class FxUtil {
 
-	public static void startup() {
-		Platform.startup( () -> {} );
-	}
-
 	public static Pos parseAlign( String align ) {
 		switch( align ) {
 			case "northwest":
