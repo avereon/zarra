@@ -32,6 +32,10 @@ public class Fx {
 		return Platform.isFxApplicationThread();
 	}
 
+	public static void checkFxThread() {
+		if( !isFxThread() ) throw new IllegalStateException( "Not on FX thread; thread=" + Thread.currentThread().getName() );
+	}
+
 	public static void waitFor( long timeout ) {
 		try {
 			doWaitForWithInterrupt( timeout );
