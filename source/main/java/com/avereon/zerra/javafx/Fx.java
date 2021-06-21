@@ -2,7 +2,9 @@ package com.avereon.zerra.javafx;
 
 import javafx.application.Platform;
 
+import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 public class Fx {
 
@@ -37,47 +39,31 @@ public class Fx {
 	}
 
 	public static void waitFor( long timeout ) {
+		waitFor( timeout, TimeUnit.MILLISECONDS );
+	}
+
+	public static void waitFor( long count, TimeUnit unit ) {
 		try {
-			doWaitForWithInterrupt( timeout );
-		} catch( InterruptedException exception ) {
+			doWaitForWithExceptions( count, unit );
+		} catch( TimeoutException | InterruptedException exception ) {
 			// Intentionally ignore exception
 		}
 	}
 
-	public static void waitFor( int count, long timeout ) {
+	public static void waitForWithExceptions( long timeout ) throws TimeoutException, InterruptedException {
+		waitForWithExceptions( timeout, TimeUnit.MILLISECONDS );
+	}
+
+	public static void waitForWithExceptions( long count, TimeUnit unit ) throws TimeoutException, InterruptedException {
 		for( int index = 0; index < count; index++ ) {
-			waitFor( timeout );
+			doWaitForWithExceptions( count, unit );
 		}
 	}
 
-	public static void waitForWithInterrupt( long timeout ) throws InterruptedException {
-		waitForWithInterrupt( 2, timeout );
+	private static void doWaitForWithExceptions( long count, TimeUnit unit ) throws TimeoutException, InterruptedException {
+		Semaphore semaphore = new Semaphore( 0 );
+		Fx.run( semaphore::release );
+		if( !semaphore.tryAcquire( count, unit ) ) throw new TimeoutException( "Timeout waiting for FX" );
 	}
 
-	public static void waitForWithInterrupt( int count, long timeout ) throws InterruptedException {
-		for( int index = 0; index < count; index++ ) {
-			doWaitForWithInterrupt( timeout );
-		}
-	}
-
-	private static void doWaitForWithInterrupt( long timeout ) throws InterruptedException {
-		WaitToken token = new WaitToken();
-		Fx.run( token );
-		token.waitFor( timeout, TimeUnit.MILLISECONDS );
-	}
-
-	private static class WaitToken implements Runnable {
-
-		boolean released;
-
-		public synchronized void run() {
-			this.released = true;
-			this.notifyAll();
-		}
-
-		public synchronized void waitFor( long timeout, TimeUnit unit ) throws InterruptedException {
-			if( !released ) unit.timedWait( this, timeout );
-		}
-
-	}
 }
