@@ -6,9 +6,7 @@ import com.avereon.util.JavaUtil;
 
 public class FxEventWrapper extends Event {
 
-	public static final EventType<FxEventWrapper> FX_WRAPPER = new EventType<>( Event.ANY, "FX_WRAPPER" );
-
-	private javafx.event.Event fxEvent;
+	private final javafx.event.Event fxEvent;
 
 	public FxEventWrapper( javafx.event.Event fxEvent ) {
 		super( fxEvent.getSource(), Event.ANY );

@@ -1,12 +1,10 @@
 package com.avereon.zerra.event;
 
-import com.avereon.util.Log;
 import com.avereon.zerra.javafx.Fx;
 import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.event.EventType;
 
-import java.lang.System.Logger;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Queue;
@@ -14,8 +12,6 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.TimeoutException;
 
 public class FxEventWatcher implements EventHandler<Event> {
-
-	private static final Logger log = Log.get();
 
 	private static final long DEFAULT_WAIT_TIMEOUT = 2500;
 

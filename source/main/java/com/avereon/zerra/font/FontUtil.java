@@ -1,23 +1,20 @@
 package com.avereon.zerra.font;
 
-import com.avereon.util.Log;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontPosture;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
+import lombok.extern.flogger.Flogger;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static java.lang.System.Logger.Level.WARNING;
-
+@Flogger
 public final class FontUtil {
-
-	private static final System.Logger log = Log.get();
 
 	private static List<String> monoFamilyList;
 
-	private static String SEPARATOR = "|";
+	private static final String SEPARATOR = "|";
 
 	public static String encode( Font font ) {
 		if( font == null ) return null;
@@ -57,7 +54,7 @@ public final class FontUtil {
 		try {
 			size = Double.parseDouble( sizeString );
 		} catch( NumberFormatException exception ) {
-			log.log( WARNING, "Error parsing font size", exception );
+			log.atWarning().withCause( exception).log( "Error parsing font size" );
 		}
 
 		return Font.font( family, getFontWeight( style ), getFontPosture( style ), size );

@@ -1,4 +1,5 @@
 module com.avereon.zerra {
+	requires static lombok;
 	requires com.avereon.zevra;
 	requires javafx.controls;
 	requires javafx.swing;

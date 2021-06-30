@@ -10,7 +10,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class FxEventHub extends EventHub {
 
-	private Map<javafx.event.EventType<? extends javafx.event.Event>, Collection<FxEventHandlerWrapper<?>>> fxHandlers;
+	private final Map<javafx.event.EventType<? extends javafx.event.Event>, Collection<FxEventHandlerWrapper<?>>> fxHandlers;
 
 	public FxEventHub() {
 		this.fxHandlers = new ConcurrentHashMap<>();
