@@ -82,13 +82,6 @@
 		</dependency>
 
 		<dependency>
-			<groupId>org.hamcrest</groupId>
-			<artifactId>hamcrest-core</artifactId>
-			<version>${hamcrest.version}</version>
-			<scope>provided</scope>
-		</dependency>
-
-		<dependency>
 			<!-- https://github.com/imcdonagh/image4j -->
 			<groupId>net.sf.image4j</groupId>
 			<artifactId>image4j</artifactId>
