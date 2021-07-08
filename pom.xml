@@ -95,12 +95,6 @@
 			<version>${image4j.version}</version>
 		</dependency>
 
-		<dependency>
-			<groupId>org.hamcrest</groupId>
-			<artifactId>hamcrest</artifactId>
-			<version>2.2</version>
-		</dependency>
-
 	</dependencies>
 
 	<build>
