@@ -42,6 +42,21 @@ public class SvgIcon extends VectorIcon {
 		return this;
 	}
 
+	public SvgIcon clip( String path ) {
+		if( path != null ) actions.add( new Clip( path ) );
+		return this;
+	}
+
+	public SvgIcon save() {
+		actions.add( new Save() );
+		return this;
+	}
+
+	public SvgIcon restore() {
+		actions.add( new Restore() );
+		return this;
+	}
+
 	public SvgIcon fill( String path ) {
 		return fill( path, null );
 	}
@@ -139,11 +154,7 @@ public class SvgIcon extends VectorIcon {
 	}
 
 	public static void main( String[] commands ) {
-		Proof.proof( new SvgIcon(
-			24,
-			24,
-			"M20.5 6c-2.61.7-5.67 1-8.5 1s-5.89-.3-8.5-1L3 8c1.86.5 4 .83 6 1v13h2v-6h2v6h2V9c2-.17 4.14-.5 6-1l-.5-2zM12 6c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2z"
-		) );
+		Proof.proof( new SvgIcon( 24, 24, "M20.5 6c-2.61.7-5.67 1-8.5 1s-5.89-.3-8.5-1L3 8c1.86.5 4 .83 6 1v13h2v-6h2v6h2V9c2-.17 4.14-.5 6-1l-.5-2zM12 6c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2z" ) );
 	}
 
 	private interface RenderAction {
@@ -242,6 +253,47 @@ public class SvgIcon extends VectorIcon {
 			context.beginPath();
 			context.appendSVGPath( path );
 			context.stroke();
+		}
+
+	}
+
+	private static class Save implements RenderAction {
+
+		@Override
+		public void render( SvgIcon icon ) {
+			icon.getGraphicsContext2D().save();
+		}
+
+	}
+
+	private static class Restore implements RenderAction {
+
+		@Override
+		public void render( SvgIcon icon ) {
+			icon.getGraphicsContext2D().restore();
+		}
+
+	}
+
+	private static class Clip implements RenderAction {
+
+		private final String path;
+
+		public Clip( String path ) {
+			this.path = path;
+		}
+
+		@Override
+		public void render( SvgIcon icon ) {
+			GraphicsContext context = icon.getGraphicsContext2D();
+
+			context.beginPath();
+			if( path == null ) {
+				context.rect( 0, 0, 0, 0 );
+			} else {
+				context.appendSVGPath( path );
+			}
+			context.clip();
 		}
 
 	}
