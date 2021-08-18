@@ -47,16 +47,6 @@ public class SvgIcon extends VectorIcon {
 		return this;
 	}
 
-	public SvgIcon save() {
-		actions.add( new Save() );
-		return this;
-	}
-
-	public SvgIcon restore() {
-		actions.add( new Restore() );
-		return this;
-	}
-
 	public SvgIcon fill( String path ) {
 		return fill( path, null );
 	}
@@ -150,6 +140,7 @@ public class SvgIcon extends VectorIcon {
 	@Override
 	protected void doRender() {
 		super.doRender();
+		getGraphicsContext2D().save();
 		for( RenderAction action : actions ) action.render( this );
 	}
 
@@ -257,24 +248,6 @@ public class SvgIcon extends VectorIcon {
 
 	}
 
-	private static class Save implements RenderAction {
-
-		@Override
-		public void render( SvgIcon icon ) {
-			icon.getGraphicsContext2D().save();
-		}
-
-	}
-
-	private static class Restore implements RenderAction {
-
-		@Override
-		public void render( SvgIcon icon ) {
-			icon.getGraphicsContext2D().restore();
-		}
-
-	}
-
 	private static class Clip implements RenderAction {
 
 		private final String path;
@@ -289,11 +262,12 @@ public class SvgIcon extends VectorIcon {
 
 			context.beginPath();
 			if( path == null ) {
-				context.rect( 0, 0, 0, 0 );
+				// This works in conjunction with context.save() in doRender()
+				context.restore();
 			} else {
 				context.appendSVGPath( path );
+				context.clip();
 			}
-			context.clip();
 		}
 
 	}
