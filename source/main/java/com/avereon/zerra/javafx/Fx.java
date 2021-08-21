@@ -2,6 +2,7 @@ package com.avereon.zerra.javafx;
 
 import javafx.application.Platform;
 
+import java.util.concurrent.FutureTask;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -17,8 +18,10 @@ public class Fx {
 	}
 
 	// Convenience method to call Platform.runLater
-	public static void run( Runnable runnable ) {
-		Platform.runLater( runnable );
+	public static FutureTask<Void> run( Runnable runnable ) {
+		FutureTask<Void> t = new FutureTask<>( runnable, null );
+		Platform.runLater( t );
+		return t;
 	}
 
 	public static boolean isRunning() {
