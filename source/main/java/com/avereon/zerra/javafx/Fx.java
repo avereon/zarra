@@ -17,8 +17,9 @@ public class Fx {
 	}
 
 	// Convenience method to call Platform.runLater
-	public static void run( Runnable runnable ) {
+	public static <R extends Runnable> R run( R runnable ) {
 		Platform.runLater( runnable );
+		return runnable;
 	}
 
 	public static boolean isRunning() {
