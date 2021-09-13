@@ -85,6 +85,10 @@ jobs:
         run: |
           mvn ${{env.MAVEN_PARMS}} deploy -Dmaven.test.skip=true
 
+      - name: Trigger Dependent Builds
+        run: |
+          curl -XPOST -u "${{secrets.AVN_CI_USERNAME}}:${{secrets.AVN_CI_PASSWORD}}" -H "Accept: application/vnd.github.v3+json" -H "Content-Type: application/json" https://api.github.com/repos/avereon/zenna/actions/workflows/ci.yml/dispatches --data '{"ref": "main"}'
+
       - name: Deploy JavaDoc
         run: |
           ssh -t ${{env.AVN_REPO_USERNAME}}@avereon.com "mkdir -p ${{env.JAVADOC_DEPLOY_PATH}};"
