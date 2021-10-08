@@ -11,11 +11,11 @@
 	</parent>
 
 	<groupId>com.avereon</groupId>
-	<artifactId>zerra</artifactId>
+	<artifactId>zarra</artifactId>
 	<version>0.6</version>
 	<packaging>jar</packaging>
 
-	<name>Zerra</name>
+	<name>Zarra</name>
 	<description>UX Utility library</description>
 	<inceptionYear>2019</inceptionYear>
 
@@ -52,15 +52,15 @@
 		<image4j.version>0.7.2</image4j.version>
 
 		<!-- Test dependencies -->
-		<zarra.version>0.6</zarra.version>
+		<zerra.version>0.6</zerra.version>
 	</properties>
 
 	<dependencies>
 
 		<dependency>
 			<groupId>com.avereon</groupId>
-			<artifactId>zarra</artifactId>
-			<version>${zarra.version}</version>
+			<artifactId>zerra</artifactId>
+			<version>${zerra.version}</version>
 		</dependency>
 
 		<dependency>
