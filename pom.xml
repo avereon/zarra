@@ -16,7 +16,7 @@
 	<packaging>jar</packaging>
 
 	<name>Zerra</name>
-	<description>Utility library</description>
+	<description>UX Utility library</description>
 	<inceptionYear>2019</inceptionYear>
 
 	<developers>
