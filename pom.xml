@@ -12,7 +12,7 @@
 
 	<groupId>com.avereon</groupId>
 	<artifactId>zerra</artifactId>
-	<version>0.5-SNAPSHOT</version>
+	<version>0.5</version>
 	<packaging>jar</packaging>
 
 	<name>Zerra</name>
@@ -52,7 +52,7 @@
 		<image4j.version>0.7.2</image4j.version>
 
 		<!-- Test dependencies -->
-		<zarra.version>[0.5-SNAPSHOT,)</zarra.version>
+		<zarra.version>[0.5,)</zarra.version>
 	</properties>
 
 	<dependencies>
