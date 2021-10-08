@@ -12,7 +12,7 @@
 
 	<groupId>com.avereon</groupId>
 	<artifactId>zarra</artifactId>
-	<version>0.6</version>
+	<version>0.7</version>
 	<packaging>jar</packaging>
 
 	<name>Zarra</name>
@@ -47,12 +47,12 @@
 
 		<!-- Version numbers updated 02 Jul 2020 -->
 		<!-- Runtime dependencies -->
-		<zevra.version>0.6</zevra.version>
+		<zevra.version>0.7</zevra.version>
 		<openjfx.version>14.0.1</openjfx.version>
 		<image4j.version>0.7.2</image4j.version>
 
 		<!-- Test dependencies -->
-		<zerra.version>0.6</zerra.version>
+		<zerra.version>0.7</zerra.version>
 	</properties>
 
 	<dependencies>
