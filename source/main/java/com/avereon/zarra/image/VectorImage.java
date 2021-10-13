@@ -16,9 +16,11 @@ import javafx.scene.shape.StrokeLineJoin;
 import javafx.scene.text.Font;
 import javafx.scene.transform.Affine;
 import javafx.scene.transform.Transform;
+import lombok.CustomLog;
 
 import java.util.List;
 
+@CustomLog
 public abstract class VectorImage extends Canvas {
 
 	public static final double DEFAULT_SIZE = 256;
@@ -427,7 +429,7 @@ public abstract class VectorImage extends Canvas {
 			copy.gridY = this.gridY;
 			copy.theme = this.theme;
 		} catch( Exception exception ) {
-			exception.printStackTrace();
+			log.atWarn( exception ).log( "Unable to copy icon: %s", getClass().getName() );
 		}
 
 		return (T)copy;
