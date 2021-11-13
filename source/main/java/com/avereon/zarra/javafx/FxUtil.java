@@ -1,6 +1,5 @@
 package com.avereon.zarra.javafx;
 
-import javafx.application.Platform;
 import javafx.geometry.*;
 import javafx.scene.Node;
 import javafx.scene.Parent;
@@ -164,11 +163,11 @@ public class FxUtil {
 	}
 
 	public static <T extends Node> T findById( Collection<? extends T> nodes, String id ) {
-		return nodes.stream().filter( n -> Objects.equals(n.getId(), id)).findFirst().orElse( null );
+		return nodes.stream().filter( n -> Objects.equals( n.getId(), id ) ).findFirst().orElse( null );
 	}
 
 	public static <T extends MenuItem> T findMenuItemById( Collection<? extends T> nodes, String id ) {
-		return nodes.stream().filter( n -> Objects.equals(n.getId(), id)).findFirst().orElse( null );
+		return nodes.stream().filter( n -> Objects.equals( n.getId(), id ) ).findFirst().orElse( null );
 	}
 
 	public static void setTransferMode( DragEvent e ) {
