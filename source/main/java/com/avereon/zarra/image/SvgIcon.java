@@ -114,6 +114,34 @@ public class SvgIcon extends VectorIcon {
 	}
 
 	/**
+	 * Create an SVG string for an ellipse. Because SVG path arcs are a bit
+	 * cumbersome this method simplifies the creating of a full ellipse.
+	 *
+	 * @param cx The ellipse center X coordinate
+	 * @param cy The ellipse center Y coordinate
+	 * @param rx The ellipse X radius
+	 * @param ry The ellipse Y radius
+	 * @return The SVG string for the ellipse
+	 */
+	public static String ellipse( double cx, double cy, double rx, double ry ) {
+		return ellipse( cx, cy, rx, ry, 0 );
+	}
+
+	/**
+	 * Create an SVG string for an ellipse. Because SVG path arcs are a bit
+	 * cumbersome this method simplifies the creating of a full ellipse.
+	 *
+	 * @param cx The ellipse center X coordinate
+	 * @param cy The ellipse center Y coordinate
+	 * @param rx The ellipse X radius
+	 * @param ry The ellipse Y radius
+	 * @return The SVG string for the ellipse
+	 */
+	public static String ellipse( double cx, double cy, double rx, double ry, double rotate ) {
+		return "M" + (cx + rx) + "," + (cy + ry) + " A" + rx + "," + ry + " " + rotate + " 0 0 " + (cx - rx) + "," + (cy - ry) + " A" + rx + "," + ry + " " + rotate + " 0 0 " + (cx + rx) + "," + (cy + ry);
+	}
+
+	/**
 	 * Create an SVG string that represents the given point rotated about cx,cy by angle.
 	 *
 	 * @param x The X coordinate of the point
