@@ -6,8 +6,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.testfx.assertions.api.Assertions.assertThat;
 
 public class VectorImageWriterTest {
 
@@ -37,9 +36,9 @@ public class VectorImageWriterTest {
 	private void runTest( String name, Generator generator ) throws Exception {
 		Path path = targetFolder.resolve( name );
 		Files.deleteIfExists( path );
-		assertFalse( Files.exists( path ) );
+		assertThat( Files.exists( path ) ).isFalse();
 		generator.run( path );
-		assertTrue( Files.exists( path ) );
+		assertThat( Files.exists( path ) ).isTrue();
 	}
 
 	private interface Generator {

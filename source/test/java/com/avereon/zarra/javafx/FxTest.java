@@ -1,12 +1,11 @@
 package com.avereon.zarra.javafx;
 
 import com.avereon.zerra.test.FxPlatformTestCase;
-import org.hamcrest.MatcherAssert;
 import org.junit.jupiter.api.Test;
 
 import java.util.concurrent.TimeUnit;
 
-import static org.hamcrest.Matchers.is;
+import static org.testfx.assertions.api.Assertions.assertThat;
 
 public class FxTest extends FxPlatformTestCase {
 
@@ -18,7 +17,7 @@ public class FxTest extends FxPlatformTestCase {
 		Fx.run( () -> {throw new RuntimeException( exceptionMessage );} );
 		Fx.waitForWithExceptions( 1, TimeUnit.SECONDS );
 
-		MatcherAssert.assertThat( handler.getThrowable().getMessage(), is( exceptionMessage ) );
+		assertThat( handler.getThrowable().getMessage() ).isEqualTo( exceptionMessage );
 	}
 
 	private static class UnhandledExceptionCatcher implements Thread.UncaughtExceptionHandler {

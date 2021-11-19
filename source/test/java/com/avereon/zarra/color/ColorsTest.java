@@ -3,28 +3,26 @@ package com.avereon.zarra.color;
 import javafx.scene.paint.Color;
 import org.junit.jupiter.api.Test;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
-import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.testfx.assertions.api.Assertions.assertThat;
 
 class ColorsTest {
 
 	@Test
 	void testToString() {
-		assertThat( Colors.toString( Color.TRANSPARENT ), is( "#00000000"));
-		assertThat( Colors.toString( Color.BLACK ), is( "#000000ff"));
-		assertThat( Colors.toString( Color.WHITE ), is( "#ffffffff"));
-		assertThat( Colors.toString( Color.GRAY ), is( "#808080ff"));
-		assertNull( Colors.toString( null ) );
+		assertThat( Colors.toString( Color.TRANSPARENT )).isEqualTo( "#00000000");
+		assertThat( Colors.toString( Color.BLACK )).isEqualTo( "#000000ff");
+		assertThat( Colors.toString( Color.WHITE )).isEqualTo( "#ffffffff");
+		assertThat( Colors.toString( Color.GRAY )).isEqualTo( "#808080ff");
+		assertThat( Colors.toString( null ) ).isNull();
 	}
 
 	@Test
 	void testParse() {
-		assertThat( Colors.parse( "#00000000"), is( Color.TRANSPARENT ));
-		assertThat( Colors.parse( "#000000ff"), is( Color.BLACK ));
-		assertThat( Colors.parse( "#ffffffff"), is( Color.WHITE ));
-		assertThat( Colors.parse( "#808080ff"), is( Color.GRAY ));
-		assertNull( Colors.parse( null ) );
+		assertThat( Colors.parse( "#00000000")).isEqualTo( Color.TRANSPARENT );
+		assertThat( Colors.parse( "#000000ff")).isEqualTo( Color.BLACK );
+		assertThat( Colors.parse( "#ffffffff")).isEqualTo( Color.WHITE );
+		assertThat( Colors.parse( "#808080ff")).isEqualTo( Color.GRAY );
+		assertThat( Colors.parse( null ) ).isNull();
 	}
 
 }
