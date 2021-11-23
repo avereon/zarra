@@ -3,8 +3,8 @@ package com.avereon.zarra.color;
 import javafx.scene.paint.Color;
 import org.junit.jupiter.api.Test;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Fail.fail;
-import static org.testfx.assertions.api.Assertions.assertThat;
 
 public class PaintsTest {
 

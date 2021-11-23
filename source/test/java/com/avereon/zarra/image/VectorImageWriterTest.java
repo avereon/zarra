@@ -6,11 +6,11 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-import static org.testfx.assertions.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class VectorImageWriterTest {
 
-	private Path targetFolder = Paths.get( "target", "images" );
+	private final Path targetFolder = Paths.get( "target", "images" );
 
 	@Test
 	void testSavePng() throws Exception {
