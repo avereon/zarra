@@ -1,6 +1,5 @@
 package com.avereon.zarra.javafx;
 
-import com.avereon.zerra.test.FxPlatformTestCase;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.control.TreeItem;

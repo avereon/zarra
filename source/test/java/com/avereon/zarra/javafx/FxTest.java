@@ -1,6 +1,5 @@
 package com.avereon.zarra.javafx;
 
-import com.avereon.zerra.test.FxPlatformTestCase;
 import org.junit.jupiter.api.Test;
 
 import java.util.concurrent.TimeUnit;
