@@ -2,6 +2,7 @@ package com.avereon.zarra.image;
 
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Paint;
+import javafx.scene.shape.FillRule;
 import javafx.scene.shape.StrokeLineCap;
 import javafx.scene.shape.StrokeLineJoin;
 
@@ -53,7 +54,7 @@ public class SvgIcon extends VectorIcon {
 	}
 
 	public SvgIcon fill( String path ) {
-		return fill( path, null );
+		return fill( path, null, null );
 	}
 
 	/**
@@ -64,7 +65,15 @@ public class SvgIcon extends VectorIcon {
 	 * @return This {@link SvgIcon}
 	 */
 	public SvgIcon fill( String path, Paint paint ) {
-		if( path != null ) actions.add( new FilledPath( path, paint ) );
+		return fill( path, paint, null );
+	}
+
+	public SvgIcon fill( String path, FillRule rule ) {
+		return fill( path, null, rule );
+	}
+
+	public SvgIcon fill( String path, Paint paint, FillRule rule ) {
+		if( path != null ) actions.add( new FilledPath( path, paint, rule ) );
 		return this;
 	}
 
@@ -193,9 +202,12 @@ public class SvgIcon extends VectorIcon {
 
 		private final Paint paint;
 
-		public FilledPath( String path, Paint paint ) {
+		private final FillRule rule;
+
+		public FilledPath( String path, Paint paint, FillRule rule ) {
 			this.path = path;
 			this.paint = paint;
+			this.rule = rule;
 		}
 
 		public String getPath() {
@@ -208,6 +220,7 @@ public class SvgIcon extends VectorIcon {
 
 		public void render( SvgIcon icon ) {
 			GraphicsContext context = icon.getGraphicsContext2D();
+			FillRule oldRule = context.getFillRule();
 			if( paint == null ) {
 				context.setFill( icon.getStrokePaint() );
 			} else if( paint == PRIMARY ) {
@@ -217,9 +230,11 @@ public class SvgIcon extends VectorIcon {
 			} else {
 				context.setFill( paint );
 			}
+			context.setFillRule( rule );
 			context.beginPath();
 			context.appendSVGPath( path );
 			context.fill();
+			context.setFillRule( oldRule );
 		}
 
 	}
