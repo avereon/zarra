@@ -5,10 +5,13 @@ import javafx.scene.paint.Paint;
 import javafx.scene.shape.FillRule;
 import javafx.scene.shape.StrokeLineCap;
 import javafx.scene.shape.StrokeLineJoin;
+import javafx.scene.transform.Affine;
+import javafx.scene.transform.Transform;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.stream.Collectors;
 
 public class SvgIcon extends VectorIcon {
 
@@ -53,17 +56,16 @@ public class SvgIcon extends VectorIcon {
 		return this;
 	}
 
-	public SvgIcon fill( String path ) {
-		return fill( path, null, null );
-	}
-
 	/**
 	 * Add a filled SVG path entry to the icon.
 	 *
 	 * @param path The SVG path to fill
-	 * @param paint The paint to use to fill the path
 	 * @return This {@link SvgIcon}
 	 */
+	public SvgIcon fill( String path ) {
+		return fill( path, null, null );
+	}
+
 	public SvgIcon fill( String path, Paint paint ) {
 		return fill( path, paint, null );
 	}
@@ -73,7 +75,23 @@ public class SvgIcon extends VectorIcon {
 	}
 
 	public SvgIcon fill( String path, Paint paint, FillRule rule ) {
-		if( path != null ) actions.add( new FilledPath( path, paint, rule ) );
+		return fill( new Affine(), path, paint, rule );
+	}
+
+	public SvgIcon fill( Transform transform, String path ) {
+		return fill( transform, path, null, null );
+	}
+
+	public SvgIcon fill( Transform transform, String path, Paint paint ) {
+		return fill( transform, path, paint, null );
+	}
+
+	public SvgIcon fill( Transform transform, String path, FillRule rule ) {
+		return fill( transform, path, null, rule );
+	}
+
+	public SvgIcon fill( Transform transform, String path, Paint paint, FillRule rule ) {
+		if( path != null ) actions.add( new FilledPath( transform, path, paint, rule ) );
 		return this;
 	}
 
@@ -105,7 +123,37 @@ public class SvgIcon extends VectorIcon {
 	}
 
 	public SvgIcon draw( String path, Paint paint, double width, StrokeLineCap cap, StrokeLineJoin join, double dashOffset, double... dashes ) {
-		if( path != null ) actions.add( new StrokedPath( path, paint, width, cap, join, dashOffset, dashes ) );
+		return draw( new Affine(), path, paint, width, cap, join, dashOffset, dashes );
+	}
+
+	public SvgIcon draw( Transform transform, String path, Paint paint ) {
+		return draw( transform, path, paint, DEFAULT_STROKE_WIDTH );
+	}
+
+	public SvgIcon draw( Transform transform, String path, double width ) {
+		return draw( transform, path, null, width, DEFAULT_STROKE_CAP, DEFAULT_STROKE_JOIN, 0 );
+	}
+
+	public SvgIcon draw( Transform transform, String path, Paint paint, double width ) {
+		return draw( transform, path, paint, width, DEFAULT_STROKE_CAP, DEFAULT_STROKE_JOIN, 0 );
+	}
+
+	public SvgIcon draw( Transform transform, String path, Paint paint, double width, StrokeLineCap cap, StrokeLineJoin join ) {
+		return draw( transform, path, paint, width, cap, join, 0 );
+	}
+
+	public SvgIcon draw( Transform transform, String path, Paint paint, double width, StrokeLineCap cap, StrokeLineJoin join, double dashOffset, double... dashes ) {
+		if( path != null ) actions.add( new StrokedPath( transform, path, paint, width, cap, join, dashOffset, dashes ) );
+		return this;
+	}
+
+	public SvgIcon draw( SvgIcon icon ) {
+		return draw( new Affine(), icon );
+	}
+
+	public SvgIcon draw( Transform transform, SvgIcon icon ) {
+		icon.doRender();
+		actions.addAll( icon.actions.stream().peek( a -> a.transform( transform ) ).collect( Collectors.toSet()) );
 		return this;
 	}
 
@@ -190,13 +238,17 @@ public class SvgIcon extends VectorIcon {
 		Proof.proof( new SvgIcon( 24, 24, "M20.5 6c-2.61.7-5.67 1-8.5 1s-5.89-.3-8.5-1L3 8c1.86.5 4 .83 6 1v13h2v-6h2v6h2V9c2-.17 4.14-.5 6-1l-.5-2zM12 6c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2z" ) );
 	}
 
-	private interface RenderAction {
+	private static abstract class RenderAction {
 
-		void render( SvgIcon icon );
+		void render( SvgIcon icon ) {}
+
+		void transform( Transform transform ) {}
 
 	}
 
-	private static class FilledPath implements RenderAction {
+	private static class FilledPath extends RenderAction {
+
+		private final Transform transform;
 
 		private final String path;
 
@@ -204,7 +256,8 @@ public class SvgIcon extends VectorIcon {
 
 		private final FillRule rule;
 
-		public FilledPath( String path, Paint paint, FillRule rule ) {
+		public FilledPath( Transform transform, String path, Paint paint, FillRule rule ) {
+			this.transform = transform;
 			this.path = path;
 			this.paint = paint;
 			this.rule = rule;
@@ -220,7 +273,8 @@ public class SvgIcon extends VectorIcon {
 
 		public void render( SvgIcon icon ) {
 			GraphicsContext context = icon.getGraphicsContext2D();
-			FillRule oldRule = context.getFillRule();
+			context.save();
+			context.transform( new Affine( transform ) );
 			if( paint == null ) {
 				context.setFill( icon.getStrokePaint() );
 			} else if( paint == PRIMARY ) {
@@ -234,12 +288,14 @@ public class SvgIcon extends VectorIcon {
 			context.beginPath();
 			context.appendSVGPath( path );
 			context.fill();
-			context.setFillRule( oldRule );
+			context.restore();
 		}
 
 	}
 
-	private static class StrokedPath implements RenderAction {
+	private static class StrokedPath extends RenderAction {
+
+		private final Transform transform;
 
 		private final String path;
 
@@ -255,7 +311,8 @@ public class SvgIcon extends VectorIcon {
 
 		private final double[] dashes;
 
-		public StrokedPath( String path, Paint paint, double width, StrokeLineCap cap, StrokeLineJoin join, double dashOffset, double... dashes ) {
+		public StrokedPath( Transform transform, String path, Paint paint, double width, StrokeLineCap cap, StrokeLineJoin join, double dashOffset, double... dashes ) {
+			this.transform = transform;
 			this.path = path;
 			this.paint = paint;
 			this.width = width;
@@ -275,6 +332,8 @@ public class SvgIcon extends VectorIcon {
 
 		public void render( SvgIcon icon ) {
 			GraphicsContext context = icon.getGraphicsContext2D();
+			context.save();
+			context.transform( new Affine( transform ) );
 			if( paint == null ) {
 				context.setStroke( icon.getStrokePaint() );
 			} else if( paint == PRIMARY ) {
@@ -292,11 +351,12 @@ public class SvgIcon extends VectorIcon {
 			context.beginPath();
 			context.appendSVGPath( path );
 			context.stroke();
+			context.restore();
 		}
 
 	}
 
-	private static class Save implements RenderAction {
+	private static class Save extends RenderAction {
 
 		@Override
 		public void render( SvgIcon icon ) {
@@ -305,7 +365,7 @@ public class SvgIcon extends VectorIcon {
 
 	}
 
-	private static class Restore implements RenderAction {
+	private static class Restore extends RenderAction {
 
 		@Override
 		public void render( SvgIcon icon ) {
@@ -314,22 +374,25 @@ public class SvgIcon extends VectorIcon {
 
 	}
 
-	private static class Clip implements RenderAction {
+	private static class Clip extends RenderAction {
+
+		private final Transform transform;
 
 		private final String path;
 
 		public Clip( String path ) {
+			this.transform = new Affine();
 			this.path = path;
 		}
 
 		@Override
 		public void render( SvgIcon icon ) {
 			GraphicsContext context = icon.getGraphicsContext2D();
-
 			if( path == null ) {
 				// This works in conjunction with context.save() in doRender()
 				context.restore();
 			} else {
+				context.transform( new Affine( transform ) );
 				context.beginPath();
 				context.appendSVGPath( path );
 				context.clip();
