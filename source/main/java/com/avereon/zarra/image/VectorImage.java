@@ -198,15 +198,8 @@ public abstract class VectorImage extends Canvas {
 			double scaleY = getHeight() / getGridY();
 			baseTransform = Transform.scale( scaleX, scaleY );
 			getGraphicsContext2D().clearRect( 0, 0, getGridX(), getGridY() );
-			reset();
+			getGraphicsContext2D().setTransform( new Affine( baseTransform ) );
 		}
-	}
-
-	/**
-	 * Reset the transform back to the initial rendering transform.
-	 */
-	protected void reset() {
-		getGraphicsContext2D().setTransform( new Affine( baseTransform ) );
 	}
 
 	public static List<CssMetaData<? extends Styleable, ?>> getClassCssMetaData() {
