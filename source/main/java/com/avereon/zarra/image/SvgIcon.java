@@ -5,13 +5,13 @@ import javafx.scene.paint.Paint;
 import javafx.scene.shape.FillRule;
 import javafx.scene.shape.StrokeLineCap;
 import javafx.scene.shape.StrokeLineJoin;
-import javafx.scene.transform.Affine;
 import javafx.scene.transform.Transform;
 
-import java.util.ArrayList;
+import java.util.Deque;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.stream.Collectors;
 
 public class SvgIcon extends VectorIcon {
 
@@ -25,7 +25,15 @@ public class SvgIcon extends VectorIcon {
 	 */
 	protected static final Paint SECONDARY = Paint.valueOf( "#000000" );
 
-	private List<RenderAction> actions;
+	private static final String EMPTY_CLIP = "";
+
+	private final List<RenderAction> actions;
+
+	private final String defaultClip;
+
+	private final Deque<String> clips;
+
+	private final Deque<Transform> transforms;
 
 	public SvgIcon() {
 		this( DEFAULT_GRID, DEFAULT_GRID );
@@ -38,6 +46,11 @@ public class SvgIcon extends VectorIcon {
 	protected SvgIcon( double gridX, double gridY, String svgPath ) {
 		super( gridX, gridY );
 		actions = new CopyOnWriteArrayList<>();
+		clips = new LinkedList<>();
+		transforms = new LinkedList<>();
+
+		defaultClip = "M0,0 L0," + gridY + " L" + gridX + "," + gridY + " L" + gridX + ",0 Z";
+
 		fill( svgPath );
 	}
 
@@ -46,13 +59,17 @@ public class SvgIcon extends VectorIcon {
 		return this;
 	}
 
+	public SvgIcon clip() {
+		return clip( null );
+	}
+
 	public SvgIcon clip( String path ) {
 		actions.add( new Clip( path ) );
 		return this;
 	}
 
-	public SvgIcon restore() {
-		actions.add( new Restore() );
+	public SvgIcon transform( Transform transform ) {
+		actions.add( new Xform( transform ) );
 		return this;
 	}
 
@@ -75,37 +92,20 @@ public class SvgIcon extends VectorIcon {
 	}
 
 	public SvgIcon fill( String path, Paint paint, FillRule rule ) {
-		return fill( new Affine(), path, paint, rule );
-	}
-
-	public SvgIcon fill( Transform transform, String path ) {
-		return fill( transform, path, null, null );
-	}
-
-	public SvgIcon fill( Transform transform, String path, Paint paint ) {
-		return fill( transform, path, paint, null );
-	}
-
-	public SvgIcon fill( Transform transform, String path, FillRule rule ) {
-		return fill( transform, path, null, rule );
-	}
-
-	public SvgIcon fill( Transform transform, String path, Paint paint, FillRule rule ) {
-		if( path != null ) actions.add( new FilledPath( transform, path, paint, rule ) );
+		if( path != null ) actions.add( new Fill( path, paint, rule ) );
 		return this;
-	}
-
-	public SvgIcon draw( String path ) {
-		return draw( path, null );
 	}
 
 	/**
 	 * Add a stroked SVG path entry to the icon.
 	 *
 	 * @param path The SVG path to fill
-	 * @param paint The paint to use to fill the path
 	 * @return This {@link SvgIcon}
 	 */
+	public SvgIcon draw( String path ) {
+		return draw( path, null );
+	}
+
 	public SvgIcon draw( String path, Paint paint ) {
 		return draw( path, paint, DEFAULT_STROKE_WIDTH );
 	}
@@ -123,37 +123,15 @@ public class SvgIcon extends VectorIcon {
 	}
 
 	public SvgIcon draw( String path, Paint paint, double width, StrokeLineCap cap, StrokeLineJoin join, double dashOffset, double... dashes ) {
-		return draw( new Affine(), path, paint, width, cap, join, dashOffset, dashes );
-	}
-
-	public SvgIcon draw( Transform transform, String path, Paint paint ) {
-		return draw( transform, path, paint, DEFAULT_STROKE_WIDTH );
-	}
-
-	public SvgIcon draw( Transform transform, String path, double width ) {
-		return draw( transform, path, null, width, DEFAULT_STROKE_CAP, DEFAULT_STROKE_JOIN, 0 );
-	}
-
-	public SvgIcon draw( Transform transform, String path, Paint paint, double width ) {
-		return draw( transform, path, paint, width, DEFAULT_STROKE_CAP, DEFAULT_STROKE_JOIN, 0 );
-	}
-
-	public SvgIcon draw( Transform transform, String path, Paint paint, double width, StrokeLineCap cap, StrokeLineJoin join ) {
-		return draw( transform, path, paint, width, cap, join, 0 );
-	}
-
-	public SvgIcon draw( Transform transform, String path, Paint paint, double width, StrokeLineCap cap, StrokeLineJoin join, double dashOffset, double... dashes ) {
-		if( path != null ) actions.add( new StrokedPath( transform, path, paint, width, cap, join, dashOffset, dashes ) );
+		if( path != null ) actions.add( new Draw( path, paint, width, cap, join, dashOffset, dashes ) );
 		return this;
 	}
 
 	public SvgIcon draw( SvgIcon icon ) {
-		return draw( new Affine(), icon );
-	}
-
-	public SvgIcon draw( Transform transform, SvgIcon icon ) {
-		icon.doRender();
-		actions.addAll( icon.actions.stream().peek( a -> a.transform( transform ) ).collect( Collectors.toSet()) );
+		if( icon != null ) {
+			icon.doRender();
+			actions.addAll( icon.actions );
+		}
 		return this;
 	}
 
@@ -220,18 +198,56 @@ public class SvgIcon extends VectorIcon {
 		return cy + ((y - cy) * Math.cos( Math.toRadians( angle ) )) - ((x - cx) * Math.sin( Math.toRadians( angle ) ));
 	}
 
+	private void pushClip( String path ) {
+		clips.push( path );
+	}
+
+	private void popClip() {
+		clips.pop();
+	}
+
+	private void setClip() {
+		//if( clips.isEmpty() ) System.out.println( "No clips in queue" );
+
+//		String clip = clips.peek();
+//		//if( clip == null ) System.out.println( "Clip is null" );
+//		//if( Objects.equals( clip, EMPTY_CLIP ) ) System.out.println( "Clip is EMPTY_CLIP" );
+//
+//		if( clip == null || Objects.equals( clip, EMPTY_CLIP ) ) clip = null;
+//
+//		//if( clip == null ) System.out.println( "Clip is still null" );
+//
+//		if( Objects.equals( clip, null ) ) {
+//			System.err.println( "Using null clip" );
+//		} else if( Objects.equals( clip, defaultClip ) ) {
+//			System.err.println( "Using default clip" );
+//		} else {
+//			System.err.println( "Using special clip" );
+//		}
+//
+//		GraphicsContext context = getGraphicsContext2D();
+//		context.beginPath();
+//		if( clip == null ) {
+//			//context.rect( Double.MIN_VALUE, Double.MIN_VALUE, Double.MAX_VALUE, Double.MAX_VALUE );
+//		} else {
+//			context.appendSVGPath( clip );
+//		}
+//		context.clip();
+	}
+
 	@Override
 	public <T extends VectorImage> T copy() {
 		T copy = super.copy();
-		((SvgIcon)copy).actions = new ArrayList<>( this.actions );
+		((SvgIcon)copy).actions.addAll( this.actions );
 		return copy;
 	}
 
 	@Override
 	protected void doRender() {
+		getGraphicsContext2D().save();
 		super.doRender();
-		actions.add( 0, new Save() );
-		for( RenderAction action : actions ) action.render( this );
+		actions.forEach( a -> a.render( this ) );
+		getGraphicsContext2D().restore();
 	}
 
 	public static void main( String[] commands ) {
@@ -240,66 +256,82 @@ public class SvgIcon extends VectorIcon {
 
 	private static abstract class RenderAction {
 
-		void render( SvgIcon icon ) {}
-
-		void transform( Transform transform ) {}
-
-	}
-
-	private static class FilledPath extends RenderAction {
-
-		private final Transform transform;
-
 		private final String path;
 
 		private final Paint paint;
 
-		private final FillRule rule;
-
-		public FilledPath( Transform transform, String path, Paint paint, FillRule rule ) {
-			this.transform = transform;
+		protected RenderAction( String path, Paint paint ) {
 			this.path = path;
 			this.paint = paint;
-			this.rule = rule;
 		}
 
-		public String getPath() {
+		abstract void render( SvgIcon icon );
+
+		protected String getPath() {
 			return path;
 		}
 
-		public Paint getPaint() {
+		protected Paint getPaint() {
 			return paint;
 		}
 
-		public void render( SvgIcon icon ) {
+		protected GraphicsContext setup( SvgIcon icon ) {
 			GraphicsContext context = icon.getGraphicsContext2D();
+
 			context.save();
-			context.transform( new Affine( transform ) );
-			if( paint == null ) {
-				context.setFill( icon.getStrokePaint() );
-			} else if( paint == PRIMARY ) {
-				context.setFill( icon.getPrimaryPaint() );
-			} else if( paint == SECONDARY ) {
-				context.setFill( icon.getSecondaryPaint() );
-			} else {
-				context.setFill( paint );
-			}
-			context.setFillRule( rule );
-			context.beginPath();
-			context.appendSVGPath( path );
-			context.fill();
+			icon.setClip();
+
+			return context;
+		}
+
+		protected GraphicsContext teardown( SvgIcon icon ) {
+			GraphicsContext context = icon.getGraphicsContext2D();
+
 			context.restore();
+
+			return context;
+		}
+
+		protected Paint calcPaint( SvgIcon icon ) {
+			if( paint == null ) {
+				return icon.getStrokePaint();
+			} else if( paint == PRIMARY ) {
+				return icon.getPrimaryPaint();
+			} else if( paint == SECONDARY ) {
+				return icon.getSecondaryPaint();
+			} else {
+				return paint;
+			}
 		}
 
 	}
 
-	private static class StrokedPath extends RenderAction {
+	private static class Fill extends RenderAction {
 
-		private final Transform transform;
+		private final FillRule rule;
 
-		private final String path;
+		public Fill( String path, Paint paint, FillRule rule ) {
+			super( path, paint );
+			this.rule = rule;
+		}
 
-		private final Paint paint;
+		public void render( SvgIcon icon ) {
+			GraphicsContext context = setup( icon );
+			context.setFill( calcPaint( icon ) );
+			context.setFillRule( rule );
+
+			System.err.println( "FILL");
+
+			context.beginPath();
+			context.appendSVGPath( getPath() );
+			context.fill();
+
+			teardown( icon );
+		}
+
+	}
+
+	private static class Draw extends RenderAction {
 
 		private final double width;
 
@@ -311,10 +343,8 @@ public class SvgIcon extends VectorIcon {
 
 		private final double[] dashes;
 
-		public StrokedPath( Transform transform, String path, Paint paint, double width, StrokeLineCap cap, StrokeLineJoin join, double dashOffset, double... dashes ) {
-			this.transform = transform;
-			this.path = path;
-			this.paint = paint;
+		public Draw( String path, Paint paint, double width, StrokeLineCap cap, StrokeLineJoin join, double dashOffset, double... dashes ) {
+			super( path, paint );
 			this.width = width;
 			this.cap = cap;
 			this.join = join;
@@ -322,81 +352,62 @@ public class SvgIcon extends VectorIcon {
 			this.dashes = dashes;
 		}
 
-		public Paint getPaint() {
-			return paint;
-		}
-
-		public String getPath() {
-			return path;
-		}
-
 		public void render( SvgIcon icon ) {
-			GraphicsContext context = icon.getGraphicsContext2D();
-			context.save();
-			context.transform( new Affine( transform ) );
-			if( paint == null ) {
-				context.setStroke( icon.getStrokePaint() );
-			} else if( paint == PRIMARY ) {
-				context.setStroke( icon.getPrimaryPaint() );
-			} else if( paint == SECONDARY ) {
-				context.setStroke( icon.getSecondaryPaint() );
-			} else {
-				context.setStroke( paint );
-			}
+			GraphicsContext context = setup( icon );
+			context.setStroke( calcPaint( icon ) );
 			context.setLineWidth( width );
 			context.setLineCap( cap );
 			context.setLineJoin( join );
 			context.setLineDashOffset( dashOffset );
 			context.setLineDashes( dashes );
+
+			System.err.println( "DRAW");
 			context.beginPath();
-			context.appendSVGPath( path );
+			context.appendSVGPath( getPath() );
 			context.stroke();
-			context.restore();
-		}
 
-	}
-
-	private static class Save extends RenderAction {
-
-		@Override
-		public void render( SvgIcon icon ) {
-			icon.getGraphicsContext2D().save();
-		}
-
-	}
-
-	private static class Restore extends RenderAction {
-
-		@Override
-		public void render( SvgIcon icon ) {
-			icon.getGraphicsContext2D().restore();
+			teardown( icon );
 		}
 
 	}
 
 	private static class Clip extends RenderAction {
 
-		private final Transform transform;
-
-		private final String path;
-
 		public Clip( String path ) {
-			this.transform = new Affine();
-			this.path = path;
+			super( path, null );
 		}
 
 		@Override
 		public void render( SvgIcon icon ) {
-			GraphicsContext context = icon.getGraphicsContext2D();
-			if( path == null ) {
-				// This works in conjunction with context.save() in doRender()
-				context.restore();
+			String path = getPath();
+			if( Objects.equals( path, EMPTY_CLIP ) ) {
+				icon.popClip();
+				icon.popClip();
 			} else {
-				context.transform( new Affine( transform ) );
-				context.beginPath();
-				context.appendSVGPath( path );
-				context.clip();
+				icon.pushClip( path );
 			}
+		}
+
+	}
+
+	private class Xform extends RenderAction {
+
+		private final Transform transform;
+
+		public Xform( Transform transform ) {
+			super( null, null );
+			this.transform = transform;
+		}
+
+		@Override
+		public void render( SvgIcon icon ) {
+			//			GraphicsContext context = icon.getGraphicsContext2D();
+			//			if( xform != null ) {
+			//				context.save();
+			//				context.transform( new Affine( transform() ) );
+			//			} else {
+			//				context.restore();
+			//			}
 		}
 
 	}
