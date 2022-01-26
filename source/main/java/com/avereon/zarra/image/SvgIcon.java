@@ -45,7 +45,7 @@ public class SvgIcon extends VectorIcon {
 	}
 
 	public SvgIcon clip( String path ) {
-		actions.add( new Clip( path ) );
+		actions.add( new Clip( path, true ) );
 		return this;
 	}
 
@@ -73,8 +73,53 @@ public class SvgIcon extends VectorIcon {
 	}
 
 	public SvgIcon fill( String path, Paint paint, FillRule rule ) {
-		if( path != null ) actions.add( new Fill( path, paint, rule ) );
+		if( path != null ) actions.add( new Fill( path, true, paint, rule ) );
 		return this;
+	}
+
+	/**
+	 * Add a filled text entry to the icon.
+	 *
+	 * @param path The text to fill
+	 * @return This {@link SvgIcon}
+	 */
+	public SvgIcon fillText( String path ) {
+		return fillText( path, null, null );
+	}
+
+	public SvgIcon fillText( String path, Paint paint ) {
+		return fillText( path, paint, null );
+	}
+
+	public SvgIcon fillText( String path, FillRule rule ) {
+		return fillText( path, null, rule );
+	}
+
+	public SvgIcon fillText( String path, Paint paint, FillRule rule ) {
+		if( path != null ) actions.add( new Fill( path, false, paint, rule ) );
+		return this;
+	}
+
+	/**
+	 * Add a filled text entry to the icon.
+	 *
+	 * @param path The text to fill
+	 * @return This {@link SvgIcon}
+	 */
+	public SvgIcon text( String path ) {
+		return text( path, null, null );
+	}
+
+	public SvgIcon text( String path, Paint paint ) {
+		return text( path, paint, null );
+	}
+
+	public SvgIcon text( String path, FillRule rule ) {
+		return text( path, null, rule );
+	}
+
+	public SvgIcon text( String path, Paint paint, FillRule rule ) {
+		return fillText( path, paint, rule );
 	}
 
 	/**
@@ -104,7 +149,38 @@ public class SvgIcon extends VectorIcon {
 	}
 
 	public SvgIcon draw( String path, Paint paint, double width, StrokeLineCap cap, StrokeLineJoin join, double dashOffset, double... dashes ) {
-		if( path != null ) actions.add( new Draw( path, paint, width, cap, join, dashOffset, dashes ) );
+		if( path != null ) actions.add( new Draw( path, true, paint, width, cap, join, dashOffset, dashes ) );
+		return this;
+	}
+
+	/**
+	 * Add a stroked SVG path entry to the icon.
+	 *
+	 * @param path The SVG path to fill
+	 * @return This {@link SvgIcon}
+	 */
+	public SvgIcon drawText( String path ) {
+		return drawText( path, null );
+	}
+
+	public SvgIcon drawText( String path, Paint paint ) {
+		return drawText( path, paint, DEFAULT_STROKE_WIDTH );
+	}
+
+	public SvgIcon drawText( String path, double width ) {
+		return drawText( path, null, width, DEFAULT_STROKE_CAP, DEFAULT_STROKE_JOIN, 0 );
+	}
+
+	public SvgIcon drawText( String path, Paint paint, double width ) {
+		return drawText( path, paint, width, DEFAULT_STROKE_CAP, DEFAULT_STROKE_JOIN, 0 );
+	}
+
+	public SvgIcon drawText( String path, Paint paint, double width, StrokeLineCap cap, StrokeLineJoin join ) {
+		return drawText( path, paint, width, cap, join, 0 );
+	}
+
+	public SvgIcon drawText( String path, Paint paint, double width, StrokeLineCap cap, StrokeLineJoin join, double dashOffset, double... dashes ) {
+		if( path != null ) actions.add( new Draw( path, false, paint, width, cap, join, dashOffset, dashes ) );
 		return this;
 	}
 
@@ -216,15 +292,22 @@ public class SvgIcon extends VectorIcon {
 
 		private final String path;
 
+		private boolean isSvg;
+
 		private final Paint paint;
 
-		protected RenderAction( String path, Paint paint ) {
+		protected RenderAction( String path, boolean isSvg, Paint paint ) {
 			this.path = path;
+			this.isSvg = isSvg;
 			this.paint = paint;
 		}
 
 		protected String getPath() {
 			return path;
+		}
+
+		protected boolean isSvg() {
+			return isSvg;
 		}
 
 		protected GraphicsContext setup( SvgIcon icon ) {
@@ -257,8 +340,8 @@ public class SvgIcon extends VectorIcon {
 
 		private final FillRule rule;
 
-		public Fill( String path, Paint paint, FillRule rule ) {
-			super( path, paint );
+		public Fill( String path, boolean isSvg, Paint paint, FillRule rule ) {
+			super( path, isSvg, paint );
 			this.rule = rule;
 		}
 
@@ -267,9 +350,14 @@ public class SvgIcon extends VectorIcon {
 			context.setFill( calcPaint( icon ) );
 			context.setFillRule( rule );
 
-			context.beginPath();
-			context.appendSVGPath( getPath() );
-			context.fill();
+			if( isSvg() ) {
+				context.beginPath();
+				context.appendSVGPath( getPath() );
+				context.fill();
+			} else {
+				context.fillText( getPath(), 0, 0 );
+				context.restore();
+			}
 
 			teardown( icon );
 		}
@@ -288,8 +376,8 @@ public class SvgIcon extends VectorIcon {
 
 		private final double[] dashes;
 
-		public Draw( String path, Paint paint, double width, StrokeLineCap cap, StrokeLineJoin join, double dashOffset, double... dashes ) {
-			super( path, paint );
+		public Draw( String path, boolean isSvg, Paint paint, double width, StrokeLineCap cap, StrokeLineJoin join, double dashOffset, double... dashes ) {
+			super( path, isSvg, paint );
 			this.width = width;
 			this.cap = cap;
 			this.join = join;
@@ -306,9 +394,14 @@ public class SvgIcon extends VectorIcon {
 			context.setLineDashOffset( dashOffset );
 			context.setLineDashes( dashes );
 
-			context.beginPath();
-			context.appendSVGPath( getPath() );
-			context.stroke();
+			if( isSvg() ) {
+				context.beginPath();
+				context.appendSVGPath( getPath() );
+				context.stroke();
+			} else {
+				context.strokeText( getPath(), 0, 0 );
+				context.restore();
+			}
 
 			teardown( icon );
 		}
@@ -317,8 +410,8 @@ public class SvgIcon extends VectorIcon {
 
 	private static class Clip extends RenderAction {
 
-		public Clip( String path ) {
-			super( path, null );
+		public Clip( String path, boolean isSvg ) {
+			super( path, isSvg, null );
 		}
 
 		@Override
@@ -346,6 +439,10 @@ public class SvgIcon extends VectorIcon {
 		@Override
 		public void render( SvgIcon icon ) {
 			GraphicsContext context = icon.getGraphicsContext2D();
+
+			// It is important to store the context state, but not restore it
+			context.save();
+
 			context.transform( new Affine( transform ) );
 		}
 
