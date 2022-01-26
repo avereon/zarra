@@ -5,12 +5,12 @@ import javafx.scene.paint.Paint;
 import javafx.scene.shape.FillRule;
 import javafx.scene.shape.StrokeLineCap;
 import javafx.scene.shape.StrokeLineJoin;
+import javafx.scene.transform.Affine;
 import javafx.scene.transform.Transform;
 
 import java.util.Deque;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Objects;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 public class SvgIcon extends VectorIcon {
@@ -25,15 +25,7 @@ public class SvgIcon extends VectorIcon {
 	 */
 	protected static final Paint SECONDARY = Paint.valueOf( "#000000" );
 
-	private static final String EMPTY_CLIP = "";
-
-	private final List<RenderAction> actions;
-
-	private final String defaultClip;
-
-	private final Deque<String> clips;
-
-	private final Deque<Transform> transforms;
+	private final List<IconAction> actions;
 
 	public SvgIcon() {
 		this( DEFAULT_GRID, DEFAULT_GRID );
@@ -46,11 +38,7 @@ public class SvgIcon extends VectorIcon {
 	protected SvgIcon( double gridX, double gridY, String svgPath ) {
 		super( gridX, gridY );
 		actions = new CopyOnWriteArrayList<>();
-		clips = new LinkedList<>();
-		transforms = new LinkedList<>();
-
-		defaultClip = "M0,0 L0," + gridY + " L" + gridX + "," + gridY + " L" + gridX + ",0 Z";
-
+		reset();
 		fill( svgPath );
 	}
 
@@ -59,8 +47,8 @@ public class SvgIcon extends VectorIcon {
 		return this;
 	}
 
-	public SvgIcon clip() {
-		return clip( null );
+	public void restore() {
+		actions.add( new Reset() );
 	}
 
 	public SvgIcon clip( String path ) {
@@ -131,6 +119,7 @@ public class SvgIcon extends VectorIcon {
 		if( icon != null ) {
 			icon.doRender();
 			actions.addAll( icon.actions );
+			actions.add( new Reset() );
 		}
 		return this;
 	}
@@ -199,40 +188,40 @@ public class SvgIcon extends VectorIcon {
 	}
 
 	private void pushClip( String path ) {
-		clips.push( path );
+//		clips.push( path );
 	}
 
 	private void popClip() {
-		clips.pop();
+//		clips.pop();
 	}
 
 	private void setClip() {
 		//if( clips.isEmpty() ) System.out.println( "No clips in queue" );
 
-//		String clip = clips.peek();
-//		//if( clip == null ) System.out.println( "Clip is null" );
-//		//if( Objects.equals( clip, EMPTY_CLIP ) ) System.out.println( "Clip is EMPTY_CLIP" );
-//
-//		if( clip == null || Objects.equals( clip, EMPTY_CLIP ) ) clip = null;
-//
-//		//if( clip == null ) System.out.println( "Clip is still null" );
-//
-//		if( Objects.equals( clip, null ) ) {
-//			System.err.println( "Using null clip" );
-//		} else if( Objects.equals( clip, defaultClip ) ) {
-//			System.err.println( "Using default clip" );
-//		} else {
-//			System.err.println( "Using special clip" );
-//		}
-//
-//		GraphicsContext context = getGraphicsContext2D();
-//		context.beginPath();
-//		if( clip == null ) {
-//			//context.rect( Double.MIN_VALUE, Double.MIN_VALUE, Double.MAX_VALUE, Double.MAX_VALUE );
-//		} else {
-//			context.appendSVGPath( clip );
-//		}
-//		context.clip();
+		//		String clip = clips.peek();
+		//		//if( clip == null ) System.out.println( "Clip is null" );
+		//		//if( Objects.equals( clip, EMPTY_CLIP ) ) System.out.println( "Clip is EMPTY_CLIP" );
+		//
+		//		if( clip == null || Objects.equals( clip, EMPTY_CLIP ) ) clip = null;
+		//
+		//		//if( clip == null ) System.out.println( "Clip is still null" );
+		//
+		//		if( Objects.equals( clip, null ) ) {
+		//			System.err.println( "Using null clip" );
+		//		} else if( Objects.equals( clip, defaultClip ) ) {
+		//			System.err.println( "Using default clip" );
+		//		} else {
+		//			System.err.println( "Using special clip" );
+		//		}
+		//
+		//		GraphicsContext context = getGraphicsContext2D();
+		//		context.beginPath();
+		//		if( clip == null ) {
+		//			//context.rect( Double.MIN_VALUE, Double.MIN_VALUE, Double.MAX_VALUE, Double.MAX_VALUE );
+		//		} else {
+		//			context.appendSVGPath( clip );
+		//		}
+		//		context.clip();
 	}
 
 	@Override
@@ -244,17 +233,26 @@ public class SvgIcon extends VectorIcon {
 
 	@Override
 	protected void doRender() {
-		getGraphicsContext2D().save();
 		super.doRender();
+		getGraphicsContext2D().save();
 		actions.forEach( a -> a.render( this ) );
+	}
+
+	private void doReset() {
 		getGraphicsContext2D().restore();
+		//super.reset();
 	}
 
 	public static void main( String[] commands ) {
 		Proof.proof( new SvgIcon( 24, 24, "M20.5 6c-2.61.7-5.67 1-8.5 1s-5.89-.3-8.5-1L3 8c1.86.5 4 .83 6 1v13h2v-6h2v6h2V9c2-.17 4.14-.5 6-1l-.5-2zM12 6c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2z" ) );
 	}
 
-	private static abstract class RenderAction {
+	private static interface IconAction {
+
+		void render( SvgIcon icon );
+	}
+
+	private static abstract class RenderAction implements IconAction {
 
 		private final String path;
 
@@ -264,8 +262,6 @@ public class SvgIcon extends VectorIcon {
 			this.path = path;
 			this.paint = paint;
 		}
-
-		abstract void render( SvgIcon icon );
 
 		protected String getPath() {
 			return path;
@@ -279,7 +275,7 @@ public class SvgIcon extends VectorIcon {
 			GraphicsContext context = icon.getGraphicsContext2D();
 
 			context.save();
-			icon.setClip();
+			//icon.setClip();
 
 			return context;
 		}
@@ -320,8 +316,6 @@ public class SvgIcon extends VectorIcon {
 			context.setFill( calcPaint( icon ) );
 			context.setFillRule( rule );
 
-			System.err.println( "FILL");
-
 			context.beginPath();
 			context.appendSVGPath( getPath() );
 			context.fill();
@@ -361,7 +355,6 @@ public class SvgIcon extends VectorIcon {
 			context.setLineDashOffset( dashOffset );
 			context.setLineDashes( dashes );
 
-			System.err.println( "DRAW");
 			context.beginPath();
 			context.appendSVGPath( getPath() );
 			context.stroke();
@@ -379,35 +372,37 @@ public class SvgIcon extends VectorIcon {
 
 		@Override
 		public void render( SvgIcon icon ) {
-			String path = getPath();
-			if( Objects.equals( path, EMPTY_CLIP ) ) {
-				icon.popClip();
-				icon.popClip();
-			} else {
-				icon.pushClip( path );
-			}
+			GraphicsContext context = setup( icon );
+			if( getPath() == null ) return;
+
+			context.beginPath();
+			context.appendSVGPath( getPath() );
+			context.clip();
 		}
 
 	}
 
-	private class Xform extends RenderAction {
+	private static class Xform implements IconAction {
 
 		private final Transform transform;
 
 		public Xform( Transform transform ) {
-			super( null, null );
 			this.transform = transform;
 		}
 
 		@Override
 		public void render( SvgIcon icon ) {
-			//			GraphicsContext context = icon.getGraphicsContext2D();
-			//			if( xform != null ) {
-			//				context.save();
-			//				context.transform( new Affine( transform() ) );
-			//			} else {
-			//				context.restore();
-			//			}
+			GraphicsContext context = icon.getGraphicsContext2D();
+			context.transform( new Affine( transform ) );
+		}
+
+	}
+
+	private static class Reset implements IconAction {
+
+		@Override
+		public void render( SvgIcon icon ) {
+			icon.doReset();
 		}
 
 	}
