@@ -124,13 +124,7 @@
 				<artifactId>maven-surefire-plugin</artifactId>
 				<!-- This configuration allows the JUnit test runner to find the unit tests -->
 				<configuration>
-					<argLine>
-						--add-opens=javafx.graphics/com.sun.javafx.application=ALL-UNNAMED
-						--add-opens=com.avereon.zarra/com.avereon.zarra.color=ALL-UNNAMED
-						--add-opens=com.avereon.zarra/com.avereon.zarra.font=ALL-UNNAMED
-						--add-opens=com.avereon.zarra/com.avereon.zarra.image=ALL-UNNAMED
-						--add-opens=com.avereon.zarra/com.avereon.zarra.javafx=ALL-UNNAMED
-					</argLine>
+					<argLine>-Xmx128m --add-opens=javafx.graphics/com.sun.glass.ui=ALL-UNNAMED --add-opens=javafx.graphics/com.sun.javafx.application=ALL-UNNAMED</argLine>
 				</configuration>
 			</plugin>
 
