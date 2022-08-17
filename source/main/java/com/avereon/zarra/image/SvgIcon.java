@@ -40,6 +40,13 @@ public class SvgIcon extends VectorIcon {
 		fill( svgPath );
 	}
 
+	/**
+	 * This method is used to define the rendering steps where it is problematic
+	 * to define them in the constructor. This is particularly necessary when
+	 * using values that come from the style class like colors and sizes.
+	 */
+	protected void define() {}
+
 	public void restore() {
 		actions.add( new Restore() );
 	}
@@ -269,6 +276,7 @@ public class SvgIcon extends VectorIcon {
 	 */
 	@Override
 	protected final void doRender() {
+		define();
 		super.doRender();
 		getGraphicsContext2D().save();
 		actions.forEach( a -> a.render( this ) );
