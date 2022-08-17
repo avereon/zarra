@@ -28,6 +28,8 @@ public class Colors {
 
 	public static Color mix( Color color, Color mixer, double factor ) {
 		if( color == null || mixer == null ) return null;
+
+		if( Color.TRANSPARENT.equals( color ) ) return translucent( mixer, factor );
 		if( Color.TRANSPARENT.equals( mixer ) ) return translucent( color, factor );
 
 		factor = clamp( factor );
