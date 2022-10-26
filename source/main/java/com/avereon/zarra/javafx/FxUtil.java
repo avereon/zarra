@@ -175,7 +175,11 @@ public class FxUtil {
 	}
 
 	public static void setTransferMode( DragEvent e, TransferMode... defaultModes ) {
-		e.acceptTransferModes( TransferMode.COPY_OR_MOVE );
+		// This allows either copy or move, but copy appears to be default on Cinnamon
+		e.acceptTransferModes( TransferMode.ANY );
+
+		// This forces the mode to move
+		//e.acceptTransferModes( TransferMode.MOVE );
 	}
 
 	private static void setTransferModeWorkaround( DragEvent e, TransferMode... defaultModes ) {
