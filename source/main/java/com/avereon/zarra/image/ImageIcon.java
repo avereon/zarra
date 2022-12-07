@@ -36,11 +36,11 @@ public class ImageIcon extends RenderedIcon {
 
 	@Override
 	protected void render() {
-		drawImage( getImage( url ) );
+		drawImage( getImageFromUrl( url ) );
 	}
 
 	public Runnable getPreloadRunner() {
-		return () -> getImage( url );
+		return () -> getImageFromUrl( url );
 	}
 
 	public static void main( String[] commands ) {
@@ -48,7 +48,7 @@ public class ImageIcon extends RenderedIcon {
 		proof( icon );
 	}
 
-	private Image getImage( String url ) {
+	private Image getImageFromUrl( String url ) {
 		int w = (int)getWidth();
 		int h = (int)getHeight();
 		String key = url + "?w=" + w + "&h=" + h;
