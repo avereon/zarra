@@ -53,10 +53,7 @@ public class Images {
 	}
 
 	static Scene getImageScene( Canvas canvas, double imageWidth, double imageHeight, Paint fill ) {
-		if( canvas instanceof VectorImage ) {
-			VectorImage image = (VectorImage)canvas;
-			applyTheme( image, image.getTheme() );
-		}
+		if( canvas instanceof VectorImage image ) applyTheme( image, image.getTheme() );
 		Pane pane = new Pane( canvas );
 		pane.setBackground( Background.EMPTY );
 		pane.setPrefSize( imageWidth, imageHeight );
