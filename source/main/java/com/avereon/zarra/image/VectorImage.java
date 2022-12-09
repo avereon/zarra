@@ -1,6 +1,5 @@
 package com.avereon.zarra.image;
 
-import com.avereon.zarra.style.Stylesheet;
 import com.avereon.zarra.style.Theme;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.ObjectProperty;
@@ -392,10 +391,6 @@ public abstract class VectorImage extends Canvas {
 		return getImage( getWidth(), getHeight() );
 	}
 
-	public Image getImage( String url ) {
-		return getImage( getWidth(), getHeight(), url );
-	}
-
 	/**
 	 * Get an image of the rendered ProgramImage. A new image of size width x
 	 * height is created and the ProgramImage is rendered on the new image at the
@@ -406,19 +401,12 @@ public abstract class VectorImage extends Canvas {
 	 * @return An image with the rendered image on it
 	 */
 	public Image getImage( double width, double height ) {
-		return getImage( width, height, null );
-	}
-
-	public Image getImage( double width, double height, String url ) {
 		// Note that just returning the WritableImage that the snapshot() method
 		// creates did not work when used as a Stage icon. However, creating a new
 		// WritableImage from the snapshot image seemed to solve the problem. That
 		// is why a new Writable image is created instead of just returning the
 		// snapshot image.
 		Scene scene = Images.getImageScene( this, width, height, null );
-		scene.getStylesheets().clear();
-		scene.getStylesheets().add( Stylesheet.ZARRA );
-		if( url != null) scene.getStylesheets().add( url );
 		WritableImage snapshot = scene.snapshot( new WritableImage( (int)width, (int)height ) );
 		return new WritableImage( snapshot.getPixelReader(), (int)snapshot.getWidth(), (int)snapshot.getHeight() );
 	}
