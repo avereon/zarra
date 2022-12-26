@@ -7,12 +7,14 @@ import javafx.scene.text.Text;
 import lombok.CustomLog;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 @CustomLog
 public final class FontUtil {
 
-	private static List<String> monoFamilyList;
+	private static List<String> monoFontFamilyList;
 
 	private static final String SEPARATOR = "|";
 
@@ -37,16 +39,14 @@ public final class FontUtil {
 		String style = FontPosture.REGULAR.name();
 		String sizeString = "-1";
 		switch( strings.size() ) {
-			case 2: {
+			case 2 -> {
 				family = strings.get( 0 );
 				sizeString = strings.get( 1 );
-				break;
 			}
-			case 3: {
+			case 3 -> {
 				family = strings.get( 0 );
 				style = strings.get( 1 );
 				sizeString = strings.get( 2 );
-				break;
 			}
 		}
 
@@ -54,39 +54,60 @@ public final class FontUtil {
 		try {
 			size = Double.parseDouble( sizeString );
 		} catch( NumberFormatException exception ) {
-			log.atWarning().withCause( exception).log( "Error parsing font size" );
+			log.atWarning().withCause( exception ).log( "Error parsing font size" );
 		}
 
-		return Font.font( family, getFontWeight( style ), getFontPosture( style ), size );
+		return javafx.scene.text.Font.font( family, getFontWeight( style ), getFontPosture( style ), size );
 	}
 
+	/**
+	 * Pass in the font style and this will return the font weight.
+	 *
+	 * @param string The font style string
+	 * @return The font weight
+	 */
 	public static FontWeight getFontWeight( String string ) {
 		string = string.toUpperCase();
 		for( FontWeight weight : FontWeight.values() ) {
-			if( string.contains( weight.name() ) ) return weight;
+			if( string.startsWith( weight.name() ) ) return weight;
 		}
 		return FontWeight.NORMAL;
 	}
 
+	/**
+	 * Pass in the font style and this will return the font posture.
+	 *
+	 * @param string The font style string
+	 * @return The font posture
+	 */
 	public static FontPosture getFontPosture( String string ) {
 		string = string.toUpperCase();
 		for( FontPosture posture : FontPosture.values() ) {
-			if( string.contains( posture.name() ) ) return posture;
+			if( string.endsWith( posture.name() ) ) return posture;
 		}
 
 		return FontPosture.REGULAR;
 	}
 
+	public static Font fromMap( Map<String, Object> map ) {
+		// "font"={"family"="System", "name"="System Regular", "size"=13.0, "style"="Regular"}
+		String family = String.valueOf( map.get( "family" ) );
+		FontWeight weight = FontUtil.getFontWeight( String.valueOf( map.getOrDefault( "style", FontWeight.NORMAL ) ) );
+		FontPosture posture = FontUtil.getFontPosture( String.valueOf( map.getOrDefault( "style", FontPosture.REGULAR ) ) );
+		double size = Double.parseDouble( String.valueOf( map.get( "size" ) ) );
+		return Font.font( family, weight, posture, size );
+	}
+
 	/**
-	 * Return a list of all the mono-spaced fonts on the system.
+	 * Return a list of all the monospaced fonts on the system.
 	 *
-	 * @return An observable list of all of the mono-spaced fonts on the system.
+	 * @return An observable list of all the monospaced fonts on the system.
 	 */
 	public static List<String> getMonoFontFamilyNames() {
-		if( monoFamilyList != null ) return monoFamilyList;
+		if( monoFontFamilyList != null ) return monoFontFamilyList;
 
 		// Compare the layout widths of two strings. One string is composed
-		// of "thin" characters, the other of "wide" characters. In mono-spaced
+		// of "thin" characters, the other of "wide" characters. In monospaced
 		// fonts the widths should be the same.
 
 		final Text thinText = new Text( "1 l" ); // note the space
@@ -104,7 +125,7 @@ public final class FontUtil {
 			if( thinText.getLayoutBounds().getWidth() == thickText.getLayoutBounds().getWidth() ) monoFamilyList.add( fontFamilyName );
 		}
 
-		return monoFamilyList;
+		return monoFontFamilyList = Collections.unmodifiableList( monoFamilyList );
 	}
 
 }

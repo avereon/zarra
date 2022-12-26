@@ -31,4 +31,9 @@ class FontUtilTest {
 		assertThat( FontUtil.decode( "SansSerif|Bold Italic|18.0" ) ).isEqualTo( Font.font( "SansSerif", FontWeight.BOLD, FontPosture.ITALIC, 18.0 ) );
 	}
 
+	@Test
+	void testGetMonoFontFamilyNames() {
+		assertThat( FontUtil.getMonoFontFamilyNames().size()).isGreaterThan( 0 );
+	}
+
 }
