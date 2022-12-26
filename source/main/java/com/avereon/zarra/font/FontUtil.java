@@ -9,7 +9,6 @@ import lombok.CustomLog;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 
 @CustomLog
 public final class FontUtil {
@@ -87,15 +86,6 @@ public final class FontUtil {
 		}
 
 		return FontPosture.REGULAR;
-	}
-
-	public static Font fromMap( Map<String, Object> map ) {
-		// "font"={"family"="System", "name"="System Regular", "size"=13.0, "style"="Regular"}
-		String family = String.valueOf( map.get( "family" ) );
-		FontWeight weight = FontUtil.getFontWeight( String.valueOf( map.getOrDefault( "style", FontWeight.NORMAL ) ) );
-		FontPosture posture = FontUtil.getFontPosture( String.valueOf( map.getOrDefault( "style", FontPosture.REGULAR ) ) );
-		double size = Double.parseDouble( String.valueOf( map.get( "size" ) ) );
-		return Font.font( family, weight, posture, size );
 	}
 
 	/**
