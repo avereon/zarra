@@ -14,51 +14,40 @@ import java.util.*;
 public class FxUtil {
 
 	public static Pos parseAlign( String align ) {
-		switch( align ) {
-			case "northwest":
-				return Pos.TOP_LEFT;
-			case "north":
-				return Pos.TOP_CENTER;
-			case "northeast":
-				return Pos.TOP_RIGHT;
-			case "west":
-				return Pos.CENTER_LEFT;
-			case "center":
-				return Pos.CENTER;
-			case "east":
-				return Pos.CENTER_RIGHT;
-			case "southwest":
-				return Pos.BOTTOM_LEFT;
-			case "south":
-				return Pos.BOTTOM_CENTER;
-			case "southeast":
-				return Pos.BOTTOM_RIGHT;
-		}
-		return Pos.CENTER;
+		return switch( align ) {
+			case "northwest" -> Pos.TOP_LEFT;
+			case "north" -> Pos.TOP_CENTER;
+			case "northeast" -> Pos.TOP_RIGHT;
+			case "west" -> Pos.CENTER_LEFT;
+			case "east" -> Pos.CENTER_RIGHT;
+			case "southwest" -> Pos.BOTTOM_LEFT;
+			case "south" -> Pos.BOTTOM_CENTER;
+			case "southeast" -> Pos.BOTTOM_RIGHT;
+			default -> Pos.CENTER;
+		};
 	}
 
 	public static BackgroundPosition parseBackgroundPosition( String align ) {
-		switch( align ) {
-			case "northwest":
-				return new BackgroundPosition( Side.LEFT, 0, true, Side.TOP, 0, true );
-			case "north":
-				return new BackgroundPosition( Side.LEFT, 0.5, true, Side.TOP, 0, true );
-			case "northeast":
-				return new BackgroundPosition( Side.LEFT, 1, true, Side.TOP, 0, true );
-			case "west":
-				return new BackgroundPosition( Side.LEFT, 0, true, Side.TOP, 0.5, true );
-			case "center":
-				return new BackgroundPosition( Side.LEFT, 0.5, true, Side.TOP, 0.5, true );
-			case "east":
-				return new BackgroundPosition( Side.LEFT, 1, true, Side.TOP, 0.5, true );
-			case "southwest":
-				return new BackgroundPosition( Side.LEFT, 0, true, Side.TOP, 1, true );
-			case "south":
-				return new BackgroundPosition( Side.LEFT, 0.5, true, Side.TOP, 1, true );
-			case "southeast":
-				return new BackgroundPosition( Side.LEFT, 1, true, Side.TOP, 1, true );
+		return switch( align ) {
+			case "northwest" -> new BackgroundPosition( Side.LEFT, 0, true, Side.TOP, 0, true );
+			case "north" -> new BackgroundPosition( Side.LEFT, 0.5, true, Side.TOP, 0, true );
+			case "northeast" -> new BackgroundPosition( Side.LEFT, 1, true, Side.TOP, 0, true );
+			case "west" -> new BackgroundPosition( Side.LEFT, 0, true, Side.TOP, 0.5, true );
+			case "center" -> new BackgroundPosition( Side.LEFT, 0.5, true, Side.TOP, 0.5, true );
+			case "east" -> new BackgroundPosition( Side.LEFT, 1, true, Side.TOP, 0.5, true );
+			case "southwest" -> new BackgroundPosition( Side.LEFT, 0, true, Side.TOP, 1, true );
+			case "south" -> new BackgroundPosition( Side.LEFT, 0.5, true, Side.TOP, 1, true );
+			case "southeast" -> new BackgroundPosition( Side.LEFT, 1, true, Side.TOP, 1, true );
+			default -> BackgroundPosition.CENTER;
+		};
+	}
+
+	@SuppressWarnings( "unchecked" )
+	public static <T extends Parent> T findParentByClass( Node node, Class<T> clazz ) {
+		while( (node = node.getParent()) != null ) {
+			if( clazz.isAssignableFrom( node.getClass() ) ) return (T)node;
 		}
-		return BackgroundPosition.CENTER;
+		return null;
 	}
 
 	public static boolean isChildOf( Node node, Node container ) {
@@ -131,12 +120,12 @@ public class FxUtil {
 
 	/**
 	 * Pick the child node in a parent node that contains the scene point. Found
-	 * at: http://fxexperience.com/2016/01/node-picking-in-javafx/.
+	 * at: <a href="http://fxexperience.com/2016/01/node-picking-in-javafx/">fxexperience.com</a>.
 	 *
-	 * @param parent
-	 * @param sceneX
-	 * @param sceneY
-	 * @return
+	 * @param parent The parent node
+	 * @param sceneX The x coordinate in the scene
+	 * @param sceneY The y coordinate in the scene
+	 * @return The node at the location
 	 */
 	public static Node pick( Node parent, double sceneX, double sceneY ) {
 		Point2D point = parent.sceneToLocal( sceneX, sceneY, true );
