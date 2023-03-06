@@ -1,7 +1,7 @@
 package com.avereon.zarra.image;
 
 import com.avereon.zarra.style.Stylesheet;
-import com.avereon.zarra.style.Theme;
+import com.avereon.zarra.style.Motif;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
@@ -72,14 +72,14 @@ public class Images {
 		if( style != null ) node.setStyle( style );
 	}
 
-	private static void applyTheme( VectorImage node, Theme theme ) {
+	private static void applyTheme( VectorImage node, Motif motif ) {
 		String style = removeTheme( node );
-		node.setStyle( style == null ? theme.getStyle() : style + theme.getStyle() );
+		node.setStyle( style == null ? motif.getStyle() : style + motif.getStyle() );
 	}
 
 	private static String removeTheme( Canvas node ) {
 		String style = node.getStyle();
-		for( Theme t : Theme.values() ) {
+		for( Motif t : Motif.values() ) {
 			int index = style.indexOf( t.getStyle() );
 			if( index > -1 ) style = style.replace( t.getStyle(), "" );
 		}
