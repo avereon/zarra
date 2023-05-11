@@ -5,6 +5,7 @@ import javafx.scene.paint.Paint;
 import javafx.scene.shape.FillRule;
 import javafx.scene.shape.StrokeLineCap;
 import javafx.scene.shape.StrokeLineJoin;
+import javafx.scene.text.Font;
 import javafx.scene.transform.Affine;
 import javafx.scene.transform.Transform;
 
@@ -80,7 +81,11 @@ public class SvgIcon extends VectorIcon {
 	}
 
 	public SvgIcon fill( String path, Paint paint, FillRule rule ) {
-		if( path != null ) actions.add( new Fill( path, true, paint, rule ) );
+		return fill( path, null, paint, rule );
+	}
+
+	public SvgIcon fill( String path, Font font, Paint paint, FillRule rule ) {
+		if( path != null ) actions.add( new Fill( path, true, font, paint, rule ) );
 		return this;
 	}
 
@@ -103,7 +108,11 @@ public class SvgIcon extends VectorIcon {
 	}
 
 	public SvgIcon fillText( String path, Paint paint, FillRule rule ) {
-		if( path != null ) actions.add( new Fill( path, false, paint, rule ) );
+		return fillText( path, null, paint, rule );
+	}
+
+	public SvgIcon fillText( String path, Font font, Paint paint, FillRule rule ) {
+		if( path != null ) actions.add( new Fill( path, false, font, paint, rule ) );
 		return this;
 	}
 
@@ -156,7 +165,11 @@ public class SvgIcon extends VectorIcon {
 	}
 
 	public SvgIcon draw( String path, Paint paint, double width, StrokeLineCap cap, StrokeLineJoin join, double dashOffset, double... dashes ) {
-		if( path != null ) actions.add( new Draw( path, true, paint, width, cap, join, dashOffset, dashes ) );
+		return draw( path, null, paint, width, cap, join, dashOffset, dashes );
+	}
+
+	public SvgIcon draw( String path, Font font, Paint paint, double width, StrokeLineCap cap, StrokeLineJoin join, double dashOffset, double... dashes ) {
+		if( path != null ) actions.add( new Draw( path, true, font, paint, width, cap, join, dashOffset, dashes ) );
 		return this;
 	}
 
@@ -187,7 +200,11 @@ public class SvgIcon extends VectorIcon {
 	}
 
 	public SvgIcon drawText( String path, Paint paint, double width, StrokeLineCap cap, StrokeLineJoin join, double dashOffset, double... dashes ) {
-		if( path != null ) actions.add( new Draw( path, false, paint, width, cap, join, dashOffset, dashes ) );
+		return drawText( path, null, paint, width, cap, join, dashOffset, dashes );
+	}
+
+	public SvgIcon drawText( String path, Font font, Paint paint, double width, StrokeLineCap cap, StrokeLineJoin join, double dashOffset, double... dashes ) {
+		if( path != null ) actions.add( new Draw( path, false, font, paint, width, cap, join, dashOffset, dashes ) );
 		return this;
 	}
 
@@ -300,7 +317,7 @@ public class SvgIcon extends VectorIcon {
 
 		private final String path;
 
-		private boolean isSvg;
+		private final boolean isSvg;
 
 		private final Paint paint;
 
@@ -346,15 +363,19 @@ public class SvgIcon extends VectorIcon {
 
 	private static class Fill extends RenderAction {
 
+		private final Font font;
+
 		private final FillRule rule;
 
-		public Fill( String path, boolean isSvg, Paint paint, FillRule rule ) {
+		public Fill( String path, boolean isSvg, Font font, Paint paint, FillRule rule ) {
 			super( path, isSvg, paint );
+			this.font = font;
 			this.rule = rule;
 		}
 
 		public void render( SvgIcon icon ) {
 			GraphicsContext context = setup( icon );
+			context.setFont( font );
 			context.setFill( calcPaint( icon ) );
 			context.setFillRule( rule );
 
@@ -374,6 +395,8 @@ public class SvgIcon extends VectorIcon {
 
 	private static class Draw extends RenderAction {
 
+		private final Font font;
+
 		private final double width;
 
 		private final StrokeLineCap cap;
@@ -384,8 +407,9 @@ public class SvgIcon extends VectorIcon {
 
 		private final double[] dashes;
 
-		public Draw( String path, boolean isSvg, Paint paint, double width, StrokeLineCap cap, StrokeLineJoin join, double dashOffset, double... dashes ) {
+		public Draw( String path, boolean isSvg, Font font, Paint paint, double width, StrokeLineCap cap, StrokeLineJoin join, double dashOffset, double... dashes ) {
 			super( path, isSvg, paint );
+			this.font = font;
 			this.width = width;
 			this.cap = cap;
 			this.join = join;
@@ -395,6 +419,7 @@ public class SvgIcon extends VectorIcon {
 
 		public void render( SvgIcon icon ) {
 			GraphicsContext context = setup( icon );
+			context.setFont( font );
 			context.setStroke( calcPaint( icon ) );
 			context.setLineWidth( width );
 			context.setLineCap( cap );
