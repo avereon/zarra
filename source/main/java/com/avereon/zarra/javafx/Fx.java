@@ -58,12 +58,15 @@ public class Fx {
 	}
 
 	private static void doWaitForWithExceptions( long count, TimeUnit unit ) throws TimeoutException, InterruptedException {
+		if( Fx.isFxThread() ) throw new IllegalStateException( "Attempt to wait on FX thread from FX thread" );
+
 		Semaphore semaphore = new Semaphore( 0 );
 		Fx.run( semaphore::release );
-		if( !semaphore.tryAcquire( count, unit ) ) throw new TimeoutException( "Timeout waiting for FX" );
 
 		// NOTE Thread.yield() is helpful but not consistent
 		//Thread.yield();
+
+		if( !semaphore.tryAcquire( count, unit ) ) throw new TimeoutException( "Timeout waiting for FX" );
 	}
 
 }
