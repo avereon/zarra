@@ -9,11 +9,7 @@ import java.util.concurrent.TimeoutException;
 public class Fx {
 
 	public static void startup() {
-		try {
-			Fx.run( () -> {} );
-		} catch( IllegalStateException exception ) {
-			Platform.startup( () -> {} );
-		}
+		if( !isRunning() ) Platform.startup( () -> {} );
 	}
 
 	// Convenience method to call Platform.runLater
@@ -26,7 +22,7 @@ public class Fx {
 		try {
 			Fx.run( () -> {} );
 			return true;
-		} catch( Throwable throwable ) {
+		} catch( IllegalStateException throwable ) {
 			return false;
 		}
 	}
@@ -65,6 +61,9 @@ public class Fx {
 		Semaphore semaphore = new Semaphore( 0 );
 		Fx.run( semaphore::release );
 		if( !semaphore.tryAcquire( count, unit ) ) throw new TimeoutException( "Timeout waiting for FX" );
+
+		// NOTE Thread.yield() is helpful but not consistent
+		//Thread.yield();
 	}
 
 }
