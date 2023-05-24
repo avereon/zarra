@@ -1,15 +1,22 @@
 package com.avereon.zarra.javafx;
 
 import javafx.application.Platform;
+import lombok.CustomLog;
 
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
+@CustomLog
 public class Fx {
 
 	public static void startup() {
-		if( !isRunning() ) Platform.startup( () -> {} );
+		try {
+			log.atDebug().log( "Starting FX Platform..." );
+			Platform.startup( () -> log.atConfig().log( "FX Platform started!" ) );
+		} catch( IllegalStateException exception ) {
+			log.atConfig().log( "FX Platform already started!" );
+		}
 	}
 
 	// Convenience method to call Platform.runLater
@@ -23,6 +30,7 @@ public class Fx {
 			Fx.run( () -> {} );
 			return true;
 		} catch( IllegalStateException throwable ) {
+			throwable.printStackTrace( System.err );
 			return false;
 		}
 	}
