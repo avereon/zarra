@@ -30,7 +30,6 @@ public class Fx {
 			Fx.run( () -> {} );
 			return true;
 		} catch( IllegalStateException throwable ) {
-			throwable.printStackTrace( System.err );
 			return false;
 		}
 	}
