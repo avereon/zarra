@@ -38,7 +38,7 @@ public class Fx {
 		return Platform.isFxApplicationThread();
 	}
 
-	public static void checkFxThread() {
+	public static void affirmOnFxThread() {
 		if( !isFxThread() ) throw new IllegalStateException( "Not on FX thread; thread=" + Thread.currentThread().getName() );
 	}
 
