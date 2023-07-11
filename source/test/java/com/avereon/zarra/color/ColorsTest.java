@@ -30,13 +30,18 @@ class ColorsTest {
 	void testInvertBrightness() {
 		assertInvertedBrightness( Color.rgb( 0, 0, 0, 0 ), Color.rgb( 0, 0, 0, 0 ) );
 
-		//assertInvertedBrightness( Color.rgb( 0, 0, 0 ), Color.rgb( 255, 255, 255 ) );
-		//assertInvertedBrightness( Color.rgb( 128, 128, 128 ), Color.rgb( 127, 127, 127 ) );
+		assertInvertedBrightness( Color.rgb( 0, 0, 0 ), Color.rgb( 255, 255, 255 ) );
+		assertInvertedBrightness( Color.rgb( 128, 128, 128 ), Color.rgb( 126, 126, 126 ) );
+		assertInvertedBrightness( Color.rgb( 127, 127, 127 ), Color.rgb( 127, 127, 127 ) );
 
-		// So...this one works at the expense of the previous
+		// yellow
 		assertInvertedBrightness( Color.rgb( 255, 255, 0 ), Color.rgb( 31, 31, 0 ) );
 
-		//assertInvertedBrightness( Color.RED, Color.RED );
+		// red
+		// FIXME Red doesn't invert correctly
+		assertInvertedBrightness( Color.rgb( 255, 0, 0 ), Color.rgb( 76, 0, 0 ) );
+
+		// green
 		//		assertInvertedBrightness( Color.GREEN, Color.GREEN );
 		//		assertInvertedBrightness( Color.CYAN, Color.CYAN );
 		//		assertInvertedBrightness( Color.BLUE, Color.BLUE );

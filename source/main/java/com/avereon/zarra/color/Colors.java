@@ -60,66 +60,44 @@ public class Colors {
 	 * @return The color with the brightness inverted
 	 */
 	public static Color invertBrightness( Color color ) {
-		//System.out.printf( "h=%f s=%f b=%f\n", color.getHue(), color.getSaturation(), color.getBrightness() );
-		//System.out.printf( "r=%d g=%d b=%d\n", (int)(color.getRed() * 255), (int)(color.getGreen() * 255), (int)(color.getBlue() * 255) );
+		int r, g, b;
+		double a = color.getOpacity();
 
-		// FIXME This is RED in the case of grayscale colors
-		Color baseColor = Color.hsb( color.getHue(), 1, 1 );
-		//double baseLuminance = Colors.getLuminance( baseColor );
-		double luminance = Colors.getLuminance( color );
-		double desiredLuminance = 1.0 - luminance;
-		double luminanceFactor = 1 / luminance;
+		if( a == 0 ) {
+			// Handle transparent
+			r = g = b = 0;
+		} else if( color.getSaturation() == 0 ) {
+			// Handle grayscale
+			r = g = b = (int)((1 - color.getBrightness()) * 255);
+		} else {
+			// Handle colors
+			double luminance = Colors.getLuminance( color );
+			Color baseColor = Color.hsb( color.getHue(), 1, 1 );
+			double invertedLuminance = 1.0 - luminance;
+			double luminanceFactor = 1 / luminance;
 
-		double tc = baseColor.getRed() + baseColor.getGreen() + baseColor.getBlue();
-		double wr = baseColor.getRed() / tc;
-		double wg = baseColor.getGreen() / tc;
-		double wb = baseColor.getBlue() / tc;
+			// FIXME luminanceFactor is really large for the color RED
 
-		System.out.println( " wr=" + wr + " wg=" + wg + " wb=" + wb );
+			double tc = baseColor.getRed() + baseColor.getGreen() + baseColor.getBlue();
+			double wr = baseColor.getRed() / tc;
+			double wg = baseColor.getGreen() / tc;
+			double wb = baseColor.getBlue() / tc;
 
-		// Now, how to get the rgb colors to balance and sum to desired luminosity
-		double dr = clamp( baseColor.getRed() * desiredLuminance * luminanceFactor );
-		double dg = clamp( baseColor.getGreen() * desiredLuminance  * luminanceFactor);
-		double db = clamp( baseColor.getBlue() * desiredLuminance * luminanceFactor );
+			System.out.println( "wr=" + wr + " wg=" + wg + " wb=" + wb + " il=" + invertedLuminance + " lf=" + luminanceFactor );
 
+			// Now, how to get the rgb colors to balance and sum to desired luminosity
+			double dr = clamp( baseColor.getRed() * invertedLuminance * luminanceFactor );
+			double dg = clamp( baseColor.getGreen() * invertedLuminance * luminanceFactor );
+			double db = clamp( baseColor.getBlue() * invertedLuminance * luminanceFactor );
 
-		// FIXME This approach causes bright colors to be black
-		// This approach does not work well with fully saturated colors because cmax
-		// gets set to 1.0 by the brightest color. Can we use intensity?
+			r = (int)(dr * 255);
+			g = (int)(dg * 255);
+			b = (int)(db * 255);
+		}
 
-		//		double ir = 1.0 - color.getRed();
-		//		double ig = 1.0 - color.getGreen();
-		//		double ib = 1.0 - color.getBlue();
-		//		double cmax = Math.max( ir, Math.max( ig, ib ) );
-		//		double cmin = Math.min( ir, Math.min( ig, ib ) );
-		//
-		//		System.out.println( "hue=" + color.getHue() + " il=" + cmax + " cmax=" + cmax + " cmin=" + cmin );
-		//
-		//		double desiredBrightness = cmax;
-		//		double desiredSaturation = cmax == 0 ? 0 : (cmax - cmin) / cmax;
-		//
-		//		Color inverse = color.invert();
-		//		double revertedHue = (((inverse.getHue() % 360) + 180) % 360) / 360;
-		//
-		//		double h = color.getHue();
-		//		double s = color.getSaturation();
-		//		double l = desiredBrightness;
-		//		double a = color.getOpacity();
-		//
-		//		double level = (255 - (int)(l * 255)) / 255.0;
-		//
-		//		Color inverted = Color.hsb( h, s, l );
-		//
-				int r = (int)(dr * 255);
-				int g = (int)(dg * 255);
-				int b = (int)(db * 255);
-		//
-		//		if( desiredSaturation == 0 ) r = g = b = (int)(desiredBrightness * 255);
-		//
-		//		//System.out.printf( "-> r=%d g=%d b=%d\n", r, g, b );
-
-		Color desiredColor = Color.rgb( r,g,b, color.getOpacity() );
-		System.out.println( "desired color instensity=" + getLuminance( desiredColor ) );
+		Color desiredColor = Color.rgb( r, g, b, a );
+		//System.out.println( "desired color intensity=" + getLuminance( desiredColor ) );
+		//System.out.printf( "-> r=%d g=%d b=%d\n", r, g, b );
 		return desiredColor;
 	}
 
