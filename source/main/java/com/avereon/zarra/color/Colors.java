@@ -54,6 +54,75 @@ public class Colors {
 	}
 
 	/**
+	 * Invert the brightness of a color while maintaining hue and saturation.
+	 *
+	 * @param color The color to invert
+	 * @return The color with the brightness inverted
+	 */
+	public static Color invertBrightness( Color color ) {
+		//System.out.printf( "h=%f s=%f b=%f\n", color.getHue(), color.getSaturation(), color.getBrightness() );
+		//System.out.printf( "r=%d g=%d b=%d\n", (int)(color.getRed() * 255), (int)(color.getGreen() * 255), (int)(color.getBlue() * 255) );
+
+		Color baseColor = Color.hsb( color.getHue(), 1, 1 );
+		double baseLuminance = Colors.getLuminance( baseColor );
+		double luminance = Colors.getLuminance( color );
+		double desiredLuminance = 1.0 - luminance;
+		double luminanceFactor = 1 / luminance;
+
+		double tc = baseColor.getRed() + baseColor.getGreen() + baseColor.getBlue();
+		double wr = baseColor.getRed() / tc;
+		double wg = baseColor.getGreen() / tc;
+		double wb = baseColor.getBlue() / tc;
+
+		System.out.println( "baseLuminance=" + baseLuminance + " wr=" + wr + " wg=" + wg + " wb=" + wb );
+
+		// Now, how to get the rgb colors to balance and sum to desired luminosity
+		double dr = clamp( baseColor.getRed() * desiredLuminance * luminanceFactor );
+		double dg = clamp( baseColor.getGreen() * desiredLuminance  * luminanceFactor);
+		double db = clamp( baseColor.getBlue() * desiredLuminance * luminanceFactor );
+
+
+		// FIXME This approach causes bright colors to be black
+		// This approach does not work well with fully saturated colors because cmax
+		// gets set to 1.0 by the brightest color. Can we use intensity?
+
+		//		double ir = 1.0 - color.getRed();
+		//		double ig = 1.0 - color.getGreen();
+		//		double ib = 1.0 - color.getBlue();
+		//		double cmax = Math.max( ir, Math.max( ig, ib ) );
+		//		double cmin = Math.min( ir, Math.min( ig, ib ) );
+		//
+		//		System.out.println( "hue=" + color.getHue() + " il=" + cmax + " cmax=" + cmax + " cmin=" + cmin );
+		//
+		//		double desiredBrightness = cmax;
+		//		double desiredSaturation = cmax == 0 ? 0 : (cmax - cmin) / cmax;
+		//
+		//		Color inverse = color.invert();
+		//		double revertedHue = (((inverse.getHue() % 360) + 180) % 360) / 360;
+		//
+		//		double h = color.getHue();
+		//		double s = color.getSaturation();
+		//		double l = desiredBrightness;
+		//		double a = color.getOpacity();
+		//
+		//		double level = (255 - (int)(l * 255)) / 255.0;
+		//
+		//		Color inverted = Color.hsb( h, s, l );
+		//
+				int r = (int)(dr * 255);
+				int g = (int)(dg * 255);
+				int b = (int)(db * 255);
+		//
+		//		if( desiredSaturation == 0 ) r = g = b = (int)(desiredBrightness * 255);
+		//
+		//		//System.out.printf( "-> r=%d g=%d b=%d\n", r, g, b );
+
+		Color desiredColor = Color.rgb( r,g,b, color.getOpacity() );
+		System.out.println( "desired color instensity=" + getLuminance( desiredColor ) );
+		return desiredColor;
+	}
+
+	/**
 	 * Generate a toned color by mixing the specified color with white (factor
 	 * 1.0) or black (factor -1.0).
 	 */
@@ -90,8 +159,6 @@ public class Colors {
 
 	/**
 	 * Get the intensity of the specified color.
-	 * <p>
-	 * Derived from: http://stackoverflow.com/questions/596216/formula-to-determine-brightness-of-rgb-color
 	 *
 	 * @param color The color for which to find the luminance.
 	 * @return A number between 0.0 and 1.0 representing the luminance.
