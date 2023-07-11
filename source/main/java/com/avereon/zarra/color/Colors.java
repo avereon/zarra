@@ -63,8 +63,9 @@ public class Colors {
 		//System.out.printf( "h=%f s=%f b=%f\n", color.getHue(), color.getSaturation(), color.getBrightness() );
 		//System.out.printf( "r=%d g=%d b=%d\n", (int)(color.getRed() * 255), (int)(color.getGreen() * 255), (int)(color.getBlue() * 255) );
 
+		// FIXME This is RED in the case of grayscale colors
 		Color baseColor = Color.hsb( color.getHue(), 1, 1 );
-		double baseLuminance = Colors.getLuminance( baseColor );
+		//double baseLuminance = Colors.getLuminance( baseColor );
 		double luminance = Colors.getLuminance( color );
 		double desiredLuminance = 1.0 - luminance;
 		double luminanceFactor = 1 / luminance;
@@ -74,7 +75,7 @@ public class Colors {
 		double wg = baseColor.getGreen() / tc;
 		double wb = baseColor.getBlue() / tc;
 
-		System.out.println( "baseLuminance=" + baseLuminance + " wr=" + wr + " wg=" + wg + " wb=" + wb );
+		System.out.println( " wr=" + wr + " wg=" + wg + " wb=" + wb );
 
 		// Now, how to get the rgb colors to balance and sum to desired luminosity
 		double dr = clamp( baseColor.getRed() * desiredLuminance * luminanceFactor );

@@ -28,7 +28,7 @@ class ColorsTest {
 
 	@Test
 	void testInvertBrightness() {
-		//assertInvertedBrightness( Color.rgb( 0, 0, 0, 0 ), Color.rgb( 0, 0, 0, 0 ) );
+		assertInvertedBrightness( Color.rgb( 0, 0, 0, 0 ), Color.rgb( 0, 0, 0, 0 ) );
 
 		//assertInvertedBrightness( Color.rgb( 0, 0, 0 ), Color.rgb( 255, 255, 255 ) );
 		//assertInvertedBrightness( Color.rgb( 128, 128, 128 ), Color.rgb( 127, 127, 127 ) );
