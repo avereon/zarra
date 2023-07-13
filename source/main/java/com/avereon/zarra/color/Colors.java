@@ -4,6 +4,18 @@ import javafx.scene.paint.Color;
 
 public class Colors {
 
+	// Per http://stackoverflow.com/questions/596216/formula-to-determine-brightness-of-rgb-color
+	//	public static final double RED_BRIGHTNESS_FACTOR = 0.2126;
+	//	public static final double GREEN_BRIGHTNESS_FACTOR = 0.7152;
+	//	public static final double BLUE_BRIGHTNESS_FACTOR = 0.0722;
+
+	// Per com.sun.javafx.util.Utils.calculateBrightness(Color)
+	public static final double RED_BRIGHTNESS_FACTOR = 0.3;
+
+	public static final double GREEN_BRIGHTNESS_FACTOR = 0.59;
+
+	public static final double BLUE_BRIGHTNESS_FACTOR = 0.11;
+
 	public static Color parse( String string ) {
 		if( string == null ) return null;
 		return Color.web( string );
@@ -143,11 +155,51 @@ public class Colors {
 	 * @return A number between 0.0 and 1.0 representing the luminance.
 	 */
 	public static double getLuminance( Color color ) {
-		// Per http://stackoverflow.com/questions/596216/formula-to-determine-brightness-of-rgb-color
-		//return  (0.2126*color.getRed()) + (0.7152*color.getGreen()) + (0.0722*color.getBlue());
+		return (RED_BRIGHTNESS_FACTOR * color.getRed()) + (GREEN_BRIGHTNESS_FACTOR * color.getGreen()) + (BLUE_BRIGHTNESS_FACTOR * color.getBlue());
+	}
 
-		// Per com.sun.javafx.util.Utils.calculateBrightness(Color)
-		return (0.3 * color.getRed()) + (0.59 * color.getGreen()) + (0.11 * color.getBlue());
+	public static Color swapLuminance( Color color ) {
+		Color inverse = color.invert();
+		double colorLuminance = Colors.getLuminance( color );
+		double inverseLuminance = Colors.getLuminance( inverse );
+
+		double inverseFactor = inverseLuminance / colorLuminance;
+		double inverseRedLuminance = color.getRed() * inverseFactor;
+		double inverseGreenLuminance = color.getGreen() * inverseFactor;
+		double inverseBlueLuminance = color.getBlue() * inverseFactor;
+
+		boolean redPegged = inverseRedLuminance > 1.0;
+		boolean greenPegged = inverseGreenLuminance > 1.0;
+		boolean bluePegged = inverseBlueLuminance > 1.0;
+		boolean allSafe = !redPegged && !greenPegged && !bluePegged;
+
+		if( allSafe ) {
+			return Color.color( inverseRedLuminance, inverseGreenLuminance, inverseBlueLuminance, color.getOpacity() );
+		} else {
+			double targetLuminance = 1;
+			if( redPegged ) targetLuminance -= RED_BRIGHTNESS_FACTOR;
+			if( greenPegged ) targetLuminance -= GREEN_BRIGHTNESS_FACTOR;
+			if( bluePegged ) targetLuminance -= BLUE_BRIGHTNESS_FACTOR;
+
+			double remainingTargetLuminance = targetLuminance;
+			if( redPegged ) remainingTargetLuminance -= RED_BRIGHTNESS_FACTOR;
+			if( greenPegged ) remainingTargetLuminance -= GREEN_BRIGHTNESS_FACTOR;
+			if( bluePegged ) remainingTargetLuminance -= BLUE_BRIGHTNESS_FACTOR;
+
+			double combinedAvailableFactors = 0;
+			if( !redPegged ) combinedAvailableFactors += RED_BRIGHTNESS_FACTOR;
+			if( !greenPegged ) combinedAvailableFactors += GREEN_BRIGHTNESS_FACTOR;
+			if( !bluePegged ) combinedAvailableFactors += BLUE_BRIGHTNESS_FACTOR;
+
+			double n = remainingTargetLuminance / combinedAvailableFactors;
+			double r = clamp( redPegged ? 1.0 : n );
+			double g = clamp( greenPegged ? 1.0 : n );
+			double b = clamp( bluePegged ? 1.0 : n );
+
+			System.out.println( "color=" + color + " r=" + r + " g=" + g + " b=" + b );
+
+			return Color.color( r, g, b, color.getOpacity() );
+		}
 	}
 
 	private static double clamp( double value ) {
