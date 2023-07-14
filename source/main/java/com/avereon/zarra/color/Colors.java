@@ -66,54 +66,6 @@ public class Colors {
 	}
 
 	/**
-	 * Invert the brightness of a color while maintaining hue and saturation.
-	 *
-	 * @param color The color to invert
-	 * @return The color with the brightness inverted
-	 */
-	public static Color invertBrightness( Color color ) {
-		int r, g, b;
-		double a = color.getOpacity();
-
-		if( a == 0 ) {
-			// Handle transparent
-			r = g = b = 0;
-		} else if( color.getSaturation() == 0 ) {
-			// Handle grayscale
-			r = g = b = (int)((1 - color.getBrightness()) * 255);
-		} else {
-			// Handle colors
-			double luminance = Colors.getLuminance( color );
-			Color baseColor = Color.hsb( color.getHue(), 1, 1 );
-			double invertedLuminance = 1.0 - luminance;
-			double luminanceFactor = 1 / luminance;
-
-			// FIXME luminanceFactor is really large for the color RED
-
-			double tc = baseColor.getRed() + baseColor.getGreen() + baseColor.getBlue();
-			double wr = baseColor.getRed() / tc;
-			double wg = baseColor.getGreen() / tc;
-			double wb = baseColor.getBlue() / tc;
-
-			System.out.println( "wr=" + wr + " wg=" + wg + " wb=" + wb + " il=" + invertedLuminance + " lf=" + luminanceFactor );
-
-			// Now, how to get the rgb colors to balance and sum to desired luminosity
-			double dr = clamp( baseColor.getRed() * invertedLuminance * luminanceFactor );
-			double dg = clamp( baseColor.getGreen() * invertedLuminance * luminanceFactor );
-			double db = clamp( baseColor.getBlue() * invertedLuminance * luminanceFactor );
-
-			r = (int)(dr * 255);
-			g = (int)(dg * 255);
-			b = (int)(db * 255);
-		}
-
-		Color desiredColor = Color.rgb( r, g, b, a );
-		//System.out.println( "desired color intensity=" + getLuminance( desiredColor ) );
-		//System.out.printf( "-> r=%d g=%d b=%d\n", r, g, b );
-		return desiredColor;
-	}
-
-	/**
 	 * Generate a toned color by mixing the specified color with white (factor
 	 * 1.0) or black (factor -1.0).
 	 */
@@ -159,11 +111,21 @@ public class Colors {
 		return RED_BRIGHTNESS_FACTOR * color.getRed() + GREEN_BRIGHTNESS_FACTOR * color.getGreen() + BLUE_BRIGHTNESS_FACTOR * color.getBlue();
 	}
 
-	public static Color swapLuminance( Color color ) {
+	/**
+	 * Invert the luminance of a color while attempting to keep the hue.
+	 * Sometimes, due to color channel overflow when inverting luminance, the hue
+	 * cannot be well maintained. Therefore, inverting the luminance of a
+	 * luminance inverted color does not always result in the original color. But
+	 * in most cases luminance inverts and reverts well.
+	 *
+	 * @param color The color to invert luminance
+	 * @return A color of the same, or similar, hue with inverted luminance
+	 */
+	public static Color invertLuminance( Color color ) {
 		double sourceLuminance = Colors.getLuminance( color );
 		double targetLuminance = Colors.getLuminance( color.invert() );
 
-		System.out.println( "sourceLuminance=" + sourceLuminance + " targetLuminance=" + targetLuminance );
+		//System.out.println( "sourceLuminance=" + sourceLuminance + " targetLuminance=" + targetLuminance );
 
 		if( sourceLuminance == 0 ) return Color.color( 1, 1, 1, color.getOpacity() );
 		if( sourceLuminance == 1 ) return Color.color( 0, 0, 0, color.getOpacity() );
@@ -178,48 +140,57 @@ public class Colors {
 		boolean bluePegged = b > 1.0;
 		boolean rollover = redPegged || greenPegged || bluePegged;
 
+		int peggedCount = 0;
+		if( redPegged ) peggedCount++;
+		if( greenPegged ) peggedCount++;
+		if( bluePegged ) peggedCount++;
+
 		if( rollover ) {
+			// Remove luminance already accounted for by existing colors
 			double remainingTargetLuminance = targetLuminance;
-			if( redPegged ) remainingTargetLuminance -= RED_BRIGHTNESS_FACTOR;
-			if( greenPegged ) remainingTargetLuminance -= GREEN_BRIGHTNESS_FACTOR;
-			if( bluePegged ) remainingTargetLuminance -= BLUE_BRIGHTNESS_FACTOR;
+			remainingTargetLuminance -= clamp( r ) * RED_BRIGHTNESS_FACTOR;
+			remainingTargetLuminance -= clamp( g ) * GREEN_BRIGHTNESS_FACTOR;
+			remainingTargetLuminance -= clamp( b ) * BLUE_BRIGHTNESS_FACTOR;
 
 			double combinedAvailableFactors = 0;
 			if( !redPegged ) combinedAvailableFactors += RED_BRIGHTNESS_FACTOR;
 			if( !greenPegged ) combinedAvailableFactors += GREEN_BRIGHTNESS_FACTOR;
 			if( !bluePegged ) combinedAvailableFactors += BLUE_BRIGHTNESS_FACTOR;
 
-			double n = remainingTargetLuminance / combinedAvailableFactors;
+			double splitRatio = 1.0;
+			if( redPegged && b > 0 ) splitRatio = g / b;
+			if( greenPegged && r > 0 ) splitRatio = b / r;
+			if( bluePegged && g > 0 ) splitRatio = r / g;
 
-			// TODO n has to be distributed proportionally across available channels
-			double sourceR = color.getRed();
-			double sourceG = color.getGreen();
-			double sourceB = color.getBlue();
-			double sourceT = sourceR + sourceG + sourceB;
-			double rContribution = sourceR / sourceT;
-			double gContribution = sourceG / sourceT;
-			double bContribution = sourceB / sourceT;
-
-			System.out.println( "rc=" + rContribution + " gc=" + gContribution + " bc=" + bContribution + " sourceT=" + sourceT );
-
-			// FIXME What to do when contributions are zero; still should result in a factor of 1
-			double combinedSourceColor = 0;
-			if( !redPegged ) combinedSourceColor += rContribution;
-			if( !greenPegged ) combinedSourceColor += gContribution;
-			if( !bluePegged ) combinedSourceColor += bContribution;
-
-			double rFactor = 1 + (combinedSourceColor == 0 ? 0 : sourceR / combinedSourceColor);
-			double gFactor = 1 + (combinedSourceColor == 0 ? 0 : sourceG / combinedSourceColor);
-			double bFactor = 1 + (combinedSourceColor == 0 ? 0 : sourceB / combinedSourceColor);
-
-			System.out.println( "rf=" + rFactor + " gf=" + gFactor + " bf=" + bFactor + " combinedSourceColor=" + combinedSourceColor );
-
-			r = clamp( redPegged ? 1.0 : n * rFactor );
-			g = clamp( greenPegged ? 1.0 : n * gFactor );
-			b = clamp( bluePegged ? 1.0 : n * bFactor );
+			if( peggedCount == 2 || splitRatio == 1.0 ) {
+				double n = remainingTargetLuminance / combinedAvailableFactors;
+				r = clamp( redPegged ? 1.0 : n );
+				g = clamp( greenPegged ? 1.0 : n );
+				b = clamp( bluePegged ? 1.0 : n );
+			} else {
+				if( redPegged ) {
+					double termA = remainingTargetLuminance / (GREEN_BRIGHTNESS_FACTOR + BLUE_BRIGHTNESS_FACTOR / splitRatio);
+					double termB = termA / splitRatio;
+					r = 1;
+					g = clamp( g + termA );
+					b = clamp( b + termB );
+				} else if( greenPegged ) {
+					double termA = remainingTargetLuminance / (BLUE_BRIGHTNESS_FACTOR + RED_BRIGHTNESS_FACTOR / splitRatio);
+					double termB = termA / splitRatio;
+					r = clamp( r + termB );
+					g = 1;
+					b = clamp( b + termA );
+				} else {
+					double termA = remainingTargetLuminance / (RED_BRIGHTNESS_FACTOR + GREEN_BRIGHTNESS_FACTOR / splitRatio);
+					double termB = termA / splitRatio;
+					r = clamp( r + termA );
+					g = clamp( g + termB );
+					b = 1;
+				}
+			}
 		}
 
-		System.out.println( "color=" + color + " r=" + r + " g=" + g + " b=" + b );
+		//System.out.println( "color=" + color + " r=" + r + " g=" + g + " b=" + b );
 		return Color.color( r, g, b, color.getOpacity() );
 	}
 
