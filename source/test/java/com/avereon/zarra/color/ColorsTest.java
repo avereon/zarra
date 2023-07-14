@@ -29,173 +29,137 @@ class ColorsTest {
 	}
 
 	@Test
-	void testSwapRed() {
-		Color color = Color.color( 1, 0, 0 );
-		double colorLuminance = Colors.getLuminance( color );
-		assertThat( colorLuminance ).isEqualTo( 0.3 );
+	void testGetBrightness() {
+		// Transparent
+		assertThat( Colors.getLuminance( Color.color( 0, 0, 0, 0 ) ) ).isEqualTo( 0.0 );
+		assertThat( Colors.getLuminance( Color.color( 0.5, 0.5, 0.5, 0 ) ) ).isEqualTo( 0.5, Offset.offset( 1e-7 ) );
+		assertThat( Colors.getLuminance( Color.color( 1, 1, 1, 0 ) ) ).isEqualTo( 1.0 );
 
-		Color inverse = color.invert();
-		double inverseLuminance = Colors.getLuminance( inverse );
-		assertThat( inverseLuminance ).isEqualTo( 0.7 );
+		// Basics
+		assertThat( Colors.getLuminance( Color.BLACK ) ).isEqualTo( 0.0 );
+		assertThat( Colors.getLuminance( Color.RED ) ).isEqualTo( 0.3 );
+		assertThat( Colors.getLuminance( Color.LIME ) ).isEqualTo( 0.59, Offset.offset( 1e-7 ) );
+		assertThat( Colors.getLuminance( Color.BLUE ) ).isEqualTo( 0.11 );
+		assertThat( Colors.getLuminance( Color.CYAN ) ).isEqualTo( 0.7 );
+		assertThat( Colors.getLuminance( Color.MAGENTA ) ).isEqualTo( 0.41 );
+		assertThat( Colors.getLuminance( Color.YELLOW ) ).isEqualTo( 0.89, Offset.offset( 1e-7 ) );
+		assertThat( Colors.getLuminance( Color.WHITE ) ).isEqualTo( 1.0 );
 
-		// Now, to generate a color that has a luminance of 0.7
-		double redLuminance = 0.3 * color.getRed();
-		double greenLuminance = 0.59 * color.getGreen();
-		double blueLuminance = 0.11 * color.getBlue();
+		// Grays
+		assertThat( Colors.getLuminance( Color.rgb( 127, 127, 127 ) ) ).isEqualTo( 0.4980392158031463 );
+		assertThat( Colors.getLuminance( Color.color( 0.5, 0.5, 0.5 ) ) ).isEqualTo( 0.5, Offset.offset( 1e-7 ) );
+		assertThat( Colors.getLuminance( Color.rgb( 128, 128, 128 ) ) ).isEqualTo( 0.501960813999176 );
+	}
+
+	@Test
+	void testSwapColor() {
+		Color color = Color.rgb( 32, 64, 128 );
+
+		double sourceLuminance = Colors.getLuminance( color );
+		double targetLuminance = Colors.getLuminance( color.invert() );
+		assertThat( sourceLuminance ).isEqualTo( 0.24094119071960451 );
+		assertThat( targetLuminance ).isEqualTo( 0.759058831334114 );
 
 		// These weights are based on the channel luminance
-		double inverseFactor = inverseLuminance / colorLuminance;
-		double inverseRedLuminance = color.getRed() * inverseFactor; // 2.3333333333333335
-		double inverseGreenLuminance = color.getGreen() * inverseFactor; // 0.0
-		double inverseBlueLuminance = color.getBlue() * inverseFactor; // 0.0
+		double inverseFactor = targetLuminance / sourceLuminance;
+		double r = color.getRed() * inverseFactor; // 0.395343141319851
+		double g = color.getGreen() * inverseFactor; // 0.790686282639702
+		double b = color.getBlue() * inverseFactor; // 1.581372565279404
 
-		System.out.println( "if=" + inverseFactor );
+		System.out.println( "sourceLuminance=" + sourceLuminance + " targetLuminance=" + targetLuminance + " if=" + inverseFactor );
 
-		// In this case the new luminance is 0.7 (on the high end)
-		// This means that we need to find a light red with luminance 0.7
-		// Because one of the luminance values is greater than 1 we need to fill in the rest with green and blue
-		// Red will account for 0.3 of the new luminance
-		// That means that 0.4 needs to be accounted for by green and blue
-		// but with the luminance weights of green and blue
-		// Luminance factor for both green and blue together is 0.7
-		// n * 0.7[green+blue factors] = 0.4
-		// n = 0.4 / 0.7[green+blue factors]
-		// n = 0.571428571
+		// In this case the new luminance is 0.759058831334114 (on the high end)
+		// This means that we need to find a light blueish with luminance 0.759058831334114
+		// Because one of the luminance values is greater than 1 we need to fill in the rest with red and green
+		// Blue will account for 0.11 of the new luminance
+		// That means that 0.649058831 needs to be accounted for by red and green
+
+		// but with the luminance weights of red(0.3) and green(0.59)
+
+		// red already accounts for 0.395343141319851 * 0.3 = 0.118602942
+		// green already accounts for 0.790686282639702 * 0.59 = 0.466504907
+		// the remainder of that is 0.649058831 - 0.118602942(red) - 0.466504907(green) = 0.063950982
+		// That needs to be split between the colors and added to each channel
+		// This formula also predicts that value: 0.043210059 × 0.3 + 0.086420117 × 0.59 = 0.063950887
+
+		// Luminance factor for both red and green together is 0.89
+		// n * 0.89[green+blue factors] = 0.649058831
+		// n = 0.649058831 / 0.89[green+blue factors]
+		// n = 0.729279586
+		double remainder = targetLuminance - 0.11;
+
+		// Distribute n between red and green proportionally
+		double redFactor = r / (r + g);
+		double greenFactor = g / (r + g);
+		System.out.println( "rf=" + redFactor + "gf=" + greenFactor );
+
+		// Remove luminance already accounted for by red and green
+		remainder -= r * 0.3;
+		remainder -= g * 0.59;
+		assertThat( remainder ).isEqualTo( 0.06395098218073464 );
+
+		// NEXT Split the remainder along the color channels
+		double nr = redFactor * remainder;
+		double ng = greenFactor * remainder;
+		assertThat( nr + ng ).isEqualTo( remainder );
+		System.out.println( "nr=" + nr + "ng=" + ng );
+
+		//double n = remainder / 0.89;
+		//assertThat( n ).isEqualTo( 0.07185503615812881 );
+
+		double median = 0.5 * (redFactor + greenFactor);
+		double rWeight = redFactor / median;
+		double gWeight = greenFactor / median;
+
+		// NOTE R and G already have values, they "just" need to be tweaked
+		// r needs 0.043210059 more
+		// g needs 0.086420117 more
+
+		//		r = n * rWeight;
+		//		g = n * gWeight;
+
+		System.out.println( "rf=" + redFactor + "gf=" + greenFactor + " median=" + median );
+		System.out.println( "rw=" + rWeight + "gw=" + gWeight );
+
 		// That should mean that green and blue values of 0.4 / 0.7 should give us the
 		// extra 0.4 of luminance
 
-		Color invertedRed = Color.color( 1, 0.4 / 0.7, 0.4 / 0.7 );
-		assertThat( Colors.getLuminance( invertedRed ) ).isCloseTo( 0.7, Offset.offset( 1e-7 ) );
-	}
+		System.out.println( "color=" + color + " r=" + r + " g=" + g + " b=" + b );
+		Color source = Color.rgb( 32, 64, 128 );
+		Color target = Color.color( clamp( r ), clamp( g ), clamp( b ), 1 );
+		Color target2 = Color.color( 0.395343141319851, 0.790686282639702, 1 );
 
-	@Test
-	void testSwapYellow() {
-		Color color = Color.color( 1, 1, 0 );
-		double colorLuminance = Colors.getLuminance( color );
-		assertThat( colorLuminance ).isEqualTo( 0.8899999999999999 );
+		// This is close enough pass the test
+		Color target3 = Color.color( 0.4385532, 0.8771064, 1 );
 
-		Color inverse = color.invert();
-		double inverseLuminance = Colors.getLuminance( inverse );
-		assertThat( inverseLuminance ).isEqualTo( 0.11 );
-
-		// Now, to generate a color that has a luminance of 0.8899999999999999
-		double redLuminance = 0.3 * color.getRed();
-		double greenLuminance = 0.59 * color.getGreen();
-		double blueLuminance = 0.11 * color.getBlue();
-
-		// These weights are based on the channel luminance
-		double inverseFactor = inverseLuminance / colorLuminance;
-		double inverseRedLuminance = color.getRed() * inverseFactor; // 0.12359550561797754
-		double inverseGreenLuminance = color.getGreen() * inverseFactor; // 0.12359550561797754
-		double inverseBlueLuminance = color.getBlue() * inverseFactor; // 0.0
-
-		//System.out.println( "inverseRedLuminance=" + inverseRedLuminance );
-
-		// In this case the new luminance is 0.11 (rather low)
-		// This means that we need to find a dark color with luminance 0.11
-		// All the inverse luminance values are less than 1 so no need to "fill" extra channels
-		// Red will account for 0.037078652 of the new luminance
-		// Green will account for 0.072921348 of the new luminance
-		// Blue will account for 0.0 of the new luminance
-		// red = inverseRedLuminance
-		// green = inverseGreenLuminance
-		// blue = inverseBlueLuminance
-
-		Color inverted = Color.color( inverseRedLuminance, inverseGreenLuminance, inverseBlueLuminance );
-		assertThat( Colors.getLuminance( inverted ) ).isCloseTo( 0.11, Offset.offset( 1e-7 ) );
-	}
-
-	@Test
-	void testSwapBlue() {
-		Color color = Color.color( 0, 0, 1 );
-		double colorLuminance = Colors.getLuminance( color );
-		assertThat( colorLuminance ).isEqualTo( 0.11 );
-
-		Color inverse = color.invert();
-		double inverseLuminance = Colors.getLuminance( inverse );
-		assertThat( inverseLuminance ).isCloseTo( 0.89, Offset.offset( 1e-7 ) );
-
-		// Now, to generate a color that has a luminance of 0.7
-		double redLuminance = 0.3 * color.getRed();
-		double greenLuminance = 0.59 * color.getGreen();
-		double blueLuminance = 0.11 * color.getBlue();
-
-		// These weights are based on the channel luminance
-		double inverseFactor = inverseLuminance / colorLuminance; // 8.09090909090909
-		double inverseRedLuminance = color.getRed() * inverseFactor; // 0.0
-		double inverseGreenLuminance = color.getGreen() * inverseFactor; // 0.0
-		double inverseBlueLuminance = color.getBlue() * inverseFactor; // 8.09090909090909
-
-		//System.out.println( "if=" + inverseBlueLuminance );
-
-		// In this case the new luminance is 0.89 (on the high end)
-		// This means that we need to find a light blue with luminance 0.89
-		// Because one of the luminance values is greater than 1 we need to fill in the rest with red and green
-		// Blue will account for 0.11 of the new luminance
-		// That means that 0.78 needs to be accounted for by red and green
-		// but with the luminance weights of red and green
-		// Luminance factor for both red and green together is 0.89
-		// n * 0.89[red+green factors] = 0.78
-		// n = 0.78 / 0.89[red+green factors]
-		// n = 0.876404494
-		// That should mean that red and green values of 0.78 / 0.89 should give us the
-		// extra 0.78 of luminance
-
-		Color invertedRed = Color.color( 0.78 / 0.89, 0.78 / 0.89, 1 );
-		assertThat( Colors.getLuminance( invertedRed ) ).isCloseTo( 0.89, Offset.offset( 1e-7 ) );
-	}
-
-	@Test
-	void testSwapGreen() {
-		Color color = Color.color( 0, 1, 0 );
-		double colorLuminance = Colors.getLuminance( color );
-		assertThat( colorLuminance ).isEqualTo( 0.59 );
-
-		Color inverse = color.invert();
-		double inverseLuminance = Colors.getLuminance( inverse );
-		assertThat( inverseLuminance ).isCloseTo( 0.41, Offset.offset( 1e-7 ) );
-
-		// Now, to generate a color that has a luminance of 0.41
-		double redLuminance = 0.3 * color.getRed();
-		double greenLuminance = 0.59 * color.getGreen();
-		double blueLuminance = 0.11 * color.getBlue();
-
-		// These weights are based on the channel luminance
-		double inverseFactor = inverseLuminance / colorLuminance; // 0.6949152542372882
-		double inverseRedLuminance = color.getRed() * inverseFactor; // 0.0
-		double inverseGreenLuminance = color.getGreen() * inverseFactor; // 0.6949152542372882
-		double inverseBlueLuminance = color.getBlue() * inverseFactor; // 0.0
-
-		//System.out.println( "if=" + inverseFactor );
-
-		// In this case the new luminance is 0.41 (on the low end)
-		// This means that we need to find a dark green with luminance 0.41
-		// All the inverse luminance values are less than 1 so no need to "fill" extra channels
-		// Red will account for 0.0 of the new luminance
-		// Green will account for 0.41 of the new luminance
-		// Blue will account for 0.0 of the new luminance
-		// That means that 0.78 needs to be accounted for by red and green
-		// but with the luminance weights of red and green
-		// Luminance factor for both red and green together is 0.89
-		// n * 0.89[red+green factors] = 0.78
-		// n = 0.78 / 0.89[red+green factors]
-		// n = 0.876404494
-		// That should mean that red and green values of 0.78 / 0.89 should give us the
-		// extra 0.78 of luminance
-
-		Color inverted = Color.color( inverseRedLuminance, inverseGreenLuminance, inverseBlueLuminance );
-		assertThat( Colors.getLuminance( inverted ) ).isCloseTo( 0.41, Offset.offset( 1e-7 ) );
+		assertThat( Colors.getLuminance( target ) ).isCloseTo( 0.759058831334114, Offset.offset( 1e-7 ) );
 	}
 
 	@Test
 	void testSwapBrightness() {
-		assertThat( Colors.swapLuminance( Color.color( 1, 0, 0 ) ) ).isEqualTo( Color.color( 1, 0.4 / 0.7, 0.4 / 0.7 ) );
-		assertThat( Colors.swapLuminance( Color.color( 0, 0, 1 ) ) ).isEqualTo( Color.color( 0.78 / 0.89, 0.78 / 0.89, 1 ) );
-		assertThat( Colors.swapLuminance( Color.color( 0, 1, 0 ) ) ).isEqualTo( Color.color( 0, 0.6949152542372882, 0 ) );
-		assertThat( Colors.swapLuminance( Color.color( 1, 1, 0 ) ) ).isEqualTo( Color.color( 0.12359550561797754, 0.12359550561797754, 0 ) );
+		// Transparent
+		assertThat( Colors.swapLuminance( Color.color( 0, 0, 0, 0 ) ) ).isEqualTo( Color.color( 1, 1, 1, 0 ) );
+		assertThat( Colors.swapLuminance( Color.color( 0.5, 0.5, 0.5, 0 ) ) ).isEqualTo( Color.color( 0.5, 0.5, 0.5, 0 ) );
+		assertThat( Colors.swapLuminance( Color.color( 1, 1, 1, 0 ) ) ).isEqualTo( Color.color( 0, 0, 0, 0 ) );
 
-		assertThat( Colors.swapLuminance( Color.color( 0, 1, 1 ) ) ).isEqualTo( Color.color( 0.8764044943820226, 0.8764044943820226, 1 ) );
-		assertThat( Colors.swapLuminance( Color.color( 1, 0, 1 ) ) ).isEqualTo( Color.color( 1, 1, 1 ) );
+		// Basics
+		assertThat( Colors.swapLuminance( Color.color( 0, 0, 0 ) ) ).isEqualTo( Color.color( 1, 1, 1 ) );
+		assertThat( Colors.swapLuminance( Color.color( 1, 0, 0 ) ) ).isEqualTo( Color.color( 1, 0.4 / 0.7, 0.4 / 0.7 ) );
+		assertThat( Colors.swapLuminance( Color.color( 0, 1, 0 ) ) ).isEqualTo( Color.color( 0, 0.6949152542372882, 0 ) );
+		assertThat( Colors.swapLuminance( Color.color( 0, 0, 1 ) ) ).isEqualTo( Color.color( 0.78 / 0.89, 0.78 / 0.89, 1 ) );
+		assertThat( Colors.swapLuminance( Color.color( 0, 1, 1 ) ) ).isEqualTo( Color.color( 0, 0.4285714285714286, 0.4285714285714286 ) );
+		assertThat( Colors.swapLuminance( Color.color( 1, 0, 1 ) ) ).isEqualTo( Color.color( 1, 0.3050847457627119, 1 ) );
+		assertThat( Colors.swapLuminance( Color.color( 1, 1, 0 ) ) ).isEqualTo( Color.color( 0.12359550561797754, 0.12359550561797754, 0 ) );
+		assertThat( Colors.swapLuminance( Color.color( 1, 1, 1 ) ) ).isEqualTo( Color.color( 0, 0, 0 ) );
+
+		// Grays
+		assertThat( Colors.swapLuminance( Color.rgb( 127, 127, 127 ) ) ).isEqualTo( Color.color( 0.5019607543945312, 0.5019607543945312, 0.5019607543945312 ) );
+		assertThat( Colors.swapLuminance( Color.color( 0.5, 0.5, 0.5 ) ) ).isEqualTo( Color.color( 0.5, 0.5, 0.5 ) );
+		assertThat( Colors.swapLuminance( Color.rgb( 128, 128, 128 ) ) ).isEqualTo( Color.color( 0.4980391860008239, 0.4980391860008239, 0.4980391860008239 ) );
+
+		//System.out.println( "b=" + Colors.getLuminance(  Color.color( 0, 0, 1 )) + " sbcb=" + Colors.getLuminance( Color.rgb( 32, 64, 128 )));
+		// Others
+		assertThat( Colors.swapLuminance( Color.rgb( 32, 64, 128 ) ) ).isEqualTo( Color.rgb( 129, 160, 223 ) );
 	}
 
 	@Test
@@ -244,6 +208,15 @@ class ColorsTest {
 			System.out.println( "source=" + source + " expected=" + target + " inverted=" + inverted + " reverted=" + reverted );
 			throw error;
 		}
+	}
+
+	private static double clamp( double value ) {
+		if( value < 0 ) {
+			value = 0;
+		} else if( value > 1 ) {
+			value = 1;
+		}
+		return value;
 	}
 
 }

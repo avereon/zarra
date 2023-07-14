@@ -155,32 +155,30 @@ public class Colors {
 	 * @return A number between 0.0 and 1.0 representing the luminance.
 	 */
 	public static double getLuminance( Color color ) {
-		return (RED_BRIGHTNESS_FACTOR * color.getRed()) + (GREEN_BRIGHTNESS_FACTOR * color.getGreen()) + (BLUE_BRIGHTNESS_FACTOR * color.getBlue());
+		if( color.getRed() + color.getGreen() + color.getBlue() == 3.0 ) return 1.0;
+		return RED_BRIGHTNESS_FACTOR * color.getRed() + GREEN_BRIGHTNESS_FACTOR * color.getGreen() + BLUE_BRIGHTNESS_FACTOR * color.getBlue();
 	}
 
 	public static Color swapLuminance( Color color ) {
-		Color inverse = color.invert();
-		double colorLuminance = Colors.getLuminance( color );
-		double inverseLuminance = Colors.getLuminance( inverse );
+		double sourceLuminance = Colors.getLuminance( color );
+		double targetLuminance = Colors.getLuminance( color.invert() );
 
-		double inverseFactor = inverseLuminance / colorLuminance;
-		double inverseRedLuminance = color.getRed() * inverseFactor;
-		double inverseGreenLuminance = color.getGreen() * inverseFactor;
-		double inverseBlueLuminance = color.getBlue() * inverseFactor;
+		System.out.println( "sourceLuminance=" + sourceLuminance + " targetLuminance=" + targetLuminance );
 
-		boolean redPegged = inverseRedLuminance > 1.0;
-		boolean greenPegged = inverseGreenLuminance > 1.0;
-		boolean bluePegged = inverseBlueLuminance > 1.0;
-		boolean allSafe = !redPegged && !greenPegged && !bluePegged;
+		if( sourceLuminance == 0 ) return Color.color( 1, 1, 1, color.getOpacity() );
+		if( sourceLuminance == 1 ) return Color.color( 0, 0, 0, color.getOpacity() );
 
-		if( allSafe ) {
-			return Color.color( inverseRedLuminance, inverseGreenLuminance, inverseBlueLuminance, color.getOpacity() );
-		} else {
-			double targetLuminance = 1;
-			if( redPegged ) targetLuminance -= RED_BRIGHTNESS_FACTOR;
-			if( greenPegged ) targetLuminance -= GREEN_BRIGHTNESS_FACTOR;
-			if( bluePegged ) targetLuminance -= BLUE_BRIGHTNESS_FACTOR;
+		double inverseFactor = targetLuminance / sourceLuminance;
+		double r = color.getRed() * inverseFactor;
+		double g = color.getGreen() * inverseFactor;
+		double b = color.getBlue() * inverseFactor;
 
+		boolean redPegged = r > 1.0;
+		boolean greenPegged = g > 1.0;
+		boolean bluePegged = b > 1.0;
+		boolean rollover = redPegged || greenPegged || bluePegged;
+
+		if( rollover ) {
 			double remainingTargetLuminance = targetLuminance;
 			if( redPegged ) remainingTargetLuminance -= RED_BRIGHTNESS_FACTOR;
 			if( greenPegged ) remainingTargetLuminance -= GREEN_BRIGHTNESS_FACTOR;
@@ -192,14 +190,37 @@ public class Colors {
 			if( !bluePegged ) combinedAvailableFactors += BLUE_BRIGHTNESS_FACTOR;
 
 			double n = remainingTargetLuminance / combinedAvailableFactors;
-			double r = clamp( redPegged ? 1.0 : n );
-			double g = clamp( greenPegged ? 1.0 : n );
-			double b = clamp( bluePegged ? 1.0 : n );
 
-			System.out.println( "color=" + color + " r=" + r + " g=" + g + " b=" + b );
+			// TODO n has to be distributed proportionally across available channels
+			double sourceR = color.getRed();
+			double sourceG = color.getGreen();
+			double sourceB = color.getBlue();
+			double sourceT = sourceR + sourceG + sourceB;
+			double rContribution = sourceR / sourceT;
+			double gContribution = sourceG / sourceT;
+			double bContribution = sourceB / sourceT;
 
-			return Color.color( r, g, b, color.getOpacity() );
+			System.out.println( "rc=" + rContribution + " gc=" + gContribution + " bc=" + bContribution + " sourceT=" + sourceT );
+
+			// FIXME What to do when contributions are zero; still should result in a factor of 1
+			double combinedSourceColor = 0;
+			if( !redPegged ) combinedSourceColor += rContribution;
+			if( !greenPegged ) combinedSourceColor += gContribution;
+			if( !bluePegged ) combinedSourceColor += bContribution;
+
+			double rFactor = 1 + (combinedSourceColor == 0 ? 0 : sourceR / combinedSourceColor);
+			double gFactor = 1 + (combinedSourceColor == 0 ? 0 : sourceG / combinedSourceColor);
+			double bFactor = 1 + (combinedSourceColor == 0 ? 0 : sourceB / combinedSourceColor);
+
+			System.out.println( "rf=" + rFactor + " gf=" + gFactor + " bf=" + bFactor + " combinedSourceColor=" + combinedSourceColor );
+
+			r = clamp( redPegged ? 1.0 : n * rFactor );
+			g = clamp( greenPegged ? 1.0 : n * gFactor );
+			b = clamp( bluePegged ? 1.0 : n * bFactor );
 		}
+
+		System.out.println( "color=" + color + " r=" + r + " g=" + g + " b=" + b );
+		return Color.color( r, g, b, color.getOpacity() );
 	}
 
 	private static double clamp( double value ) {
