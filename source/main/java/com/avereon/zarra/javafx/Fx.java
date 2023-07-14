@@ -54,6 +54,13 @@ public class Fx {
 		}
 	}
 
+	public static void splitWaitFor( long timeout, int count ) {
+		long duration = timeout / count;
+		for( int index = 0; index < count; index++ ) {
+			waitFor( duration, TimeUnit.MILLISECONDS );
+		}
+	}
+
 	public static void waitForWithExceptions( long timeout ) throws TimeoutException, InterruptedException {
 		waitForWithExceptions( timeout, TimeUnit.MILLISECONDS );
 	}
