@@ -42,4 +42,9 @@ public class FontMetrics {
 		return (float)this.text.getLayoutBounds().getWidth();
 	}
 
+	@Override
+	public String toString() {
+		return "FontMetrics [ascent: " + ascent + ", decent: " + descent + ", spacing: " + spacing + "]";
+	}
+
 }
