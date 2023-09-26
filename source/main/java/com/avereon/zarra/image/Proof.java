@@ -129,17 +129,31 @@ public class Proof {
 		Images.applyContainerStylesheets( icon, iconPane32 );
 		Images.applyContainerStylesheets( icon, scaledIconPane );
 
-		TilePane pane = new TilePane( Orientation.HORIZONTAL, 5, 5 );
-		pane.setPrefColumns( 2 );
-		pane.setPrefRows( 2 );
-		pane.setHgap( 5 );
-		pane.setVgap( 5 );
-		pane.getChildren().add( iconPane256 );
-		pane.getChildren().add( iconPane16 );
-		pane.getChildren().add( iconPane32 );
-		pane.getChildren().add( scaledIconPane );
+		GridPane grid = new GridPane();
+		GridPane.setRowIndex( iconPane256, 1 );
+		GridPane.setRowIndex( iconPane16, 1 );
+		GridPane.setRowIndex( iconPane32, 2 );
+		GridPane.setRowIndex( scaledIconPane, 2 );
+		GridPane.setColumnIndex( iconPane256,1 );
+		GridPane.setColumnIndex( iconPane16,2 );
+		GridPane.setColumnIndex( iconPane32,1 );
+		GridPane.setColumnIndex( scaledIconPane,2 );
+		grid.getChildren().add( iconPane256 );
+		grid.getChildren().add( iconPane16 );
+		grid.getChildren().add( iconPane32 );
+		grid.getChildren().add( scaledIconPane );
 
-		StackPane root = new StackPane( pane );
+//		TilePane pane = new TilePane( Orientation.HORIZONTAL, 5, 5 );
+//		pane.setPrefColumns( 2 );
+//		pane.setPrefRows( 2 );
+//		pane.setHgap( 5 );
+//		pane.setVgap( 5 );
+//		pane.getChildren().add( iconPane256 );
+//		pane.getChildren().add( iconPane16 );
+//		pane.getChildren().add( iconPane32 );
+//		pane.getChildren().add( scaledIconPane );
+
+		StackPane root = new StackPane( grid );
 		root.getStyleClass().add( "root" );
 		root.setStyle( "-fx-background-color: " + Colors.toString( FILL ) + ";" );
 		return root;
