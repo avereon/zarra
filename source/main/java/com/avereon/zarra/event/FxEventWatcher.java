@@ -73,7 +73,8 @@ public class FxEventWatcher implements EventHandler<Event> {
 		}
 
 		duration = System.currentTimeMillis() - start;
-		if( duration >= timeout ) throw new TimeoutException( "Timeout waiting for event " + type );
+		String eventTypeName = type.getSuperType() + "." + type.getName();
+		if( duration >= timeout ) throw new TimeoutException( "Timeout waiting for event " + eventTypeName );
 	}
 
 	private Event findNext( EventType<? extends Event> type ) {
