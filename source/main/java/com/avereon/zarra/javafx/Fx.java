@@ -14,6 +14,8 @@ import java.util.concurrent.TimeoutException;
 @CustomLog
 public class Fx {
 
+	private Fx() {}
+
 	public static void startup() {
 		try {
 			log.atDebug().log( "Starting FX Platform..." );
