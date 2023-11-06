@@ -1,6 +1,10 @@
 package com.avereon.zarra.javafx;
 
 import javafx.application.Platform;
+import javafx.scene.Node;
+import javafx.scene.input.MouseEvent;
+import javafx.stage.Stage;
+import javafx.stage.Window;
 import lombok.CustomLog;
 
 import java.util.concurrent.Semaphore;
@@ -40,6 +44,14 @@ public class Fx {
 
 	public static void affirmOnFxThread() {
 		if( !isFxThread() ) throw new IllegalStateException( "Not on FX thread; thread=" + Thread.currentThread().getName() );
+	}
+
+	public static Stage getStage( MouseEvent event ) {
+		return (Stage)getWindow(event);
+	}
+
+	public static Window getWindow( MouseEvent event ) {
+		return ((Node)event.getSource()).getScene().getWindow();
 	}
 
 	public static void waitFor( long timeout ) {
