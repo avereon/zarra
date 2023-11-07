@@ -23,11 +23,13 @@ public class Paints {
 	}
 
 	public static String toString( LinearGradient gradient ) {
-		return "[]";
+		if( gradient == null ) return null;
+		return gradient.toString();
 	}
 
 	public static String toString( RadialGradient gradient ) {
-		return "()";
+		if( gradient == null ) return null;
+		return gradient.toString();
 	}
 
 	public static Paint parse( String string ) {
@@ -37,8 +39,8 @@ public class Paints {
 		// [] - linear gradient
 		// () - radial gradient
 		if( string.startsWith( "#" ) ) return Colors.parse( string );
-		if( string.startsWith( "[" ) ) return Colors.parse( string );
-		if( string.startsWith( "(" ) ) return Colors.parse( string );
+		if( string.startsWith( "linear-gradient" ) ) return LinearGradient.valueOf( string );
+		if( string.startsWith( "radial-gradient" ) ) return RadialGradient.valueOf( string );
 
 		return Colors.parse( string );
 	}
