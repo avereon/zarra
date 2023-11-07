@@ -35,9 +35,6 @@ public class Paints {
 	public static Paint parse( String string ) {
 		if( string == null ) return null;
 
-		// # - color
-		// [] - linear gradient
-		// () - radial gradient
 		if( string.startsWith( "#" ) ) return Colors.parse( string );
 		if( string.startsWith( "linear-gradient" ) ) return LinearGradient.valueOf( string );
 		if( string.startsWith( "radial-gradient" ) ) return RadialGradient.valueOf( string );
