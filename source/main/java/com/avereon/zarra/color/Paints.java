@@ -7,11 +7,13 @@ import javafx.scene.paint.RadialGradient;
 
 public class Paints {
 
+	private Paints() {}
+
 	public static String toString( Paint paint ) {
 		if( paint == null ) return null;
-		if( paint instanceof Color ) return toString( (Color)paint );
-		if( paint instanceof LinearGradient ) return toString( (LinearGradient)paint );
-		if( paint instanceof RadialGradient ) return toString( (RadialGradient)paint );
+		if( paint instanceof Color color ) return toString( color );
+		if( paint instanceof LinearGradient gradient ) return toString( gradient );
+		if( paint instanceof RadialGradient gradient ) return toString( gradient );
 		throw new IllegalArgumentException( "Unknown paint type: " + paint.getClass().getName() );
 	}
 
