@@ -225,13 +225,29 @@ public class SvgIcon extends VectorIcon {
 	 * on the center start and extent.
 	 */
 	public static String arc( double cx, double cy, double r, double start, double extent ) {
+		return arc( false, cx, cy, r, start, extent );
+	}
+
+	/**
+	 * Create an SVG string for an arc. Because SVG path arcs are a bit
+	 * cumbersome this method simplifies the creating of an arc based
+	 * on the center start and extent.
+	 */
+	public static String arc( boolean moveToStart, double cx, double cy, double r, double start, double extent ) {
 		int ccw = extent < 0 ? 0 : 1;
 		double end = start + extent;
 		double sx = cx + r * Math.cos( start * RADIANS_PER_DEGREE );
 		double sy = cy + r * Math.sin( start * RADIANS_PER_DEGREE );
 		double ex = cx + r * Math.cos( end * RADIANS_PER_DEGREE );
 		double ey = cy + r * Math.sin( end * RADIANS_PER_DEGREE );
-		return "M" + sx + "," + sy + " A" + r + "," + r + " 0 0 " + ccw + " " + ex + "," + ey;
+
+		String icon = "";
+		if( moveToStart ) {
+			icon += "M" + sx + "," + sy + " ";
+		}
+		icon += "A" + r + "," + r + " 0 0 " + ccw + " " + ex + "," + ey;
+
+		return icon;
 	}
 
 	/**
