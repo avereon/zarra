@@ -13,7 +13,7 @@
 
 	<groupId>com.avereon</groupId>
 	<artifactId>zarra</artifactId>
-	<version>0.9-SNAPSHOT</version>
+	<version>0.9</version>
 	<packaging>jar</packaging>
 
 	<name>Zarra</name>
@@ -48,7 +48,7 @@
 
 		<!-- Version numbers updated 02 Jul 2020 -->
 		<!-- Runtime dependencies -->
-		<zevra.version>[0.8,)</zevra.version>
+		<zevra.version>[0.9,)</zevra.version>
 		<openjfx.version>21.0.2</openjfx.version>
 		<image4j.version>0.7.2</image4j.version>
 
