@@ -1,13 +1,6 @@
 name: CI
 
-on:
-  push:
-    branches:
-      - main
-  pull_request:
-    branches:
-      - stable
-  workflow_dispatch:
+on: [ push, workflow_dispatch ]
 
 env:
   AVN_PRODUCT: "zarra"
