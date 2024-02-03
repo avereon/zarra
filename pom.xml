@@ -49,7 +49,7 @@
 		<!-- Version numbers updated 02 Jul 2020 -->
 		<!-- Runtime dependencies -->
 		<zevra.version>[0.8,)</zevra.version>
-		<openjfx.version>20.0.1</openjfx.version>
+		<openjfx.version>21.0.2</openjfx.version>
 		<image4j.version>0.7.2</image4j.version>
 
 		<!-- Test dependencies -->
