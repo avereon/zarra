@@ -53,7 +53,7 @@
 		<image4j.version>0.7.2</image4j.version>
 
 		<!-- Test dependencies -->
-		<testfx.version>4.0.16-alpha</testfx.version>
+		<testfx.version>4.0.18</testfx.version>
 	</properties>
 
 	<dependencies>
