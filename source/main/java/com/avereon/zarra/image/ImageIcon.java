@@ -1,10 +1,12 @@
 package com.avereon.zarra.image;
 
 import javafx.scene.image.Image;
+import lombok.Getter;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+@Getter
 public class ImageIcon extends RenderedIcon {
 
 	private static final Map<String, Image> CACHE = new ConcurrentHashMap<>();
@@ -23,10 +25,6 @@ public class ImageIcon extends RenderedIcon {
 		ImageIcon image = super.copy();
 		image.url = this.url;
 		return image;
-	}
-
-	public String getUrl() {
-		return url;
 	}
 
 	public ImageIcon setUrl( String url ) {
@@ -52,14 +50,7 @@ public class ImageIcon extends RenderedIcon {
 		int w = (int)getWidth();
 		int h = (int)getHeight();
 		String key = url + "?w=" + w + "&h=" + h;
-		Image source = CACHE.computeIfAbsent( key, Image::new );
-
-		// TODO This was an attempt to store pre-scaled images
-		//		Image cached = CACHE.computeIfAbsent( key, ( k) -> {
-		//			return Images.scaleImage( source, w,h );
-		//		} );
-
-		return source;
+		return CACHE.computeIfAbsent( key, ( k ) -> new Image( url, w, h, true, true ) );
 	}
 
 }
