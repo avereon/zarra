@@ -2,6 +2,7 @@ package com.avereon.zarra.event;
 
 import com.avereon.event.*;
 import javafx.event.EventDispatchChain;
+import lombok.Getter;
 
 import java.util.Collection;
 import java.util.HashSet;
@@ -57,20 +58,13 @@ public class FxEventHub extends EventHub {
 		return this;
 	}
 
-//	protected FxEventHub getParent() {
-//		return (FxEventHub)super.getParent();
-//	}
-
+	@Getter
 	private static class FxEventHandlerWrapper<T extends javafx.event.Event> implements javafx.event.EventDispatcher, javafx.event.EventHandler<T> {
 
-		private javafx.event.EventHandler<T> handler;
+		private final javafx.event.EventHandler<T> handler;
 
 		public FxEventHandlerWrapper( javafx.event.EventHandler<T> handler ) {
 			this.handler = handler;
-		}
-
-		public javafx.event.EventHandler<T> getHandler() {
-			return handler;
 		}
 
 		@Override

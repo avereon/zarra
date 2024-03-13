@@ -3,7 +3,9 @@ package com.avereon.zarra.event;
 import com.avereon.event.Event;
 import com.avereon.event.EventType;
 import com.avereon.util.JavaUtil;
+import lombok.Getter;
 
+@Getter
 public class FxEventWrapper extends Event {
 
 	private final javafx.event.Event fxEvent;
@@ -11,10 +13,6 @@ public class FxEventWrapper extends Event {
 	public FxEventWrapper( javafx.event.Event fxEvent ) {
 		super( fxEvent.getSource(), Event.ANY );
 		this.fxEvent = fxEvent;
-	}
-
-	public javafx.event.Event getFxEvent() {
-		return fxEvent;
 	}
 
 	@SuppressWarnings( "unchecked" )

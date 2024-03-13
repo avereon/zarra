@@ -4,6 +4,7 @@ import com.avereon.zarra.javafx.Fx;
 import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.event.EventType;
+import lombok.Getter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,6 +18,7 @@ public class FxEventWatcher implements EventHandler<Event> {
 
 	private final Queue<Event> events = new ConcurrentLinkedQueue<>();
 
+	@Getter
 	private final long timeout;
 
 	public FxEventWatcher() {
@@ -25,10 +27,6 @@ public class FxEventWatcher implements EventHandler<Event> {
 
 	public FxEventWatcher( long timeout ) {
 		this.timeout = timeout;
-	}
-
-	public long getTimeout() {
-		return timeout;
 	}
 
 	@Override
