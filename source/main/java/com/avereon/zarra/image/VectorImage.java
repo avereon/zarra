@@ -417,11 +417,10 @@ public abstract class VectorImage extends Canvas {
 
 		try {
 			copy = getClass().getDeclaredConstructor().newInstance();
-			copy.getStyleClass().clear();
-			copy.getStyleClass().addAll( this.getStyleClass() );
-			copy.setStyle( getStyle() );
+			copy.getStyleClass().setAll( this.getStyleClass() );
 			copy.setHeight( getHeight() );
 			copy.setWidth( getWidth() );
+			copy.setStyle( getStyle() );
 			copy.getProperties().putAll( this.getProperties() );
 			copy.strokeWidthOverride = this.strokeWidthOverride;
 			copy.strokePaintOverride = this.strokePaintOverride;
