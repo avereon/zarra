@@ -298,7 +298,7 @@ public class SvgIcon extends VectorIcon {
 	 * @param y The Y coordinate of the point
 	 * @param cx The X coordinate of the rotation center
 	 * @param cy The Y coordinate of the rotation center
-	 * @param angle The angle in degrees to rotate counter clockwise
+	 * @param angle The angle in degrees to rotate counter-clockwise
 	 * @return The SVG string of the rotated point
 	 */
 	protected String rotate( double x, double y, double cx, double cy, double angle ) {
@@ -330,6 +330,21 @@ public class SvgIcon extends VectorIcon {
 		super.doRender();
 		getGraphicsContext2D().save();
 		actions.forEach( a -> a.render( this ) );
+	}
+
+	public String toSvg() {
+		StringBuilder svg = new StringBuilder();
+		svg.append( "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"" ).append( getWidth() ).append( "\" height=\"" ).append( getHeight() ).append( "\">" );
+		for( IconAction action : actions ) {
+			if( action instanceof Fill fill ) {
+				svg.append( "<path fill=\"" ).append( fill.calcPaint( this ) ).append( "\" d=\"" ).append( fill.getPath() ).append( "\"/>" );
+			} else if( action instanceof Draw draw ) {
+				svg.append( "<path stroke=\"" ).append( draw.calcPaint( this ) ).append( "\" stroke-width=\"" ).append( draw.width ).append( "\" d=\"" ).append( draw.getPath() ).append( "\"/>" );
+			}
+		}
+		svg.append( "</svg>" );
+
+		return svg.toString();
 	}
 
 	private void doRestore() {
