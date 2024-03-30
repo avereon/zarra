@@ -1,5 +1,6 @@
 package com.avereon.zarra.image;
 
+import com.avereon.zarra.color.Paints;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Paint;
 import javafx.scene.shape.FillRule;
@@ -48,7 +49,8 @@ public class SvgIcon extends VectorIcon {
 	 * to define them in the constructor. This is particularly necessary when
 	 * using values that come from the style class like colors and sizes.
 	 */
-	protected void define() {}
+	protected void define() {
+	}
 
 	public void restore() {
 		actions.add( new Restore() );
@@ -87,7 +89,9 @@ public class SvgIcon extends VectorIcon {
 	}
 
 	public SvgIcon fill( String path, Font font, Paint paint, FillRule rule ) {
-		if( path != null ) actions.add( new Fill( path, true, font, paint, rule ) );
+		if( path != null ) {
+			actions.add( new Fill( path, true, font, paint, rule ) );
+		}
 		return this;
 	}
 
@@ -114,7 +118,9 @@ public class SvgIcon extends VectorIcon {
 	}
 
 	public SvgIcon fillText( String path, Font font, Paint paint, FillRule rule ) {
-		if( path != null ) actions.add( new Fill( path, false, font, paint, rule ) );
+		if( path != null ) {
+			actions.add( new Fill( path, false, font, paint, rule ) );
+		}
 		return this;
 	}
 
@@ -166,12 +172,18 @@ public class SvgIcon extends VectorIcon {
 		return draw( path, paint, width, cap, join, 0 );
 	}
 
-	public SvgIcon draw( String path, Paint paint, double width, StrokeLineCap cap, StrokeLineJoin join, double dashOffset, double... dashes ) {
+	public SvgIcon draw(
+		String path, Paint paint, double width, StrokeLineCap cap, StrokeLineJoin join, double dashOffset, double... dashes
+	) {
 		return draw( path, null, paint, width, cap, join, dashOffset, dashes );
 	}
 
-	public SvgIcon draw( String path, Font font, Paint paint, double width, StrokeLineCap cap, StrokeLineJoin join, double dashOffset, double... dashes ) {
-		if( path != null ) actions.add( new Draw( path, true, font, paint, width, cap, join, dashOffset, dashes ) );
+	public SvgIcon draw(
+		String path, Font font, Paint paint, double width, StrokeLineCap cap, StrokeLineJoin join, double dashOffset, double... dashes
+	) {
+		if( path != null ) {
+			actions.add( new Draw( path, true, font, paint, width, cap, join, dashOffset, dashes ) );
+		}
 		return this;
 	}
 
@@ -201,12 +213,18 @@ public class SvgIcon extends VectorIcon {
 		return drawText( path, paint, width, cap, join, 0 );
 	}
 
-	public SvgIcon drawText( String path, Paint paint, double width, StrokeLineCap cap, StrokeLineJoin join, double dashOffset, double... dashes ) {
+	public SvgIcon drawText(
+		String path, Paint paint, double width, StrokeLineCap cap, StrokeLineJoin join, double dashOffset, double... dashes
+	) {
 		return drawText( path, null, paint, width, cap, join, dashOffset, dashes );
 	}
 
-	public SvgIcon drawText( String path, Font font, Paint paint, double width, StrokeLineCap cap, StrokeLineJoin join, double dashOffset, double... dashes ) {
-		if( path != null ) actions.add( new Draw( path, false, font, paint, width, cap, join, dashOffset, dashes ) );
+	public SvgIcon drawText(
+		String path, Font font, Paint paint, double width, StrokeLineCap cap, StrokeLineJoin join, double dashOffset, double... dashes
+	) {
+		if( path != null ) {
+			actions.add( new Draw( path, false, font, paint, width, cap, join, dashOffset, dashes ) );
+		}
 		return this;
 	}
 
@@ -334,12 +352,22 @@ public class SvgIcon extends VectorIcon {
 
 	public String toSvg() {
 		StringBuilder svg = new StringBuilder();
-		svg.append( "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"" ).append( getWidth() ).append( "\" height=\"" ).append( getHeight() ).append( "\">" );
+		svg.append( "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"" ).append( getGridX() ).append( "\" height=\"" ).append( getGridY() ).append( "\">" );
 		for( IconAction action : actions ) {
+			// TODO Handle transforms
+			//getTransforms();
+
 			if( action instanceof Fill fill ) {
-				svg.append( "<path fill=\"" ).append( fill.calcPaint( this ) ).append( "\" d=\"" ).append( fill.getPath() ).append( "\"/>" );
+				svg.append( "<path fill=\"" ).append( Paints.toString( fill.calcPaint( this ) ) ).append( "\" d=\"" ).append( fill.getPath() ).append( "\"/>" );
 			} else if( action instanceof Draw draw ) {
-				svg.append( "<path stroke=\"" ).append( draw.calcPaint( this ) ).append( "\" stroke-width=\"" ).append( draw.width ).append( "\" d=\"" ).append( draw.getPath() ).append( "\"/>" );
+				svg
+					.append( "<path stroke=\"" )
+					.append( Paints.toString( draw.calcPaint( this ) ) )
+					.append( "\" stroke-width=\"" )
+					.append( draw.width )
+					.append( "\" d=\"" )
+					.append( draw.getPath() )
+					.append( "\"/>" );
 			}
 		}
 		svg.append( "</svg>" );
@@ -455,7 +483,9 @@ public class SvgIcon extends VectorIcon {
 
 		private final double[] dashes;
 
-		public Draw( String path, boolean isSvg, Font font, Paint paint, double width, StrokeLineCap cap, StrokeLineJoin join, double dashOffset, double... dashes ) {
+		public Draw(
+			String path, boolean isSvg, Font font, Paint paint, double width, StrokeLineCap cap, StrokeLineJoin join, double dashOffset, double... dashes
+		) {
 			super( path, isSvg, paint );
 			this.font = font;
 			this.width = width;
