@@ -118,4 +118,13 @@ public final class FontUtil {
 		return monoFontFamilyList = Collections.unmodifiableList( monoFamilyList );
 	}
 
+	public static Font derive( Font font, double size ) {
+		String style = font.getStyle();
+		return Font.font( font.getFamily(), getFontWeight( style ), getFontPosture( style ), size );
+	}
+
+	public static Font derive( Font font, FontWeight weight, FontPosture posture, double size ) {
+		return Font.font( font.getFamily(), weight, posture, size );
+	}
+
 }
