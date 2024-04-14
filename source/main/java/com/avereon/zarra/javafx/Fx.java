@@ -1,6 +1,8 @@
 package com.avereon.zarra.javafx;
 
 import javafx.application.Platform;
+import javafx.geometry.BoundingBox;
+import javafx.geometry.Bounds;
 import javafx.scene.Node;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
@@ -13,6 +15,8 @@ import java.util.concurrent.TimeoutException;
 
 @CustomLog
 public class Fx {
+
+	public static final Bounds EMPTY_BOUNDS = new BoundingBox( 1, 1, 1, -2, -2, -2 );
 
 	private Fx() {}
 
@@ -49,7 +53,7 @@ public class Fx {
 	}
 
 	public static Stage getStage( MouseEvent event ) {
-		return (Stage)getWindow(event);
+		return (Stage)getWindow( event );
 	}
 
 	public static Window getWindow( MouseEvent event ) {
