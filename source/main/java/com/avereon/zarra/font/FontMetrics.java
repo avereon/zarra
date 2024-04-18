@@ -3,15 +3,19 @@ package com.avereon.zarra.font;
 import javafx.geometry.Bounds;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
+import lombok.Getter;
 
 public class FontMetrics {
 
 	private final Text text;
 
+	@Getter
 	private final double ascent;
 
+	@Getter
 	private final double descent;
 
+	@Getter
 	private final double spacing;
 
 	public FontMetrics( Font font ) {
@@ -25,21 +29,14 @@ public class FontMetrics {
 		spacing = bounds.getHeight();
 	}
 
-	public double getAscent() {
-		return ascent;
-	}
-
-	public double getDescent() {
-		return descent;
-	}
-
-	public double getSpacing() {
-		return spacing;
-	}
-
-	public float computeStringWidth( String text ) {
+	public double computeStringWidth( String text ) {
 		this.text.setText( text );
-		return (float)this.text.getLayoutBounds().getWidth();
+		return this.text.getLayoutBounds().getWidth();
+	}
+
+	public double computeStringHeight( String text ) {
+		this.text.setText( text );
+		return this.text.getLayoutBounds().getHeight();
 	}
 
 	@Override
