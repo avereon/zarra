@@ -1,5 +1,6 @@
 package com.avereon.zarra.javafx;
 
+import javafx.geometry.BoundingBox;
 import org.junit.jupiter.api.Test;
 
 import java.util.concurrent.TimeUnit;
@@ -7,6 +8,11 @@ import java.util.concurrent.TimeUnit;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class FxTest extends FxPlatformTestCase {
+
+	@Test
+	void emptyBounds() {
+		assertThat( Fx.EMPTY_BOUNDS ).isEqualTo( new BoundingBox( 0, 0, 0, 0, 0, 0 ) );
+	}
 
 	@Test
 	void testRunWithException() throws Exception {
