@@ -16,7 +16,7 @@ import java.util.concurrent.TimeoutException;
 @CustomLog
 public class Fx {
 
-	public static final Bounds EMPTY_BOUNDS = new BoundingBox( 1, 1, 1, -2, -2, -2 );
+	public static final Bounds EMPTY_BOUNDS = new BoundingBox( 0, 0, 0, 0, 0, 0 );
 
 	private Fx() {}
 
