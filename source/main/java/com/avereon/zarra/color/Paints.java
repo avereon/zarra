@@ -50,4 +50,10 @@ public class Paints {
 		}
 	}
 
+	public static boolean isTransparent( Paint paint ) {
+		if( paint == null ) return true;
+		if( paint instanceof Color color ) return Colors.isTransparent( color );
+		return false;
+	}
+
 }
