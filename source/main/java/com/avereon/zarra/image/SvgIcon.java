@@ -45,6 +45,82 @@ public class SvgIcon extends VectorIcon {
 	}
 
 	/**
+	 * Create an SVG string for an arc. Because SVG path arcs are a bit
+	 * cumbersome this method simplifies the creating of an arc based
+	 * on the center start and extent.
+	 */
+	public static String arc( double cx, double cy, double r, double start, double extent ) {
+		return arc( false, cx, cy, r, start, extent );
+	}
+
+	/**
+	 * Create an SVG string for an arc. Because SVG path arcs are a bit
+	 * cumbersome this method simplifies the creating of an arc based
+	 * on the center start and extent.
+	 */
+	public static String arc( boolean moveToStart, double cx, double cy, double r, double start, double extent ) {
+		int ccw = extent < 0 ? 0 : 1;
+		double end = start + extent;
+		double sx = cx + r * Math.cos( start * RADIANS_PER_DEGREE );
+		double sy = cy + r * Math.sin( start * RADIANS_PER_DEGREE );
+		double ex = cx + r * Math.cos( end * RADIANS_PER_DEGREE );
+		double ey = cy + r * Math.sin( end * RADIANS_PER_DEGREE );
+
+		String icon = "";
+		if( moveToStart ) {
+			icon += "M" + sx + "," + sy + " ";
+		}
+		icon += "A" + r + "," + r + " 0 0 " + ccw + " " + ex + "," + ey;
+
+		return icon;
+	}
+
+	/**
+	 * Create an SVG string for a circle. Because SVG path arcs are a bit
+	 * cumbersome this method simplifies the creating of a full circle.
+	 *
+	 * @param cx The circle center X coordinate
+	 * @param cy The circle center Y coordinate
+	 * @param r The circle radius
+	 * @return The SVG string for the circle
+	 */
+	public static String circle( double cx, double cy, double r ) {
+		return "M" + (cx + r) + "," + cy + " A" + r + "," + r + " 0 0 0 " + (cx - r) + "," + cy + " A" + r + "," + r + " 0 0 0 " + (cx + r) + "," + cy;
+	}
+
+	/**
+	 * Create an SVG string for an ellipse. Because SVG path arcs are a bit
+	 * cumbersome this method simplifies the creating of a full ellipse.
+	 *
+	 * @param cx The ellipse center X coordinate
+	 * @param cy The ellipse center Y coordinate
+	 * @param rx The ellipse X radius
+	 * @param ry The ellipse Y radius
+	 * @return The SVG string for the ellipse
+	 */
+	public static String ellipse( double cx, double cy, double rx, double ry ) {
+		return ellipse( cx, cy, rx, ry, 0 );
+	}
+
+	/**
+	 * Create an SVG string for an ellipse. Because SVG path arcs are a bit
+	 * cumbersome this method simplifies the creating of a full ellipse.
+	 *
+	 * @param cx The ellipse center X coordinate
+	 * @param cy The ellipse center Y coordinate
+	 * @param rx The ellipse X radius
+	 * @param ry The ellipse Y radius
+	 * @return The SVG string for the ellipse
+	 */
+	public static String ellipse( double cx, double cy, double rx, double ry, double rotate ) {
+		return "M" + (cx + rx) + "," + (cy + ry) + " A" + rx + "," + ry + " " + rotate + " 0 0 " + (cx - rx) + "," + (cy - ry) + " A" + rx + "," + ry + " " + rotate + " 0 0 " + (cx + rx) + "," + (cy + ry);
+	}
+
+	public static void main( String[] commands ) {
+		Proof.proof( new SvgIcon( 24, 24, "M20.5 6c-2.61.7-5.67 1-8.5 1s-5.89-.3-8.5-1L3 8c1.86.5 4 .83 6 1v13h2v-6h2v6h2V9c2-.17 4.14-.5 6-1l-.5-2zM12 6c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2z" ) );
+	}
+
+	/**
 	 * This method is used to define the rendering steps where it is problematic
 	 * to define them in the constructor. This is particularly necessary when
 	 * using values that come from the style class like colors and sizes.
@@ -238,78 +314,6 @@ public class SvgIcon extends VectorIcon {
 	}
 
 	/**
-	 * Create an SVG string for an arc. Because SVG path arcs are a bit
-	 * cumbersome this method simplifies the creating of an arc based
-	 * on the center start and extent.
-	 */
-	public static String arc( double cx, double cy, double r, double start, double extent ) {
-		return arc( false, cx, cy, r, start, extent );
-	}
-
-	/**
-	 * Create an SVG string for an arc. Because SVG path arcs are a bit
-	 * cumbersome this method simplifies the creating of an arc based
-	 * on the center start and extent.
-	 */
-	public static String arc( boolean moveToStart, double cx, double cy, double r, double start, double extent ) {
-		int ccw = extent < 0 ? 0 : 1;
-		double end = start + extent;
-		double sx = cx + r * Math.cos( start * RADIANS_PER_DEGREE );
-		double sy = cy + r * Math.sin( start * RADIANS_PER_DEGREE );
-		double ex = cx + r * Math.cos( end * RADIANS_PER_DEGREE );
-		double ey = cy + r * Math.sin( end * RADIANS_PER_DEGREE );
-
-		String icon = "";
-		if( moveToStart ) {
-			icon += "M" + sx + "," + sy + " ";
-		}
-		icon += "A" + r + "," + r + " 0 0 " + ccw + " " + ex + "," + ey;
-
-		return icon;
-	}
-
-	/**
-	 * Create an SVG string for a circle. Because SVG path arcs are a bit
-	 * cumbersome this method simplifies the creating of a full circle.
-	 *
-	 * @param cx The circle center X coordinate
-	 * @param cy The circle center Y coordinate
-	 * @param r The circle radius
-	 * @return The SVG string for the circle
-	 */
-	public static String circle( double cx, double cy, double r ) {
-		return "M" + (cx + r) + "," + cy + " A" + r + "," + r + " 0 0 0 " + (cx - r) + "," + cy + " A" + r + "," + r + " 0 0 0 " + (cx + r) + "," + cy;
-	}
-
-	/**
-	 * Create an SVG string for an ellipse. Because SVG path arcs are a bit
-	 * cumbersome this method simplifies the creating of a full ellipse.
-	 *
-	 * @param cx The ellipse center X coordinate
-	 * @param cy The ellipse center Y coordinate
-	 * @param rx The ellipse X radius
-	 * @param ry The ellipse Y radius
-	 * @return The SVG string for the ellipse
-	 */
-	public static String ellipse( double cx, double cy, double rx, double ry ) {
-		return ellipse( cx, cy, rx, ry, 0 );
-	}
-
-	/**
-	 * Create an SVG string for an ellipse. Because SVG path arcs are a bit
-	 * cumbersome this method simplifies the creating of a full ellipse.
-	 *
-	 * @param cx The ellipse center X coordinate
-	 * @param cy The ellipse center Y coordinate
-	 * @param rx The ellipse X radius
-	 * @param ry The ellipse Y radius
-	 * @return The SVG string for the ellipse
-	 */
-	public static String ellipse( double cx, double cy, double rx, double ry, double rotate ) {
-		return "M" + (cx + rx) + "," + (cy + ry) + " A" + rx + "," + ry + " " + rotate + " 0 0 " + (cx - rx) + "," + (cy - ry) + " A" + rx + "," + ry + " " + rotate + " 0 0 " + (cx + rx) + "," + (cy + ry);
-	}
-
-	/**
 	 * Create an SVG string that represents the given point rotated about cx,cy by angle.
 	 *
 	 * @param x The X coordinate of the point
@@ -377,10 +381,6 @@ public class SvgIcon extends VectorIcon {
 
 	private void doRestore() {
 		getGraphicsContext2D().restore();
-	}
-
-	public static void main( String[] commands ) {
-		Proof.proof( new SvgIcon( 24, 24, "M20.5 6c-2.61.7-5.67 1-8.5 1s-5.89-.3-8.5-1L3 8c1.86.5 4 .83 6 1v13h2v-6h2v6h2V9c2-.17 4.14-.5 6-1l-.5-2zM12 6c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2z" ) );
 	}
 
 	private interface IconAction {

@@ -13,9 +13,9 @@ import java.util.List;
 @CustomLog
 public final class FontUtil {
 
-	private static List<String> monoFontFamilyList;
-
 	private static final String SEPARATOR = "|";
+
+	private static List<String> monoFontFamilyList;
 
 	public static String encode( Font font ) {
 		if( font == null ) return null;

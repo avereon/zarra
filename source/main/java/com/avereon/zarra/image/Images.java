@@ -1,7 +1,7 @@
 package com.avereon.zarra.image;
 
-import com.avereon.zarra.style.Stylesheet;
 import com.avereon.zarra.style.Motif;
+import com.avereon.zarra.style.Stylesheet;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;

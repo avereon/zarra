@@ -33,7 +33,7 @@ class FontUtilTest {
 
 	@Test
 	void testGetMonoFontFamilyNames() {
-		assertThat( FontUtil.getMonoFontFamilyNames().size()).isGreaterThan( 0 );
+		assertThat( FontUtil.getMonoFontFamilyNames().size() ).isGreaterThan( 0 );
 	}
 
 }
