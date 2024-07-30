@@ -11,6 +11,9 @@ public class FontMetrics {
 	private final Text text;
 
 	@Getter
+	private final double lead;
+
+	@Getter
 	private final double ascent;
 
 	@Getter
@@ -23,11 +26,16 @@ public class FontMetrics {
 		text = new Text();
 		text.setFont( font );
 
-		// Ascent and decent are inverted
 		text.setBoundsType( TextBoundsType.LOGICAL );
 		Bounds bounds = text.getLayoutBounds();
+
+		// Lead will be negative
+		lead = -bounds.getMinX();
+		// Ascent will be negative
 		ascent = -bounds.getMinY();
+		// Descent will be negative
 		descent = -bounds.getMaxY();
+		// Spacing will be positive
 		spacing = bounds.getHeight();
 
 		text.setBoundsType( TextBoundsType.VISUAL );
