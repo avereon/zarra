@@ -85,6 +85,16 @@ public class FxUtil {
 		return result;
 	}
 
+	public static Bounds bounds( Point3D a, Point3D b ) {
+		double minX = Math.min( a.getX(), b.getX() );
+		double minY = Math.min( a.getY(), b.getY() );
+		double minZ = Math.min( a.getZ(), b.getZ() );
+		double maxX = Math.max( a.getX(), b.getX() );
+		double maxY = Math.max( a.getY(), b.getY() );
+		double maxZ = Math.max( a.getZ(), b.getZ() );
+		return new BoundingBox( minX, minY, minZ, maxX - minX, maxY - minY, maxZ - minZ );
+	}
+
 	public static Bounds merge( Bounds a, Bounds b ) {
 		if( a == null ) return b;
 		if( b == null ) return a;
