@@ -405,13 +405,14 @@ public abstract class VectorImage extends Canvas {
 	 * @return An image with the rendered image on it
 	 */
 	public Image getImage( double width, double height ) {
+		Scene scene = Images.getImageScene( this, width, height, null );
+		WritableImage snapshot = scene.snapshot( new WritableImage( (int)width, (int)height ) );
+		// WORKAROUND
 		// Note that just returning the WritableImage that the snapshot() method
 		// creates did not work when used as a Stage icon. However, creating a new
 		// WritableImage from the snapshot image seemed to solve the problem. That
 		// is why a new Writable image is created instead of just returning the
 		// snapshot image.
-		Scene scene = Images.getImageScene( this, width, height, null );
-		WritableImage snapshot = scene.snapshot( new WritableImage( (int)width, (int)height ) );
 		return new WritableImage( snapshot.getPixelReader(), (int)snapshot.getWidth(), (int)snapshot.getHeight() );
 	}
 
