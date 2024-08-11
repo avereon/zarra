@@ -15,11 +15,6 @@ public final class JavaFxStarter extends Application {
 
 	public JavaFxStarter() {}
 
-	@Override
-	public void start( Stage primaryStage ) {
-		setStarted( true );
-	}
-
 	private static void setStarted( boolean started ) {
 		synchronized( startLock ) {
 			JavaFxStarter.started = started;
@@ -57,6 +52,11 @@ public final class JavaFxStarter extends Application {
 
 			if( throwable != null ) throw new RuntimeException( throwable );
 		}
+	}
+
+	@Override
+	public void start( Stage primaryStage ) {
+		setStarted( true );
 	}
 
 }

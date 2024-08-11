@@ -44,5 +44,7 @@ public class FxTest extends FxPlatformTestCase {
 		public Throwable getThrowable() {
 			return throwable;
 		}
+
 	}
+
 }

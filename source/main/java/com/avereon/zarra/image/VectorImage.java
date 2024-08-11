@@ -57,36 +57,6 @@ public abstract class VectorImage extends Canvas {
 
 	private static final Font DEFAULT_FONT = Font.getDefault();
 
-	private GraphicsContext graphicsContextOverride;
-
-	private Transform baseTransform = new Affine();
-
-	private DoubleProperty strokeWidth;
-
-	private Double strokeWidthOverride;
-
-	private ObjectProperty<Paint> strokePaint;
-
-	private Paint strokePaintOverride;
-
-	private ObjectProperty<Paint> primaryPaint;
-
-	private Paint primaryPaintOverride;
-
-	private ObjectProperty<Paint> secondaryPaint;
-
-	private Paint secondaryPaintOverride;
-
-	private ObjectProperty<Font> font;
-
-	private Font fontOverride;
-
-	private double gridX;
-
-	private double gridY;
-
-	private Motif motif;
-
 	static {
 		// Don't forget to update the test style sheets
 		CSS_STROKE_WIDTH = new CssMetaData<>( "-fx-stroke-width", StyleConverter.getSizeConverter() ) {
@@ -171,6 +141,36 @@ public abstract class VectorImage extends Canvas {
 		STYLEABLES = List.of( CSS_STROKE_WIDTH, CSS_STROKE_PAINT, CSS_PRIMARY_PAINT, CSS_SECONDARY_PAINT, CSS_FONT );
 	}
 
+	private GraphicsContext graphicsContextOverride;
+
+	private Transform baseTransform = new Affine();
+
+	private DoubleProperty strokeWidth;
+
+	private Double strokeWidthOverride;
+
+	private ObjectProperty<Paint> strokePaint;
+
+	private Paint strokePaintOverride;
+
+	private ObjectProperty<Paint> primaryPaint;
+
+	private Paint primaryPaintOverride;
+
+	private ObjectProperty<Paint> secondaryPaint;
+
+	private Paint secondaryPaintOverride;
+
+	private ObjectProperty<Font> font;
+
+	private Font fontOverride;
+
+	private double gridX;
+
+	private double gridY;
+
+	private Motif motif;
+
 	protected VectorImage() {
 		this( DEFAULT_GRID, DEFAULT_GRID );
 	}
@@ -182,6 +182,14 @@ public abstract class VectorImage extends Canvas {
 		setTheme( Motif.DARK );
 		getStyleClass().add( "xe-image" );
 		if( this instanceof IconTag ) IconTag.asIcon( this );
+	}
+
+	public static List<CssMetaData<? extends Styleable, ?>> getClassCssMetaData() {
+		return STYLEABLES;
+	}
+
+	public static void proof( VectorImage image ) {
+		Proof.proof( image );
 	}
 
 	protected void doRender() {
@@ -208,10 +216,6 @@ public abstract class VectorImage extends Canvas {
 	 */
 	protected void reset() {
 		getGraphicsContext2D().setTransform( new Affine( baseTransform ) );
-	}
-
-	public static List<CssMetaData<? extends Styleable, ?>> getClassCssMetaData() {
-		return STYLEABLES;
 	}
 
 	@Override
@@ -338,12 +342,12 @@ public abstract class VectorImage extends Canvas {
 		this.graphicsContextOverride = context;
 	}
 
-	public void setTheme( Motif motif ) {
-		this.motif = motif;
-	}
-
 	public Motif getTheme() {
 		return motif;
+	}
+
+	public void setTheme( Motif motif ) {
+		this.motif = motif;
 	}
 
 	public void regrid( double width, double height ) {
@@ -401,13 +405,14 @@ public abstract class VectorImage extends Canvas {
 	 * @return An image with the rendered image on it
 	 */
 	public Image getImage( double width, double height ) {
+		Scene scene = Images.getImageScene( this, width, height, null );
+		WritableImage snapshot = scene.snapshot( new WritableImage( (int)width, (int)height ) );
+		// WORKAROUND
 		// Note that just returning the WritableImage that the snapshot() method
 		// creates did not work when used as a Stage icon. However, creating a new
 		// WritableImage from the snapshot image seemed to solve the problem. That
 		// is why a new Writable image is created instead of just returning the
 		// snapshot image.
-		Scene scene = Images.getImageScene( this, width, height, null );
-		WritableImage snapshot = scene.snapshot( new WritableImage( (int)width, (int)height ) );
 		return new WritableImage( snapshot.getPixelReader(), (int)snapshot.getWidth(), (int)snapshot.getHeight() );
 	}
 
@@ -434,10 +439,6 @@ public abstract class VectorImage extends Canvas {
 		}
 
 		return (T)copy;
-	}
-
-	public static void proof( VectorImage image ) {
-		Proof.proof( image );
 	}
 
 	void setAndApplyTheme( Motif motif ) {

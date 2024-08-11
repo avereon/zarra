@@ -9,11 +9,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class FontMetricsTest {
 
-	private FontMetrics metrics = new FontMetrics( Font.getDefault() );
+	private final FontMetrics metrics = new FontMetrics( Font.getDefault() );
 
 	@Test
 	void testFontMetrics() {
 		assertThat( metrics ).isNotNull();
+		assertThat( metrics.getLead() ).isCloseTo( 0.0, Percentage.withPercentage( 1 ) );
 		assertThat( metrics.getAscent() ).isCloseTo( 12.06689453125, Percentage.withPercentage( 1 ) );
 		assertThat( metrics.getDescent() ).isCloseTo( -3.06591796875, Percentage.withPercentage( 1 ) );
 		assertThat( metrics.getSpacing() ).isCloseTo( 15.1328125, Percentage.withPercentage( 1 ) );

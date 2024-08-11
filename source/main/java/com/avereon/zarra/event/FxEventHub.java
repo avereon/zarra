@@ -1,6 +1,6 @@
 package com.avereon.zarra.event;
 
-import com.avereon.event.*;
+import com.avereon.event.EventHub;
 import javafx.event.EventDispatchChain;
 import lombok.Getter;
 

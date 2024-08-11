@@ -50,7 +50,8 @@ public class FxEventWatcher implements EventHandler<Event> {
 	}
 
 	/**
-	 * Wait for an event of a specific type to occur. If the event has already occurred this method will return immediately. If the event has not already occurred then this method waits until the next event occurs, or the specified timeout,
+	 * Wait for an event of a specific type to occur. If the event has already occurred this method will return immediately. If the event has not already occurred then this method waits until the next
+	 * event occurs, or the specified timeout,
 	 * whichever comes first.
 	 *
 	 * @param type The event type to wait for
@@ -58,7 +59,7 @@ public class FxEventWatcher implements EventHandler<Event> {
 	 * @throws InterruptedException If the timeout is exceeded
 	 */
 	public synchronized void waitForEvent( EventType<? extends Event> type, long timeout ) throws InterruptedException, TimeoutException {
-		if( timeout <=0 ) return;
+		if( timeout <= 0 ) return;
 
 		long duration = 0;
 		boolean shouldWait = true;

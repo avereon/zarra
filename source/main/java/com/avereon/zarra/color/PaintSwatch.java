@@ -81,7 +81,7 @@ public class PaintSwatch extends Pane {
 		swatch.setStroke( null );
 
 		getChildren().addAll( background, noPaintSwatch, swatch );
-		resize( 100,100 );
+		resize( 100, 100 );
 
 		setPaint( paint );
 	}
@@ -90,14 +90,14 @@ public class PaintSwatch extends Pane {
 		return paint == null ? null : paint.get();
 	}
 
-	public ObjectProperty<Paint> paintProperty() {
-		if( paint == null ) paint = new SimpleObjectProperty<>();
-		return paint;
-	}
-
 	public void setPaint( Paint paint ) {
 		paintProperty().set( paint );
 		updateSwatch();
+	}
+
+	public ObjectProperty<Paint> paintProperty() {
+		if( paint == null ) paint = new SimpleObjectProperty<>();
+		return paint;
 	}
 
 	private void updateSwatch() {

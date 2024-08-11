@@ -2,7 +2,9 @@ package com.avereon.zarra.color;
 
 import javafx.scene.paint.Color;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
 
 public class MaterialColor {

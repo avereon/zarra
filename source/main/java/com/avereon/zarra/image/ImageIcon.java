@@ -19,6 +19,11 @@ public class ImageIcon extends RenderedIcon {
 		setUrl( url );
 	}
 
+	public static void main( String[] commands ) {
+		ImageIcon icon = new ImageIcon( "https://www.avereon.com/download/latest/xenon/product/icon" );
+		proof( icon );
+	}
+
 	@Override
 	@SuppressWarnings( "unchecked" )
 	public RenderedIcon copy() {
@@ -39,11 +44,6 @@ public class ImageIcon extends RenderedIcon {
 
 	public Runnable getPreloadRunner() {
 		return () -> getImageFromUrl( url );
-	}
-
-	public static void main( String[] commands ) {
-		ImageIcon icon = new ImageIcon( "https://www.avereon.com/download/latest/xenon/product/icon" );
-		proof( icon );
 	}
 
 	private Image getImageFromUrl( String url ) {

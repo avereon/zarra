@@ -4,10 +4,12 @@ import javafx.scene.paint.Color;
 
 public class Colors {
 
-	// Per http://stackoverflow.com/questions/596216/formula-to-determine-brightness-of-rgb-color
-	//	public static final double RED_BRIGHTNESS_FACTOR = 0.2126;
-	//	public static final double GREEN_BRIGHTNESS_FACTOR = 0.7152;
-	//	public static final double BLUE_BRIGHTNESS_FACTOR = 0.0722;
+	/*
+	 * Per http://stackoverflow.com/questions/596216/formula-to-determine-brightness-of-rgb-color
+	 * public static final double RED_BRIGHTNESS_FACTOR = 0.2126;
+	 * public static final double GREEN_BRIGHTNESS_FACTOR = 0.7152;
+	 * public static final double BLUE_BRIGHTNESS_FACTOR = 0.0722;
+	 */
 
 	// Per com.sun.javafx.util.Utils.calculateBrightness(Color)
 	public static final double RED_BRIGHTNESS_FACTOR = 0.3;
@@ -66,6 +68,16 @@ public class Colors {
 	}
 
 	/**
+	 * Determine if the specified color is transparent.
+	 *
+	 * @param color The color to check for transparency.
+	 * @return True if the color is transparent, false otherwise.
+	 */
+	public static boolean isTransparent( Color color ) {
+		return color != null && color.getOpacity() == 0;
+	}
+
+	/**
 	 * Generate a toned color by mixing the specified color with white (factor
 	 * 1.0) or black (factor -1.0).
 	 */
@@ -79,9 +91,9 @@ public class Colors {
 	/**
 	 * Generate a tinted color by mixing the specified color with white.
 	 *
-	 * @param color
-	 * @param factor
-	 * @return
+	 * @param color The color to tint
+	 * @param factor The tint factor
+	 * @return The tinted color
 	 */
 	public static Color getTint( Color color, double factor ) {
 		factor = clamp( factor );
@@ -91,9 +103,9 @@ public class Colors {
 	/**
 	 * Generate a shaded color by mixing the specified color with black.
 	 *
-	 * @param color
-	 * @param factor
-	 * @return
+	 * @param color The color to shade
+	 * @param factor The shade factor
+	 * @return The shaded color
 	 */
 	public static Color getShade( Color color, double factor ) {
 		factor = clamp( factor );
@@ -203,6 +215,7 @@ public class Colors {
 		return value;
 	}
 
+	@SuppressWarnings( "unused" )
 	private static float clamp( float value ) {
 		if( value < 0 ) {
 			value = 0;
@@ -212,6 +225,7 @@ public class Colors {
 		return value;
 	}
 
+	@SuppressWarnings( "unused" )
 	private static int clamp( int value ) {
 		if( value < 0 ) {
 			value = 0;
