@@ -181,14 +181,4 @@ public class FxUtil {
 		//e.acceptTransferModes( TransferMode.MOVE );
 	}
 
-	private static void setTransferModeWorkaround( DragEvent e, TransferMode... defaultModes ) {
-		// FIXME This does not work the same when the drag comes from an external application,
-		// including other JVMs, as it does internally. Very annoying.
-		Set<TransferMode> modes = e.getDragboard().getTransferModes();
-		System.out.println( "dtms=" + modes + " tm=" + e.getTransferMode() + " atm=" + e.getAcceptedTransferMode() );
-		if( modes.isEmpty() ) return;
-		TransferMode[] mode = modes.size() == 1 ? TransferMode.ANY : defaultModes;
-		e.acceptTransferModes( mode );
-	}
-
 }
