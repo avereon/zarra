@@ -18,9 +18,9 @@ import java.util.concurrent.TimeoutException;
 @CustomLog
 public class Fx {
 
-	public static final Transform IDENTITY_TRANSFORM = new Affine();
-
 	public static final Bounds EMPTY_BOUNDS = new BoundingBox( 0, 0, 0, 0, 0, 0 );
+
+	public static final Transform IDENTITY_TRANSFORM = new Affine();
 
 	private Fx() {}
 
