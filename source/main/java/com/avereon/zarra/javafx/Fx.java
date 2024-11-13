@@ -5,6 +5,8 @@ import javafx.geometry.BoundingBox;
 import javafx.geometry.Bounds;
 import javafx.scene.Node;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.transform.Affine;
+import javafx.scene.transform.Transform;
 import javafx.stage.Stage;
 import javafx.stage.Window;
 import lombok.CustomLog;
@@ -15,6 +17,8 @@ import java.util.concurrent.TimeoutException;
 
 @CustomLog
 public class Fx {
+
+	public static final Transform IDENTITY_TRANSFORM = new Affine();
 
 	public static final Bounds EMPTY_BOUNDS = new BoundingBox( 0, 0, 0, 0, 0, 0 );
 
