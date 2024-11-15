@@ -9,7 +9,10 @@ import javafx.scene.input.DragEvent;
 import javafx.scene.input.TransferMode;
 import javafx.scene.layout.BackgroundPosition;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Objects;
 
 public class FxUtil {
 
@@ -101,13 +104,10 @@ public class FxUtil {
 		double minX = Math.min( a.getMinX(), b.getMinX() );
 		double minY = Math.min( a.getMinY(), b.getMinY() );
 		double minZ = Math.min( a.getMinZ(), b.getMinZ() );
-		double maxX = Math.max( a.getMaxX(), b.getMaxX() );
-		double maxY = Math.max( a.getMaxY(), b.getMaxY() );
-		double maxZ = Math.max( a.getMaxZ(), b.getMaxZ() );
 		double w = Math.max( a.getWidth(), b.getWidth() );
 		double h = Math.max( a.getHeight(), b.getHeight() );
 		double d = Math.max( a.getDepth(), b.getDepth() );
-		return new BoundingBox( minX, minY, minZ, maxX - minX, maxY - minY, maxZ - minZ );
+		return new BoundingBox( minX, minY, minZ, w, h, d );
 	}
 
 	public static Bounds add( Bounds a, Insets b ) {
