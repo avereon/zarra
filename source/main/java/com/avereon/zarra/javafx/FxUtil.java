@@ -104,6 +104,9 @@ public class FxUtil {
 		double maxX = Math.max( a.getMaxX(), b.getMaxX() );
 		double maxY = Math.max( a.getMaxY(), b.getMaxY() );
 		double maxZ = Math.max( a.getMaxZ(), b.getMaxZ() );
+		double w = Math.max( a.getWidth(), b.getWidth() );
+		double h = Math.max( a.getHeight(), b.getHeight() );
+		double d = Math.max( a.getDepth(), b.getDepth() );
 		return new BoundingBox( minX, minY, minZ, maxX - minX, maxY - minY, maxZ - minZ );
 	}
 
