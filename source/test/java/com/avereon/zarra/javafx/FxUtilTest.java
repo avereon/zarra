@@ -1,5 +1,8 @@
 package com.avereon.zarra.javafx;
 
+import javafx.geometry.BoundingBox;
+import javafx.geometry.Bounds;
+import javafx.geometry.Point3D;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.control.TreeItem;
@@ -40,6 +43,45 @@ public class FxUtilTest extends FxPlatformTestCase {
 		b.getChildren().addAll( b3, b4, b5, b6 );
 		c.getChildren().addAll( c7 );
 		root.getChildren().addAll( a, b, c );
+	}
+
+	@Test
+	void bounds() {
+		// given
+		Point3D origin = new Point3D( 0, 0, 0 );
+		Point3D point = new Point3D( 1, 2, 3 );
+
+		// when
+		Bounds result = FxUtil.bounds( origin, point );
+
+		// then
+		assertThat( result ).isEqualTo( new BoundingBox( 0, 0, 0, 1, 2, 3 ) );
+	}
+
+	@Test
+	void addPointToBounds() {
+		// given
+		Bounds bounds = new BoundingBox( 0, 0, 0, 0, 0, 0 );
+		Point3D point = new Point3D( 1, 2, 3 );
+
+		// when
+		Bounds result = FxUtil.add( bounds, point );
+
+		// then
+		assertThat( result ).isEqualTo( new BoundingBox( 0, 0, 0, 1, 2, 3 ) );
+	}
+
+	@Test
+	void merge() {
+		// given
+		Bounds a = new BoundingBox( 0, 0, 0, 1, 2, 3 );
+		Bounds b = new BoundingBox( 1, 2, 3, 4, 5, 6 );
+
+		// when
+		Bounds result = FxUtil.merge( a, b );
+
+		// then
+		assertThat( result ).isEqualTo( new BoundingBox( 0, 0, 0, 5, 7, 9 ) );
 	}
 
 	@Test

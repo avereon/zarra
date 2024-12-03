@@ -98,16 +98,26 @@ public class FxUtil {
 		return new BoundingBox( minX, minY, minZ, maxX - minX, maxY - minY, maxZ - minZ );
 	}
 
+	public static Bounds add( Bounds a, Point3D p ) {
+		double minX = Math.min( a.getMinX(), p.getX() );
+		double minY = Math.min( a.getMinY(), p.getY() );
+		double minZ = Math.min( a.getMinZ(), p.getZ() );
+		double maxX = Math.max( a.getMaxX(), p.getX() );
+		double maxY = Math.max( a.getMaxY(), p.getY() );
+		double maxZ = Math.max( a.getMaxZ(), p.getZ() );
+		return new BoundingBox( minX, minY, minZ, maxX - minX, maxY - minY, maxZ - minZ );
+	}
+
 	public static Bounds merge( Bounds a, Bounds b ) {
 		if( a == null ) return b;
 		if( b == null ) return a;
 		double minX = Math.min( a.getMinX(), b.getMinX() );
 		double minY = Math.min( a.getMinY(), b.getMinY() );
 		double minZ = Math.min( a.getMinZ(), b.getMinZ() );
-		double w = Math.max( a.getWidth(), b.getWidth() );
-		double h = Math.max( a.getHeight(), b.getHeight() );
-		double d = Math.max( a.getDepth(), b.getDepth() );
-		return new BoundingBox( minX, minY, minZ, w, h, d );
+		double maxX = Math.max( a.getMaxX(), b.getMaxX() );
+		double maxY = Math.max( a.getMaxY(), b.getMaxY() );
+		double maxZ = Math.max( a.getMaxZ(), b.getMaxZ() );
+		return new BoundingBox( minX, minY, minZ, maxX - minX, maxY - minY, maxZ - minZ );
 	}
 
 	public static Bounds add( Bounds a, Insets b ) {
