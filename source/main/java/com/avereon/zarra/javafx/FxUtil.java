@@ -98,13 +98,13 @@ public class FxUtil {
 		return new BoundingBox( minX, minY, minZ, maxX - minX, maxY - minY, maxZ - minZ );
 	}
 
-	public static Bounds add( Bounds a, Point3D p ) {
-		double minX = Math.min( a.getMinX(), p.getX() );
-		double minY = Math.min( a.getMinY(), p.getY() );
-		double minZ = Math.min( a.getMinZ(), p.getZ() );
-		double maxX = Math.max( a.getMaxX(), p.getX() );
-		double maxY = Math.max( a.getMaxY(), p.getY() );
-		double maxZ = Math.max( a.getMaxZ(), p.getZ() );
+	public static Bounds add( Bounds bounds, Point3D point ) {
+		double minX = Math.min( bounds.getMinX(), point.getX() );
+		double minY = Math.min( bounds.getMinY(), point.getY() );
+		double minZ = Math.min( bounds.getMinZ(), point.getZ() );
+		double maxX = Math.max( bounds.getMaxX(), point.getX() );
+		double maxY = Math.max( bounds.getMaxY(), point.getY() );
+		double maxZ = Math.max( bounds.getMaxZ(), point.getZ() );
 		return new BoundingBox( minX, minY, minZ, maxX - minX, maxY - minY, maxZ - minZ );
 	}
 
