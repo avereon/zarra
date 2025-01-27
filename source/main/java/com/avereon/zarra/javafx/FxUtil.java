@@ -71,18 +71,36 @@ public class FxUtil {
 		return false;
 	}
 
-	public static Bounds localToParent( Node source, Node target ) {
-		return localToParent( source, target, source.getLayoutBounds() );
+	/**
+	 * Get the bounds of a node in the coordinate space of the ancestor node. The
+	 * ancestor does not have to be the immediate parent of the local node.
+	 *
+	 * @param local The node to get the bounds of
+	 * @param ancestor The ancestor node to get the bounds in
+	 * @return The bounds of the local node in the ancestor node coordinate space
+	 */
+	public static Bounds localToAncestor( Node local, Node ancestor ) {
+		return localToAncestor( local, ancestor, local.getLayoutBounds() );
 	}
 
-	public static Bounds localToParent( Node source, Node target, Bounds bounds ) {
+	/**
+	 * Convert a bounds in the local node coordinate space to a bounds in the
+	 * ancestor node coordinate space. The ancestor does not have to be the
+	 * immediate parent of the local node.
+	 *
+	 * @param local The node to get the bounds of
+	 * @param ancestor The ancestor node to get the bounds in
+	 * @param bounds The bounds to convert from local space to ancestor space
+	 * @return The bounds of the local node in the ancestor node coordinate space
+	 */
+	public static Bounds localToAncestor( Node local, Node ancestor, Bounds bounds ) {
 		Bounds result = bounds;
 
-		Node parent = source;
-		while( parent != null ) {
-			if( parent == target ) break;
-			result = parent.localToParent( result );
-			parent = parent.getParent();
+		Node node = local;
+		while( node != null ) {
+			if( node == ancestor ) break;
+			result = node.localToParent( result );
+			node = node.getParent();
 		}
 
 		return result;
