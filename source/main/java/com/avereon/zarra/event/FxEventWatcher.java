@@ -4,7 +4,9 @@ import com.avereon.zarra.javafx.Fx;
 import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.event.EventType;
+import lombok.CustomLog;
 import lombok.Getter;
+import lombok.Setter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,6 +14,7 @@ import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.TimeoutException;
 
+@CustomLog
 public class FxEventWatcher implements EventHandler<Event> {
 
 	private static final long DEFAULT_WAIT_TIMEOUT = 2500;
@@ -20,6 +23,10 @@ public class FxEventWatcher implements EventHandler<Event> {
 
 	@Getter
 	private final long timeout;
+
+	@Getter
+	@Setter
+	private boolean printEventCapture;
 
 	public FxEventWatcher() {
 		this( DEFAULT_WAIT_TIMEOUT );
@@ -31,6 +38,7 @@ public class FxEventWatcher implements EventHandler<Event> {
 
 	@Override
 	public synchronized void handle( Event event ) {
+		if( printEventCapture ) System.out.println( "Captured FX event: type=" + event.getEventType() );
 		events.offer( event );
 		notifyAll();
 	}
