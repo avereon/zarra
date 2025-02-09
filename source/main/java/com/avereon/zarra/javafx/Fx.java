@@ -11,9 +11,11 @@ import javafx.stage.Stage;
 import javafx.stage.Window;
 import lombok.CustomLog;
 
+import java.util.concurrent.Callable;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+import java.util.concurrent.atomic.AtomicReference;
 
 @CustomLog
 public class Fx {
@@ -33,15 +35,40 @@ public class Fx {
 		}
 	}
 
-	// Convenience method to call Platform.runLater
-	public static <R extends Runnable> R run( R runnable ) {
+	/**
+	 * Convenience method to run a Runnable on the FX thread.
+	 *
+	 * @param runnable The runnable to run
+	 */
+	public static void run( Runnable runnable ) {
 		Platform.runLater( runnable );
-		return runnable;
+	}
+
+	/**
+	 * Convenience method to run Callable on the FX thread and return the result.
+	 *
+	 * @param callable The callable to run
+	 * @param <T> The type of the result
+	 * @return The result of the callable
+	 */
+	public static <T> T call( Callable<T> callable ) throws Exception {
+		AtomicReference<T> reference = new AtomicReference<>();
+		AtomicReference<Exception> exceptionReference = new AtomicReference<>();
+		Platform.runLater( () -> {
+			try {
+				reference.set( callable.call() );
+			} catch( Exception exception ) {
+				exceptionReference.set( exception );
+			}
+		} );
+		Fx.waitFor( 1, TimeUnit.SECONDS );
+		if( exceptionReference.get() != null ) throw exceptionReference.get();
+		return reference.get();
 	}
 
 	public static boolean isRunning() {
 		try {
-			Fx.run( () -> {} );
+			Platform.runLater( () -> {} );
 			return true;
 		} catch( IllegalStateException throwable ) {
 			return false;
@@ -97,7 +124,7 @@ public class Fx {
 		if( Fx.isFxThread() ) throw new IllegalStateException( "Attempt to wait on FX thread from FX thread" );
 
 		Semaphore semaphore = new Semaphore( 0 );
-		Fx.run( semaphore::release );
+		Platform.runLater( semaphore::release );
 
 		// NOTE Thread.yield() is helpful but not consistent
 		//Thread.yield();
