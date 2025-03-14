@@ -54,7 +54,7 @@ public class Fx {
 	public static <T> T call( Callable<T> callable ) throws Exception {
 		AtomicReference<T> reference = new AtomicReference<>();
 		AtomicReference<Exception> exceptionReference = new AtomicReference<>();
-		Platform.runLater( () -> {
+		run( () -> {
 			try {
 				reference.set( callable.call() );
 			} catch( Exception exception ) {
@@ -98,15 +98,10 @@ public class Fx {
 	public static void waitFor( long count, TimeUnit unit ) {
 		try {
 			doWaitForWithExceptions( count, unit );
-		} catch( TimeoutException | InterruptedException exception ) {
+		} catch( InterruptedException exception ) {
+			Thread.currentThread().interrupt();
+		} catch( TimeoutException ignore ) {
 			// Intentionally ignore exception
-		}
-	}
-
-	public static void splitWaitFor( long timeout, int count ) {
-		long duration = timeout / count;
-		for( int index = 0; index < count; index++ ) {
-			waitFor( duration, TimeUnit.MILLISECONDS );
 		}
 	}
 
