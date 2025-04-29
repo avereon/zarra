@@ -1,6 +1,6 @@
-[build-status]: https://github.com/avereon/zarra/workflows/CI/badge.svg "Build status"
+[build-status]: https://github.com/avereon/zerra/workflows/CI/badge.svg "Build status"
 
-# Zarra [![][build-status]](https://github.com/avereon/zarra/actions)
+# Zerra [![][build-status]](https://github.com/avereon/zerra/actions)
 
 A UX utility library used in many Avereon projects.
 
