@@ -1,4 +1,4 @@
-module com.avereon.zarra {
+module com.avereon.zerra {
 	requires static lombok;
 
 	requires com.avereon.zevra;

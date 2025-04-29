@@ -65,7 +65,7 @@ public class Images {
 
 	static void applyContainerStylesheets( Canvas image, Parent node ) {
 		// Add the default container stylesheet
-		node.getStylesheets().add( Stylesheet.ZARRA );
+		node.getStylesheets().add( Stylesheet.ZERRA );
 
 		// Add extra container style
 		String style = (String)image.getProperties().get( "container-style" );
