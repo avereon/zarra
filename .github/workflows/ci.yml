@@ -7,7 +7,7 @@ on:
   workflow_dispatch:
 
 env:
-  AVN_PRODUCT: "zarra"
+  AVN_PRODUCT: "zerra"
   # The default release, should be overridden in config.sh
   AVN_RELEASE: "latest"
   # The default platform, should be overridden in the platform binaries jobs below
