@@ -6,10 +6,10 @@ module com.avereon.zerra {
 	requires javafx.swing;
 	requires image4j;
 
-	exports com.avereon.zarra.color;
-	exports com.avereon.zarra.event;
-	exports com.avereon.zarra.font;
-	exports com.avereon.zarra.image;
-	exports com.avereon.zarra.javafx;
-	exports com.avereon.zarra.style;
+	exports com.avereon.zerra.color;
+	exports com.avereon.zerra.event;
+	exports com.avereon.zerra.font;
+	exports com.avereon.zerra.image;
+	exports com.avereon.zerra.javafx;
+	exports com.avereon.zerra.style;
 }
